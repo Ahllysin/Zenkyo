@@ -643,7 +643,7 @@ async function main(){
         goku: f('time do goku'), geral: f('me monta o melhor time possivel'), lixo: f('blablabla'),
         semSSG: sem.team.filter(Boolean).every(id => !(getChar(id).tags || []).includes('SSG')),
         gokusNoTime: nomes.filter(n => n === 'Goku').length, tam: goku.team.filter(Boolean).length,
-        iaOff: typeof DESC_IA_ATIVA !== 'undefined' && DESC_IA_ATIVA === false && descIAStatusHtml() === '',
+        semIA: typeof descIAdisponivel === 'undefined' && typeof pedirIADescricao === 'undefined',
       };
     })()`);
     assert.deepStrictEqual(r.ar.mechs, ['elevacao']);
@@ -655,7 +655,7 @@ async function main(){
     assert.ok(r.geral.geral && !r.geral.vazio);
     assert.strictEqual(r.lixo.vazio, true);
     assert.ok(r.gokusNoTime >= 1 && r.gokusNoTime <= 3 && r.tam === 6, 'time do Goku: até 3 versões dele, o resto completa');
-    assert.ok(r.iaOff, 'a IA está desligada até haver chave: sem texto de IA no painel');
+    assert.ok(r.semIA, 'sem IA: o Descreva o time usa só a leitura por palavras-chave e os times da Comunidade');
   });
 
   await test('Descreva o time usa times da Comunidade: descrição que fala do assunto, filtros respeitados', () => {
@@ -728,6 +728,20 @@ async function main(){
     assert.ok(!r.publica.split(',').includes('a'), "o dono não ocupa lugar no ranking/pódio público: só o título Zen'oh");
     assert.ok(r.titulo, "o título Zen'oh aparece como faixa na Aliança Z");
     assert.ok(r.selDono && !r.selOutro, "a opção Zen'oh só aparece para a conta do dono");
+  });
+
+  await test('Admin: aviso de pedidos abertos há mais de 10 min (só entre 10 min e 7 dias, sem os já pagos)', () => {
+    const r = evalIn(sandbox, `(() => {
+      const agora = Date.parse('2026-10-18T12:00:00Z');
+      const min = m => new Date(agora - m * 60000).toISOString();
+      const lista = [
+        { status:'criado', criado:min(5) }, { status:'criado', criado:min(30) }, { status:'pending', criado:min(600) }, { status:'in_process', criado:min(60 * 24 * 8) },
+        { status:'aprovado', criado:min(30), aprovado_em:min(20) }, { status:'rejected', criado:min(60) },
+      ];
+      return { n: admAbertos(lista, agora), html: admAvisoAbertosHtml(lista).includes('admReconBtn'), vazio: admAvisoAbertosHtml([{ status:'aprovado', criado:min(30), aprovado_em:min(20) }]) === '' };
+    })()`);
+    assert.strictEqual(r.n, 2, 'só o criado de 30 min e o pending de 10 h contam');
+    assert.ok(r.html && r.vazio);
   });
 
   console.log(String.fromCharCode(10) + '[Estrutura: arquivos, rotas, offline, SEO]');

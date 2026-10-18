@@ -293,7 +293,7 @@ let state = {
   recRarity: 'all',
   autoMode: 'equilibrado',
   autoOpts: null,
-  descText: '', descRes: null, descNota: '', descIA: null,      // aba Combos: "Descreva o time" (texto e resultado, não persiste)
+  descText: '', descRes: null,      // aba Combos: "Descreva o time" (texto e resultado, não persiste)
   communityPosts: [],                // posts da aba Comunidade (vêm do Supabase, já sanitizados)
   communityLoaded: false, communityLoading: false, communityError: null, communityFor: null,
   communityMyLikes: [], communityReported: [],
@@ -3713,34 +3713,6 @@ function buildDescribedTeams(crit, maxOptions){
   }).sort((a, b) => b.score - a.score);
   return { list, hardN:hardPool.length, relevantN, hasSoft };
 }
-// Com login, a IA (função ia-time) traduz o texto em filtros; sem login, sem limite, sem rede ou com erro, vale a leitura por palavras-chave.
-function descCritFromIA(ia, textoOriginal){
-  const crit = parseTeamPrompt('');   // vazio: só o formato
-  const local = parseTeamPrompt(textoOriginal);
-  const pick = (arr, tabela) => (arr || []).map(k => tabela.find(x => x.key === k)).filter(Boolean);
-  crit.mechs = pick(ia.efeitos, DESC_MECHS);
-  crit.roles = (ia.papeis || []).filter(r => ROLE_INFO[r]);
-  crit.types = ia.tipos || []; crit.genders = ia.generos || []; crit.races = ia.racas || [];
-  crit.tags = ia.grupos || []; crit.affs = ia.afinidades || []; crit.rars = ia.raridades || [];
-  crit.mode = ia.foco || 'equilibrado';
-  crit.names = local.names;   // nomes completos de guerreiros a IA não precisa conhecer
-  crit.labels = [...crit.mechs.map(m => m.label), ...crit.roles.map(r => ROLE_INFO[r].label), ...crit.types.map(t => 'Tipo ' + t), ...crit.genders,
-    ...crit.races, ...crit.tags.map(g => g.replace(/^Guerreiro (de |)/, '')), ...crit.affs.map(a => 'Afinidade ' + a), ...crit.rars];
-  crit.vazio = !(crit.labels.length || crit.names.length);
-  return crit;
-}
-async function pedirIADescricao(txt){
-  const { data, error } = await window.__sb.client.functions.invoke('ia-time', { body: { texto: txt } });
-  if(error){
-    let corpo = {};
-    try{ corpo = await error.context.json(); }catch(e){}
-    return { erro: corpo.erro || 'A IA não respondeu agora.', restantes: corpo.restantes, usarLocal: true };
-  }
-  return data || { usarLocal: true };
-}
-// A IA (função ia-time no Supabase) está pronta, mas desligada: vira true quando houver chave da API configurada.
-const DESC_IA_ATIVA = false;
-function descIAdisponivel(){ return DESC_IA_ATIVA && !!(state.discordUser && window.__sb && window.__sb.client); }
 // Times da Comunidade que combinam com o pedido: pelo que a descrição/título fala, pelo que os guerreiros do time fazem e pelas curtidas.
 function descPostsParecidos(crit, texto){
   const posts = (state.communityPosts || []).filter(p => p.kind === 'team' && (p.reports || 0) < 3);
@@ -3788,33 +3760,18 @@ function renderDescComunidade(coms){
 async function runDescribeTeam(text){
   const txt = String(text || '').trim().slice(0, 200);
   state.descText = txt;
-  if(!txt){ state.descRes = null; state.descNota = ''; render(); return; }
-  state.descNota = '';
-  let crit = null, viaIA = false;
-  if(descIAdisponivel()){
-    showToast('Pensando no seu pedido…');
-    try{
-      const r = await pedirIADescricao(txt);
-      if(r.crit && !r.erro){
-        crit = descCritFromIA(r.crit, txt); viaIA = !crit.vazio;
-        state.descIA = { restantes: r.restantes, ilimitado: !!r.ilimitado };
-        if(crit.vazio) crit = null;   // a IA não entendeu: tenta a leitura simples
-      } else if(r.erro){
-        state.descNota = r.erro;
-        if(r.restantes === 0) state.descIA = { restantes: 0, ilimitado: false };
-      }
-    }catch(e){ console.error('Descreva o time: IA indisponível', e); state.descNota = 'A IA não respondeu agora. Usei a leitura simples.'; }
-  }
-  if(!crit) crit = parseTeamPrompt(txt);
+  if(!txt){ state.descRes = null; render(); return; }
+  let crit = null;
+  crit = parseTeamPrompt(txt);
   // ideias da Comunidade: carrega os posts se ainda não vieram
   if(isSupabaseConfigured() && !state.communityLoaded && !state.communityLoading){ try{ await refreshCommunity(); }catch(e){} }
   const coms = descPostsParecidos(crit, txt);
-  if(crit.vazio){ state.descRes = { texto:txt, crit, vazio:true, list:[], com:coms, ia:false }; render(); return; }
+  if(crit.vazio){ state.descRes = { texto:txt, crit, vazio:true, list:[], com:coms }; render(); return; }
   crit._com = descPostsBonus(coms);
   showToast('Montando o time…');
   setTimeout(() => {
     const r = buildDescribedTeams(crit, 3);
-    state.descRes = { texto:txt, crit, ...r, com:coms, ia:viaIA };
+    state.descRes = { texto:txt, crit, ...r, com:coms };
     render();
   }, 30);
 }
@@ -3841,7 +3798,7 @@ function renderDescribePanel(){
       const aviso = !r.list.length ? 'Nenhum guerreiro do elenco atende a esse conjunto de filtros.'
         : (r.hasSoft && r.relevantN < 6) ? `Só ${r.relevantN} guerreiro${r.relevantN === 1 ? '' : 's'} se encaixa${r.relevantN === 1 ? '' : 'm'} no que você pediu; completei o resto pelo equilíbrio.`
         : (!r.hasSoft && r.hardN < 6) ? `Só existem ${r.hardN} guerreiro${r.hardN === 1 ? '' : 's'} com esses filtros, então a equipe fica incompleta.` : '';
-      out = `<div class="kz-desc-understood"><span>${r.ia ? '✦ IA entendeu:' : 'Entendi:'}</span>${chips}</div>
+      out = `<div class="kz-desc-understood"><span>Entendi:</span>${chips}</div>
         ${aviso ? `<p class="kz-desc-msg warn">${aviso}</p>` : ''}
         ${r.list.length ? `<div class="kz-auto-rows">${r.list.map((o, i) => renderDescOptionRow(o, i, r)).join('')}</div>` : ''}
         ${renderDescComunidade(r.com)}`;
@@ -3855,20 +3812,9 @@ function renderDescribePanel(){
       <button type="submit" class="kz-btn kz-btn-primary" id="descBtn">Montar time</button>
       ${r ? '<button type="button" class="kz-btn" id="descClear">Limpar</button>' : ''}
     </form>
-    ${descIAStatusHtml()}
     <div class="kz-desc-ex"><span>Exemplos:</span>${DESC_EXAMPLES.map(e => `<button type="button" class="kz-desc-exbtn" data-desc-ex="${escapeAttr(e)}">${escapeHtml(e)}</button>`).join('')}</div>
     ${out}
   </section>`;
-}
-function descIAStatusHtml(){
-  if(!DESC_IA_ATIVA) return '';
-  let t;
-  if(!descIAdisponivel()) t = 'Entre com o Discord para usar a IA: ela entende pedidos mais livres (você tem 5 por dia; apoiadores, quantos quiserem). Sem login, vale a leitura simples.';
-  else if(state.descIA && state.descIA.ilimitado) t = '✦ IA ilimitada: obrigado por apoiar o Zenkyo!';
-  else if(state.descIA && state.descIA.restantes != null) t = `✦ IA: ${state.descIA.restantes} pedido${state.descIA.restantes === 1 ? '' : 's'} restante${state.descIA.restantes === 1 ? '' : 's'} hoje. Apoiadores não têm limite.`;
-  else t = '✦ IA ativa: até 5 pedidos por dia (apoiadores, sem limite).';
-  const nota = state.descNota ? `<p class="kz-desc-msg warn">${escapeHtml(state.descNota)}</p>` : '';
-  return `<p class="kz-desc-ia">${escapeHtml(t)}</p>${nota}`;
 }
 function renderDescOptionRow(o, i, r){
   const minis = o.team.map((id, slot) => {
@@ -6840,6 +6786,52 @@ function admResumo(lista){
 }
 // Pedidos que nunca foram pagos (link aberto e abandonado, recusado, falhou) com mais de 1 dia: o botão "Limpar" apaga estes.
 const ADM_NAO_PAGOS = ['criado','pending','in_process','rejected','cancelled','erro'];
+// Pedidos abertos há mais de 10 minutos (até 7 dias) sem confirmação: o aviso do Mercado Pago pode não ter chegado.
+const ADM_ABERTOS = ['criado','pending','in_process'];
+function admAbertos(lista, agora){
+  const t = agora || Date.now();
+  return (lista || []).filter(d=> !d.aprovado_em && ADM_ABERTOS.includes(d.status)
+    && t - new Date(d.criado).getTime() > 10 * 60 * 1000 && t - new Date(d.criado).getTime() < 7 * 24 * 3600 * 1000).length;
+}
+function admAvisoAbertosHtml(lista){
+  const n = admAbertos(lista);
+  if(!n) return '';
+  const r = state.admin.reconResp ? `<span class="kz-nva-reconresp">${escapeHtml(state.admin.reconResp)}</span>` : '';
+  return `<div class="kz-nva-aviso kz-nva-aviso-warn" role="alert">⚠ <b>${n} pedido${n === 1 ? '' : 's'}</b> aberto${n === 1 ? '' : 's'} há mais de 10 minutos sem confirmação. Pode ser gente que desistiu de pagar ou um aviso do Mercado Pago que não chegou.
+    <button type="button" class="kz-btn kz-btn-sm" id="admReconBtn">Conferir agora</button> ${r}</div>`;
+}
+async function reconciliarPagamentos(){
+  const { data, error } = await window.__sb.client.functions.invoke('mp-reconciliar', { body: {} });
+  if(error){
+    let msg = '';
+    try{ msg = (await error.context.json()).erro || ''; }catch(e){}
+    throw new Error(msg || 'Não consegui conferir agora.');
+  }
+  return data || {};
+}
+function admReconTexto(r){
+  if(!r.conferidos) return 'Nada para conferir.';
+  const partes = [`${r.conferidos} conferido${r.conferidos === 1 ? '' : 's'}`];
+  if(r.lancados) partes.push(`${r.lancados} lançado${r.lancados === 1 ? '' : 's'} no mural`);
+  if(r.atualizados) partes.push(`${r.atualizados} com status atualizado`);
+  if(r.sem_pagamento) partes.push(`${r.sem_pagamento} sem pagamento no Mercado Pago (desistiram)`);
+  if(r.falhas) partes.push(`${r.falhas} com falha`);
+  return partes.join(' · ') + '.';
+}
+async function rodarReconciliacao(){
+  const a = state.admin;
+  if(a.reconRodando) return;
+  a.reconRodando = true; a.reconResp = 'Conferindo com o Mercado Pago…'; refreshAdminDoacoes();
+  try{
+    const r = await reconciliarPagamentos();
+    a.reconResp = admReconTexto(r);
+    if(r.lancados || r.atualizados){ await refreshDonorsRemote(); }
+    a.reconRodando = false;
+    await loadAdminDoacoes();
+  }catch(e){
+    a.reconRodando = false; a.reconResp = e.message || 'Não consegui conferir agora.'; refreshAdminDoacoes();
+  }
+}
 function admLimpaveis(lista, agora){
   const corte = (agora || Date.now()) - 24 * 3600 * 1000;
   return (lista || []).filter(d=> !d.aprovado_em && ADM_NAO_PAGOS.includes(d.status) && new Date(d.criado).getTime() < corte).length;
@@ -6866,6 +6858,7 @@ function admDoacoesHtml(){
   if(a.carregando || !a.lista) return `<div class="kz-nva-aviso">Carregando as doações…</div>`;
   const res = admResumo(a.lista), vis = admFiltrar(a.lista, a.filtro, a.busca), limpaveis = admLimpaveis(a.lista);
   return `
+    ${admAvisoAbertosHtml(a.lista)}
     <div class="kz-nva-cards">
       <div class="kz-nva-card"><span>Recebido</span><b>${formatBRL(res.recebido)}</b><small>valor bruto, sem a tarifa do Mercado Pago</small></div>
       <div class="kz-nva-card"><span>Pagamentos</span><b>${res.pagas}</b><small>aprovados, devolvidos e estornados</small></div>
@@ -6925,6 +6918,8 @@ async function loadAdminDoacoes(){
     const { data, error } = await window.__sb.client.rpc('admin_listar_doacoes', { p_limite: 500 });
     if(error) throw error;
     a.lista = Array.isArray(data) ? data : [];
+    // há pedidos abertos? confere sozinho uma vez por visita à aba, sem precisar clicar
+    if(!a.autoConferido && admAbertos(a.lista)){ a.autoConferido = true; setTimeout(rodarReconciliacao, 50); }
   }catch(e){
     console.error('Não consegui carregar as doações', e);
     a.lista = null; a.erro = e && e.code === '42501' ? 'Esta conta não é a do dono do site.' : 'Não consegui carregar as doações agora.';
@@ -6940,6 +6935,8 @@ function refreshAdminDoacoes(){
 }
 function attachAdminDoacoesHandlers(root){
   const a = state.admin;
+  const recon = root.querySelector('#admReconBtn');
+  if(recon) recon.addEventListener('click', rodarReconciliacao);
   root.querySelectorAll('[data-adm-filtro]').forEach(b=> b.addEventListener('click', ()=>{ a.filtro = b.dataset.admFiltro; refreshAdminDoacoes(); }));
   const busca = root.querySelector('#admBusca');
   if(busca) busca.addEventListener('input', ()=>{
