@@ -124,7 +124,14 @@ async function main(){
             (b.blocos || []).forEach(x => confere(sec, x));
           }
           if(b.t === 'img' && !(/^guias\/img\/[a-z0-9\/-]+\.webp$/.test(b.src || '') && fileExists(b.src))) fail(`${tag}, seção ${sec.titulo}: imagem ${b.src} inválida ou ausente`);
-          if(!['p', 'note', 'h', 'ul', 'ol', 'table', 'callout', 'icons', 'details', 'img'].includes(b.t)) fail(`${tag}, seção ${sec.titulo}: tipo de bloco desconhecido (${b.t})`);
+          if(b.t === 'apoios'){
+            if(!(b.itens || []).length) fail(`${tag}, seção ${sec.titulo}: catálogo de apoios vazio`);
+            (b.itens || []).forEach(i => {
+              if(!nonEmpty(i.nome) || !nonEmpty(i.papel) || !(+i.frag > 0)) fail(`${tag}, seção ${sec.titulo}: apoio incompleto (${i.nome})`);
+              ['', '-icone'].forEach(suf => { const f = `guias/img/assistencia/${i.slug}${suf}.webp`; if(!fileExists(f)) fail(`${tag}, seção ${sec.titulo}: ${f} não existe`); });
+            });
+          }
+          if(!['p', 'note', 'h', 'ul', 'ol', 'table', 'callout', 'icons', 'details', 'img', 'apoios'].includes(b.t)) fail(`${tag}, seção ${sec.titulo}: tipo de bloco desconhecido (${b.t})`);
         };
         (g.secoes || []).forEach(sec => (sec.blocos || []).forEach(b => confere(sec, b)));
       });

@@ -760,6 +760,30 @@ async function main(){
     assert.ok(fs.existsSync(path.join(__dirname, 'icones', 'vegeta-instinto-superior.webp')), 'o ícone do Vegeta Instinto Superior deveria existir');
   });
 
+  await test('Guia de Assistência: cartões dos 13 apoios agrupados por custo e ícone junto do nome nos textos e tabelas', () => {
+    const fs = require('fs'), path = require('path');
+    const json = fs.readFileSync(path.join(__dirname, 'guias', 'guias.json'), 'utf8');
+    const r = evalIn(sandbox, `(() => {
+      const guiasAntes = guiasData;
+      guiasData = JSON.parse(${JSON.stringify(json)});
+      const g = guiasData.guias.find(x => x.id === 'assistencia');
+      const bloco = g.secoes.flatMap(s => s.blocos).find(b => b.t === 'apoios');
+      guideChips = guideChipsFor(g);
+      const html = guideBlockHtml(bloco);
+      const texto = guideBlockHtml({ t:'p', x:'Vovó Uranai e Satan ativam o Livro; Piccolo não.' });
+      const tabela = guideBlockHtml({ t:'table', head:['Grupo'], rows:[['Jebit / Tao Pai Pai']] });
+      const seguro = guideBlockHtml({ t:'p', x:'<img src=x onerror=1> Satan' });
+      guideChips = null; guiasData = guiasAntes;
+      const semChips = guideBlockHtml({ t:'p', x:'Satan' });
+      return { itens: bloco.itens.map(i => i.slug), cartoes: (html.match(/class="kz-ap-card"/g) || []).length, grupos: (html.match(/fragmentos para compor/g) || []).length,
+        chips: (texto.match(/kz-ap-chip/g) || []).length, tabela: (tabela.match(/kz-ap-chip/g) || []).length, seguro: !seguro.includes('<img src=x'), semChips: !semChips.includes('kz-ap-chip') };
+    })()`);
+    assert.strictEqual(r.cartoes, 13); assert.strictEqual(r.grupos, 3);
+    assert.strictEqual(r.chips, 3, 'Vovó Uranai, Satan e Piccolo ganham ícone'); assert.strictEqual(r.tabela, 2);
+    assert.ok(r.seguro, 'o texto continua escapado (nada de HTML solto)'); assert.ok(r.semChips, 'guias sem catálogo de apoios não mudam');
+    r.itens.forEach(sl => ['', '-icone'].forEach(suf => assert.ok(fs.existsSync(path.join(__dirname, 'guias', 'img', 'assistencia', sl + suf + '.webp')), sl + suf + ' deveria existir')));
+  });
+
   console.log(String.fromCharCode(10) + '[Estrutura: arquivos, rotas, offline, SEO]');
 
   await test('links por aba e guerreiro (#/guerreiro/<nome>, #/combos) são lidos e inválidos são ignorados', () => {

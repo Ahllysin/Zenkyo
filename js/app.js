@@ -5411,7 +5411,7 @@ function guideCover(g){ return 'guias/img/' + encodeURIComponent(g.n) + '.webp';
 function guideLabel(g){ return g.rotulo ? String(g.rotulo) : 'Guia ' + g.n; }
 function guideImgSrc(s){ return /^guias\/img\/[a-z0-9\/-]+\.webp$/.test(String(s||'')) ? s : ''; }
 function guideBlocksText(bs){
-  return (bs||[]).map(b=> (b.t === 'ul' || b.t === 'ol') ? (b.items||[]).join(' ') : b.t === 'callout' ? [b.titulo||''].concat(b.x||[]).join(' ') : b.t === 'details' ? [b.titulo||'', b.sub||'', guideBlocksText(b.blocos)].join(' ') : (b.t === 'icons' || b.t === 'img') ? '' : b.t === 'table' ? [(b.head||[]).join(' ')].concat((b.rows||[]).map(r=>r.join(' '))).join(' ') : (b.x||'')).join(' ');
+  return (bs||[]).map(b=> (b.t === 'ul' || b.t === 'ol') ? (b.items||[]).join(' ') : b.t === 'callout' ? [b.titulo||''].concat(b.x||[]).join(' ') : b.t === 'details' ? [b.titulo||'', b.sub||'', guideBlocksText(b.blocos)].join(' ') : (b.t === 'icons' || b.t === 'img') ? '' : b.t === 'apoios' ? (b.itens||[]).map(i=>[i.nome, i.frag + ' fragmentos', i.papel].join(' ')).join(' ') : b.t === 'table' ? [(b.head||[]).join(' ')].concat((b.rows||[]).map(r=>r.join(' '))).join(' ') : (b.x||'')).join(' ');
 }
 function guideSearchNorm(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
 function guideIndex(g){
@@ -5449,13 +5449,52 @@ function guideCardsHtml(q){
       </span>
     </button>`).join('');
 }
+// Guia de Assistência: o nome de cada apoio ganha o ícone dele (nos textos e nas tabelas). guideChips é montado por renderGuideReader.
+let guideChips = null;
+function guideChipsFor(g){
+  const ap = [];
+  (g.secoes||[]).forEach(sc=> (sc.blocos||[]).forEach(b=>{ if(b.t === 'apoios') (b.itens||[]).forEach(i=> ap.push(i)); }));
+  if(!ap.length) return null;
+  const mapa = new Map(ap.map(i=>[i.nome, i]));
+  const nomes = [...mapa.keys()].sort((a, b)=> b.length - a.length);
+  const esc = n=> escapeHtml(n).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return { mapa, re: new RegExp('(?<![\\p{L}\\p{N}])(' + nomes.map(esc).join('|') + ')(?![\\p{L}\\p{N}])', 'gu') };
+}
+function guideApoioIcone(i){ return guideImgSrc('guias/img/assistencia/' + String(i.slug||'').replace(/[^a-z0-9-]/g, '') + '-icone.webp'); }
+function guideApoioCartao(i){ return guideImgSrc('guias/img/assistencia/' + String(i.slug||'').replace(/[^a-z0-9-]/g, '') + '.webp'); }
+// recebe texto JÁ escapado e devolve com os ícones (só no guia que tem catálogo de apoios)
+function guideTexto(html){
+  if(!guideChips) return html;
+  return html.replace(guideChips.re, (_, n)=>{
+    const i = guideChips.mapa.get(n.replace(/&amp;/g, '&'));
+    const ic = i && guideApoioIcone(i);
+    return ic ? `<span class="kz-ap-chip"><img src="${ic}" alt="" width="20" height="20" loading="lazy" data-onerr="hide">${n}</span>` : n;
+  });
+}
+function guideApoiosHtml(b){
+  const por = new Map();
+  (b.itens||[]).forEach(i=>{ const k = +i.frag || 0; if(!por.has(k)) por.set(k, []); por.get(k).push(i); });
+  return `<div class="kz-ap">${[...por.keys()].sort((x, y)=> x - y).map(k=>`
+    <div class="kz-ap-grupo">
+      <div class="kz-ap-tier"><b>${k}</b> fragmentos para compor<small>${por.get(k).length} apoios</small></div>
+      <div class="kz-ap-grid">${por.get(k).map(i=>{
+        const cart = guideApoioCartao(i), ic = guideApoioIcone(i);
+        return `<article class="kz-ap-card">
+          ${cart ? `<img class="kz-ap-art" src="${cart}" alt="Cartão de ${escapeAttr(i.nome)}" width="200" height="258" loading="lazy" data-onerr="hide">` : ''}
+          <div class="kz-ap-info"><div class="kz-ap-nm">${ic ? `<img src="${ic}" alt="" width="28" height="28" loading="lazy" data-onerr="hide">` : ''}<b>${escapeHtml(i.nome)}</b></div>
+          <p>${escapeHtml(i.papel)}</p></div>
+        </article>`;
+      }).join('')}</div>
+    </div>`).join('')}</div>`;
+}
 function guideBlockHtml(b){
   if(!b) return '';
-  if(b.t === 'p') return `<p>${escapeHtml(b.x)}</p>`;
-  if(b.t === 'note') return `<p class="note">${escapeHtml(b.x)}</p>`;
+  if(b.t === 'apoios') return guideApoiosHtml(b);
+  if(b.t === 'p') return `<p>${guideTexto(escapeHtml(b.x))}</p>`;
+  if(b.t === 'note') return `<p class="note">${guideTexto(escapeHtml(b.x))}</p>`;
   if(b.t === 'h') return `<h3>${escapeHtml(b.x)}</h3>`;
-  if(b.t === 'ul') return `<ul>${(b.items||[]).map(i=>`<li>${escapeHtml(i)}</li>`).join('')}</ul>`;
-  if(b.t === 'ol') return `<ol>${(b.items||[]).map(i=>`<li>${escapeHtml(i)}</li>`).join('')}</ol>`;
+  if(b.t === 'ul') return `<ul>${(b.items||[]).map(i=>`<li>${guideTexto(escapeHtml(i))}</li>`).join('')}</ul>`;
+  if(b.t === 'ol') return `<ol>${(b.items||[]).map(i=>`<li>${guideTexto(escapeHtml(i))}</li>`).join('')}</ol>`;
   if(b.t === 'callout') return `<div class="kz-gr-callout">${b.titulo ? `<strong>${escapeHtml(b.titulo)}</strong>` : ''}${(b.x||[]).map(t=>`<p>${escapeHtml(t)}</p>`).join('')}</div>`;
   if(b.t === 'img'){
     const s = guideImgSrc(b.src);
@@ -5466,10 +5505,11 @@ function guideBlockHtml(b){
     return `<details class="kz-gd"><summary>${ic ? `<img src="${ic}" alt="" width="40" height="40" loading="lazy" data-onerr="hide">` : ''}<span class="tx"><b>${escapeHtml(b.titulo)}</b>${b.sub ? `<small>${escapeHtml(b.sub)}</small>` : ''}</span></summary><div class="kz-gd-body">${(b.blocos||[]).map(guideBlockHtml).join('')}</div></details>`;
   }
   if(b.t === 'icons') return `<div class="kz-gr-icons">${(b.items||[]).map(i=>{ const s = guideImgSrc(i.src); return s ? `<figure><img src="${s}" alt="${escapeAttr(i.r)}" width="48" height="48" loading="lazy" data-onerr="hide"><figcaption>${escapeHtml(i.r)}</figcaption></figure>` : ''; }).join('')}</div>`;
-  if(b.t === 'table') return `<div class="kz-gt-wrap"><table class="kz-gt${(b.head||[]).length >= 3 && (b.rows||[]).some(r=>r.some(c=>String(c).length > 90)) ? ' kz-gt-long' : ''}"><thead><tr>${(b.head||[]).map(c=>`<th>${escapeHtml(c)}</th>`).join('')}</tr></thead><tbody>${(b.rows||[]).map(r=>`<tr>${r.map(c=>`<td>${escapeHtml(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  if(b.t === 'table') return `<div class="kz-gt-wrap"><table class="kz-gt${(b.head||[]).length >= 3 && (b.rows||[]).some(r=>r.some(c=>String(c).length > 90)) ? ' kz-gt-long' : ''}"><thead><tr>${(b.head||[]).map(c=>`<th>${escapeHtml(c)}</th>`).join('')}</tr></thead><tbody>${(b.rows||[]).map(r=>`<tr>${r.map(c=>`<td>${guideTexto(escapeHtml(c))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
   return '';
 }
 function renderGuideReader(g){
+  guideChips = guideChipsFor(g);
   const list = guiasData.guias, i = list.indexOf(g);
   const prev = list[i-1], next = list[i+1];
   const sec = (g.secoes||[]);
