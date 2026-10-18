@@ -632,6 +632,32 @@ async function main(){
     assert.strictEqual(r.depois, 6);
   });
 
+  await test('Descreva o time: frases livres, "sem X", nomes citados e pedido geral', () => {
+    const r = evalIn(sandbox, `(() => {
+      const f = t => { const c = parseTeamPrompt(t); return { mechs:c.mechs.map(m=>m.key), roles:c.roles, excl:c.excl && c.excl.tags, races:c.races, refs:c.refs, geral:c.geral, vazio:c.vazio }; };
+      const sem = buildDescribedTeams(parseTeamPrompt('time de saiyajins sem ssg'), 1).list[0];
+      const goku = buildDescribedTeams(parseTeamPrompt('time do goku'), 1).list[0];
+      const nomes = goku.team.filter(Boolean).map(id => getChar(id).name.split(' ')[0]);
+      return {
+        ar: f('time pra jogar o inimigo no ar'), travar: f('quero travar o supremo do inimigo'), sem: f('time de saiyajins sem ssg'),
+        goku: f('time do goku'), geral: f('me monta o melhor time possivel'), lixo: f('blablabla'),
+        semSSG: sem.team.filter(Boolean).every(id => !(getChar(id).tags || []).includes('SSG')),
+        gokusNoTime: nomes.filter(n => n === 'Goku').length, tam: goku.team.filter(Boolean).length,
+        iaOff: typeof DESC_IA_ATIVA !== 'undefined' && DESC_IA_ATIVA === false && descIAStatusHtml() === '',
+      };
+    })()`);
+    assert.deepStrictEqual(r.ar.mechs, ['elevacao']);
+    assert.ok(r.travar.mechs.includes('silencio'));
+    assert.deepStrictEqual(r.sem.excl, ['SSG']);
+    assert.deepStrictEqual(r.sem.races, ['Saiyajin']);
+    assert.ok(r.semSSG, 'quem está depois de "sem" não pode entrar no time');
+    assert.ok(r.goku.refs.includes('goku'));
+    assert.ok(r.geral.geral && !r.geral.vazio);
+    assert.strictEqual(r.lixo.vazio, true);
+    assert.ok(r.gokusNoTime >= 1 && r.gokusNoTime <= 3 && r.tam === 6, 'time do Goku: até 3 versões dele, o resto completa');
+    assert.ok(r.iaOff, 'a IA está desligada até haver chave: sem texto de IA no painel');
+  });
+
   console.log('\n[Doar / ranking de apoiadores]');
 
   await test('elenco padrão de doadores começa vazio (nunca inventar apoiador)', () => {

@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-Wi4pAjSG5kyRWsnfRgcQHy2RL0XGpvgXO5oh3nhVLDo=' 'sha256-cPUaOqsPb0aoA8U7HZQ9R6H8c3Z1cSGcpVOa2mE+NgA='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-Cj/OlLMqYbCWsSYp6Y98xFxrmhDm1Jc+E/N6UNNfxNY=' 'sha256-f+p+0OOQkg4GzdzZmWlmO28iTTfSW6yVx0wWSREMVa0='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Zenkyo — guerreiros, combos e tier list</title>
@@ -7803,45 +7803,51 @@ function applyAutoOption(i){
 // Sem IA externa: lê o texto por palavras-chave e escolhe guerreiros pelo que está nos dados (habilidades, gênero, raça,
 // afinidade, papéis). Gênero/raça/afinidade/raridade/grupo são filtros; efeito, papel e tipo pontuam; o resto vem do Montador.
 const DESC_MECHS = [
-  { key:'queimadura', label:'Queimadura',    q:/queim|burn|incendi|ardente/,       d:/queima/ },
-  { key:'sangramento', label:'Sangramento',  q:/sangr|bleed|hemorrag/,             d:/sangr|lacera|ferimento|ferida mortal/ },
-  { key:'veneno',     label:'Veneno',        q:/venen|poison|toxic/,               d:/envenen|veneno/ },
-  { key:'atordoamento', label:'Atordoamento', q:/atordo|stun/,                     d:/atordo/ },
-  { key:'silencio',   label:'Silêncio',      q:/silenc/,                           d:/sil[eê]nc/ },
-  { key:'paralisia',  label:'Paralisia',     q:/paralis/,                          d:/paralis|imobiliza|prisão|preso/ },
-  { key:'petrificacao', label:'Petrificação', q:/petrific/,                        d:/petrific/ },
-  { key:'confusao',   label:'Confusão',      q:/confus/,                           d:/confus/ },
-  { key:'encanto',    label:'Encanto',       q:/encant|charme/,                    d:/encant/ },
-  { key:'cegueira',   label:'Cegueira',      q:/cegueira|cegar/,                   d:/cegueira/ },
-  { key:'escudo',     label:'Escudo',        q:/escudo|shield|barreira/,           d:/escudo|muralha de energia|parede de energia/ },
-  { key:'critico',    label:'Crítico',       q:/critic|crit\b/,                    d:/cr[ií]t/ },
-  { key:'furia',      label:'Fúria/Raiva',   q:/furia|raiva|rage/,                 d:/raiva|f[uú]ria/ },
-  { key:'derrubada',  label:'Derrubada',     q:/derrub|knock/,                     d:/derrub/ },
-  { key:'empurrao',   label:'Empurrão',      q:/empurr|push/,                      d:/empurr/ },
-  { key:'elevacao',   label:'Elevação',      q:/eleva|juggle|aereo/,               d:/eleva[cç]/ },
+  { key:'queimadura', label:'Queimadura',    q:/queim|burn|incendi|ardente|fogo continuo|em chamas/,  d:/queima/ },
+  { key:'sangramento', label:'Sangramento',  q:/sangr|bleed|hemorrag|laceraca|ferida/,                d:/sangr|lacera|ferimento|ferida mortal/ },
+  { key:'veneno',     label:'Veneno',        q:/venen|poison|toxic/,                                  d:/envenen|veneno/ },
+  { key:'atordoamento', label:'Atordoamento', q:/atordo|stun|desmaiar|apagar o inimigo/,              d:/atordo/ },
+  { key:'silencio',   label:'Silêncio',      q:/silenc|calar|travar (o )?(supremo|ultimate)|bloquear (o )?supremo/, d:/sil[eê]nc|suprim|supress/ },
+  { key:'paralisia',  label:'Paralisia',     q:/paralis|imobiliz|prender|prisao|travar (o )?inimigo|congel/, d:/paralis|imobiliza|prisão|preso/ },
+  { key:'petrificacao', label:'Petrificação', q:/petrific|pedra no inimigo/,                           d:/petrific/ },
+  { key:'confusao',   label:'Confusão',      q:/confus/,                                              d:/confus/ },
+  { key:'encanto',    label:'Encanto',       q:/encant|charme|enfeiti/,                               d:/encant/ },
+  { key:'cegueira',   label:'Cegueira',      q:/cegueira|cegar|cego/,                                 d:/cegueira/ },
+  { key:'escudo',     label:'Escudo',        q:/escudo|shield|barreira|protecao/,                     d:/escudo|muralha de energia|parede de energia/ },
+  { key:'critico',    label:'Crítico',       q:/critic|crit\b/,                                       d:/cr[ií]t/ },
+  { key:'furia',      label:'Fúria/Raiva',   q:/furia|raiva|rage|ki rapido|carregar rapido|encher a barra/, d:/raiva|f[uú]ria/ },
+  { key:'derrubada',  label:'Derrubada',     q:/derrub|knock|jogar no chao/,                          d:/derrub/ },
+  { key:'empurrao',   label:'Empurrão',      q:/empurr|push|jogar pra tras|jogar para tras/,          d:/empurr/ },
+  { key:'elevacao',   label:'Elevação',      q:/eleva|juggle|aereo|jogar (pro|para o) (alto|ar)|pro alto|no ar(?!\w)|pro ar(?!\w)|para o ar(?!\w)|levantar o inimigo/, d:/eleva[cç]/ },
 ];
 const DESC_ROLES = [
-  ['tank', /\btank|resistente|aguent|defensiv/], ['suporte', /suporte|buff|apoio|support/],
-  ['controle', /controle|\bcc\b|crowd|travar|incapacit/], ['cura', /\bcura\b|curandeir|healer|\bheal|regenera/],
-  ['dot', /dano continuo|dano por turno|\bdot\b/], ['dano', /\bdano\b|ofensiv|agressiv|\bdps\b|burst|\bforte\b/],
+  ['tank', /\btank|resistente|aguent|defensiv|linha de frente|frontline|protege|\bsegurar\b|\bsegura\b/],
+  ['suporte', /suporte|buff|apoio|support|fortalec|aumentar (o )?(ataque|status)/],
+  ['controle', /controle|\bcc\b|crowd|travar|incapacit|debuff|enfraquec/],
+  ['cura', /\bcura\b|curar|curandeir|healer|\bheal|regenera|recuper(ar|a) vida/],
+  ['sobrevivencia', /reviv|sobreviv|imortal|nao morre|ressusc/],
+  ['dot', /dano continuo|dano por turno|\bdot\b|dano ao longo/],
+  ['dano', /\bdano\b|ofensiv|agressiv|\bdps\b|burst|\bforte\b|bater forte|matar rapido|glass cannon/],
 ];
 const DESC_TYPES = [['Ataque', /tipo ataque|\bde ataque\b|atacantes?\b/], ['Defesa', /tipo defesa|\bde defesa\b/], ['Habilidade', /tipo habilidade|\bde habilidade\b/]];
 const DESC_RACES = [['Saiyajin', /saiyajin|saiyan|sayajin|saiya\b/], ['Androide', /androide|android/], ['Humano', /humano/]];
 const DESC_TAGS = [
-  ['Guerreiro Maligno', /malign|\bvila(o|s|oes)\b|do mal\b/], ['Guerreiro de Fusão', /fusa|fusion/], ['Guerreiro Dourado', /dourad|golden/],
-  ['Artista Marcial', /artista marcial|artistas marciais/], ['Anjo', /\banjos?\b/], ['SSG', /\bssg\b|super saiyajin god|deus saiyajin/],
-  ['SS4', /\bss4\b|super saiyajin 4/], ['Tropa do Orgulho', /orgulho/], ['Deus da Destruição', /deus(es)? da destrui/],
+  ['Guerreiro Maligno', /malign|\bvila(o|s|oes)\b|do mal\b|sombri|trevas/], ['Guerreiro de Fusão', /fusa|fusion|fundid/], ['Guerreiro Dourado', /dourad|golden/],
+  ['Artista Marcial', /artista marcial|artistas marciais|lutador/], ['Anjo', /\banjos?\b/], ['SSG', /\bssg\b|super saiyajin god|deus saiyajin/],
+  ['SS4', /\bss4\b|\bssj4\b|super saiyajin 4/], ['Tropa do Orgulho', /orgulho/], ['Deus da Destruição', /deus(es)? da destrui|\bhakai\b/],
 ];
-const DESC_AFFS = [['Fogo', /\bfogo\b|vermelh/], ['Raio', /\braio\b|eletric|amarel/], ['Pedra', /\bpedra\b|\bterra\b|\bverde\b/], ['Luz', /\bluz\b|branc/]];
+const DESC_AFFS = [['Fogo', /\bfogo\b|vermelh|\bred\b/], ['Raio', /\braio\b|eletric|amarel|\byellow\b/], ['Pedra', /\bpedra\b|\bterra\b|\bverde\b|\bgreen\b/], ['Luz', /\bluz\b|branc|\bwhite\b/]];
+const DESC_NEG = /\b(sem|exceto|menos|nao quero|nem|tirando|fora)\b/;
+const DESC_GERAL = /melhor time|time forte|time completo|equilibrad|qualquer time|time bom|monte um time|monta um time|me ajuda|me sugere|sugest/;
 function descNorm(s){ return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
-function parseTeamPrompt(text){
-  const t = descNorm(text);
-  const crit = { mechs:[], roles:[], types:[], genders:[], races:[], tags:[], affs:[], rars:[], names:[], mode:'equilibrado', labels:[] };
+// Lê um trecho do texto (já sem acento) e devolve os filtros encontrados.
+function descLerTrecho(t){
+  const crit = { mechs:[], roles:[], types:[], genders:[], races:[], tags:[], affs:[], rars:[], labels:[] };
   DESC_MECHS.forEach(m => { if(m.q.test(t)){ crit.mechs.push(m); crit.labels.push(m.label); } });
   DESC_ROLES.forEach(([r, re]) => { if(re.test(t)){ crit.roles.push(r); crit.labels.push(ROLE_INFO[r].label); } });
   DESC_TYPES.forEach(([ty, re]) => { if(re.test(t)){ crit.types.push(ty); crit.labels.push('Tipo ' + ty); } });
-  if(/feminin|mulher|garota|menina|guerreira|\belas\b/.test(t)){ crit.genders.push('Feminino'); crit.labels.push('Feminino'); }
-  else if(/masculin|homens|\bhomem\b|\beles\b/.test(t)){ crit.genders.push('Masculino'); crit.labels.push('Masculino'); }
+  if(/feminin|mulher|garota|menina|guerreira|dama|\belas\b/.test(t)){ crit.genders.push('Feminino'); crit.labels.push('Feminino'); }
+  else if(/masculin|homens|\bhomem\b|\beles\b|\bmarmanj/.test(t)){ crit.genders.push('Masculino'); crit.labels.push('Masculino'); }
   DESC_RACES.forEach(([r, re]) => { if(re.test(t)){ crit.races.push(r); crit.labels.push(r); } });
   DESC_TAGS.forEach(([g, re]) => { if(re.test(t)){ crit.tags.push(g); crit.labels.push(g.replace(/^Guerreiro (de |)/, '')); } });
   DESC_AFFS.forEach(([a, re]) => { if(re.test(t)){ crit.affs.push(a); crit.labels.push('Afinidade ' + a); } });
@@ -7850,15 +7856,50 @@ function parseTeamPrompt(text){
   if(/limitad/.test(t)){ crit.rars.push('SSR [Limitado]'); crit.labels.push('Limitado'); }
   if(/lendari/.test(t)){ crit.rars.push('SSR [Lendário]'); crit.labels.push('Lendário'); }
   if(/ultimate/.test(t)){ crit.rars.push('SSR [Ultimate]'); crit.labels.push('Ultimate'); }
-  if(/combo/.test(t)) crit.mode = 'combos'; else if(/sinergia/.test(t)) crit.mode = 'sinergias';
+  return crit;
+}
+const DESC_PALAVRAS_SOLTAS = /^(time|equipe|quero|pra|para|com|sem|que|uma|uns|das|dos|ssr|tipo|forte|bom|jogo|cartas|monte|monta)$/;
+function parseTeamPrompt(text){
+  const t = descNorm(text);
+  // "sem X": o que vem depois do marcador (até vírgula, "mas" ou "quero") é o que NÃO pode entrar
+  const m = t.match(DESC_NEG);
+  let pos = t, neg = '';
+  if(m){
+    const resto = t.slice(m.index + m[0].length);
+    const fim = resto.search(/[,.;]|\bmas\b|\bporem\b|\bquero\b/);
+    neg = fim >= 0 ? resto.slice(0, fim) : resto;
+    pos = t.slice(0, m.index) + ' ' + (fim >= 0 ? resto.slice(fim) : '');
+  }
+  const crit = { ...descLerTrecho(pos), names:[], refs:[], mode:'equilibrado', excl:null, geral:false };
+  if(neg){
+    const ex = descLerTrecho(neg);
+    const total = ex.mechs.length + ex.roles.length + ex.types.length + ex.genders.length + ex.races.length + ex.tags.length + ex.affs.length + ex.rars.length;
+    if(total){ crit.excl = ex; crit.labels = crit.labels.concat(ex.labels.map(l => 'sem ' + l)); }
+  }
+  if(/combo/.test(pos)) crit.mode = 'combos'; else if(/sinergia/.test(pos)) crit.mode = 'sinergias';
   // guerreiros citados pelo nome completo ("com Vegetto SSGSS") entram obrigatoriamente
   (state.characters || []).forEach(c => {
     const n = descNorm(c.name);
-    if(n.length >= 4 && new RegExp('(^|[^a-z0-9])' + n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '([^a-z0-9]|$)').test(t)) crit.names.push(c.id);
+    if(n.length >= 4 && new RegExp('(^|[^a-z0-9])' + n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '([^a-z0-9]|$)').test(pos)) crit.names.push(c.id);
   });
+  // só o primeiro nome ("time do goku"): todas as versões ganham pontos, a equipe escolhe as que fazem sentido
+  const palavras = pos.split(/[^a-z0-9]+/).filter(w => w.length >= 4 && !DESC_PALAVRAS_SOLTAS.test(w));
+  const primeiros = new Set((state.characters || []).filter(c => !crit.names.includes(c.id)).map(c => descNorm(c.name).split(/[^a-z0-9]+/)[0]));
+  crit.refs = [...new Set(palavras.filter(w => primeiros.has(w)))];
+  crit.refs.forEach(w => { crit.labels.push('Citado: ' + w.charAt(0).toUpperCase() + w.slice(1)); });
+  crit.geral = DESC_GERAL.test(pos);
   crit.vazio = !(crit.mechs.length || crit.roles.length || crit.types.length || crit.genders.length || crit.races.length || crit.tags.length
-    || crit.affs.length || crit.rars.length || crit.names.length);
+    || crit.affs.length || crit.rars.length || crit.names.length || crit.refs.length || crit.excl || crit.geral);
   return crit;
+}
+function descCasa(c, f){
+  if(f.genders.length && f.genders.includes(c.gender)) return true;
+  if(f.races.length && f.races.includes(c.element)) return true;
+  if(f.tags.length && f.tags.some(g => (c.tags || []).includes(g))) return true;
+  if(f.affs.length && f.affs.includes(c.affinity)) return true;
+  if(f.rars.length && f.rars.some(r => r === 'SSR' ? rarityLabel(c.rarity) === 'SSR' : c.rarity === r)) return true;
+  if(f.types.length && f.types.includes(c.type)) return true;
+  return false;
 }
 function descHardOk(c, crit){
   if(crit.genders.length && !crit.genders.includes(c.gender)) return false;
@@ -7866,9 +7907,16 @@ function descHardOk(c, crit){
   if(crit.tags.length && !crit.tags.some(g => (c.tags || []).includes(g))) return false;
   if(crit.affs.length && !crit.affs.includes(c.affinity)) return false;
   if(crit.rars.length && !crit.rars.some(r => r === 'SSR' ? rarityLabel(c.rarity) === 'SSR' : c.rarity === r)) return false;
+  if(crit.excl){
+    if(descCasa(c, crit.excl)) return false;
+    if(crit.excl.mechs.length || crit.excl.roles.length){
+      const e = descRelevance(c, { mechs:crit.excl.mechs, roles:crit.excl.roles, types:[], refs:[] });
+      if(e.rel > 0) return false;
+    }
+  }
   return true;
 }
-// Quanto o guerreiro combina com o que foi pedido em efeitos, papéis e tipo (0 a 1) e por quê.
+// Quanto o guerreiro combina com o que foi pedido em efeitos, papéis, tipo e nomes citados (0 a 1) e por quê.
 function descRelevance(c, crit){
   const texts = roleTexts(c).map(x => String(x).toLowerCase());
   const roles = rolesOf(c);
@@ -7884,12 +7932,21 @@ function descRelevance(c, crit){
     const i = roles.indexOf(r);
     if(i >= 0){ sum += i === 0 ? 1 : 0.6; tags.push(ROLE_INFO[r].label); }
   });
-  crit.types.forEach(ty => { n++; if(c.type === ty){ sum += 1; tags.push('Tipo ' + ty); } });
+  (crit.types || []).forEach(ty => { n++; if(c.type === ty){ sum += 1; tags.push('Tipo ' + ty); } });
+  if((crit.refs || []).length){
+    n++;
+    const primeiro = descNorm(c.name).split(/[^a-z0-9]+/)[0];
+    if(crit.refs.includes(primeiro) && (!crit._refOk || crit._refOk.has(c.id))){ sum += 1; tags.push('Citado'); }
+  }
   return { rel: n ? sum / n : 0, tags, soft: n > 0 };
 }
 function buildDescribedTeams(crit, maxOptions){
   const mode = crit.mode;
-  const hasSoft = !!(crit.mechs.length || crit.roles.length || crit.types.length);
+  const hasSoft = !!(crit.mechs.length || crit.roles.length || crit.types.length || (crit.refs || []).length);
+  // "time do Goku": só as 3 versões mais raras de cada nome citado ganham pontos, pra equipe não virar 6 versões do mesmo guerreiro
+  crit._refOk = new Set();
+  (crit.refs || []).forEach(w => state.characters.filter(c => descNorm(c.name).split(/[^a-z0-9]+/)[0] === w)
+    .sort((a, b) => rarityRank(a.rarity) - rarityRank(b.rarity)).slice(0, 3).forEach(c => crit._refOk.add(c.id)));
   const info = new Map();
   state.characters.forEach(c => info.set(c.id, descRelevance(c, crit)));
   const hardPool = state.characters.filter(c => descHardOk(c, crit) || crit.names.includes(c.id));
@@ -7966,7 +8023,9 @@ async function pedirIADescricao(txt){
   }
   return data || { usarLocal: true };
 }
-function descIAdisponivel(){ return !!(state.discordUser && window.__sb && window.__sb.client); }
+// A IA (função ia-time no Supabase) está pronta, mas desligada: vira true quando houver chave da API configurada.
+const DESC_IA_ATIVA = false;
+function descIAdisponivel(){ return DESC_IA_ATIVA && !!(state.discordUser && window.__sb && window.__sb.client); }
 async function runDescribeTeam(text){
   const txt = String(text || '').trim().slice(0, 200);
   state.descText = txt;
@@ -8006,7 +8065,7 @@ function applyDescOption(i){
   render();
   showToast('Equipe montada!');
 }
-const DESC_EXAMPLES = ['quero um time de queimadura', 'time feminino', 'time de saiyajins de fogo', 'time de controle com atordoamento', 'time de sangramento e veneno', 'time tank com escudo'];
+const DESC_EXAMPLES = ['quero um time de queimadura', 'time feminino', 'time de saiyajins de fogo', 'time de controle com atordoamento', 'time tank com escudo', 'time do Goku sem malignos', 'time pra jogar o inimigo no ar'];
 function renderDescribePanel(){
   const r = state.descRes;
   let out = '';
@@ -8037,6 +8096,7 @@ function renderDescribePanel(){
   </section>`;
 }
 function descIAStatusHtml(){
+  if(!DESC_IA_ATIVA) return '';
   let t;
   if(!descIAdisponivel()) t = 'Entre com o Discord para usar a IA: ela entende pedidos mais livres (você tem 5 por dia; apoiadores, quantos quiserem). Sem login, vale a leitura simples.';
   else if(state.descIA && state.descIA.ilimitado) t = '✦ IA ilimitada: obrigado por apoiar o Zenkyo!';
