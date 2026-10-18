@@ -15,7 +15,14 @@ const path = require('path');
 
 const HTML_PATH = path.join(__dirname, 'index.html');
 
+// O site separa dados (js/dados.js) e lógica (js/app.js) em arquivos; aqui eles são juntados na mesma ordem do HTML.
+// Se o HTML ainda tiver o <script> principal embutido (formato antigo), usa esse.
 function extractMainScript(html){
+  const srcs = [...html.matchAll(/<script src="(js\/[^"?]+)(?:\?[^"]*)?"><\/script>/g)].map(m => m[1]);
+  if(srcs.length) return srcs.map(f => fs.readFileSync(path.join(__dirname, f), 'utf8')).join(String.fromCharCode(10));
+  return extractInlineMainScript(html);
+}
+function extractInlineMainScript(html){
   const marker = '<script>';
   const start = html.indexOf(marker) + marker.length;
   const end = html.lastIndexOf('</script>');

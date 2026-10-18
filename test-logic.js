@@ -730,6 +730,39 @@ async function main(){
     assert.ok(r.selDono && !r.selOutro, "a opção Zen'oh só aparece para a conta do dono");
   });
 
+  console.log(String.fromCharCode(10) + '[Estrutura: arquivos, rotas, offline, SEO]');
+
+  await test('links por aba e guerreiro (#/guerreiro/<nome>, #/combos) são lidos e inválidos são ignorados', () => {
+    const r = evalIn(sandbox, `(() => ({
+      a: parseRouteHash('#/guerreiro/goku-ssgss'), b: parseRouteHash('#/combos'), c: parseRouteHash('#/admin'), d: parseRouteHash('#/guerreiro/<script>'), e: parseRouteHash(''),
+      f: parseRouteHash('#guia-x'), g: !!state.characters.find(c => slug(c.name) === 'goku-ssgss'),
+    }))()`);
+    assert.deepStrictEqual(r.a, { tab:'chars', char:'goku-ssgss' });
+    assert.deepStrictEqual(r.b, { tab:'combos' });
+    assert.strictEqual(r.c, null, 'a aba Admin não vira link público');
+    assert.strictEqual(r.d, null); assert.strictEqual(r.e, null); assert.strictEqual(r.f, null);
+    assert.ok(r.g);
+  });
+
+  await test('build em dia: ?v= dos arquivos, versão do offline, uma página por guerreiro e sitemap (rode node build.js)', () => {
+    const { execFileSync } = require('child_process');
+    try{ execFileSync(process.execPath, [require('path').join(__dirname, 'build.js'), '--check'], { stdio:'pipe' }); }
+    catch(e){ assert.fail('build desatualizado — rode: node build.js ' + String(e.stderr || e.stdout || e.message).slice(0, 600)); }
+  });
+
+  await test('modo offline: sw.js só cuida do próprio site, não mexe em Supabase/Mercado Pago, e termos/robots/404 existem', () => {
+    const fs = require('fs'), path = require('path');
+    const sw = fs.readFileSync(path.join(__dirname, 'sw.js'), 'utf8');
+    assert.ok(/url\.origin !== self\.location\.origin\) return/.test(sw), 'endereços de fora (Supabase, Mercado Pago) não podem passar pelo cache');
+    assert.ok(/req\.method !== 'GET'\) return/.test(sw), 'só GET é guardado');
+    assert.ok(/const VERSION = '[0-9a-f]{8}'/.test(sw) && /PRECACHE = \[/.test(sw));
+    ['termos.html', 'robots.txt', '404.html', 'sitemap.xml'].forEach(f => assert.ok(fs.existsSync(path.join(__dirname, f)), f + ' deveria existir'));
+    const sm = fs.readFileSync(path.join(__dirname, 'sitemap.xml'), 'utf8');
+    assert.ok(sm.includes('https://zenkyo.com.br/p/goku-ssgss.html') && sm.includes('termos.html'));
+    const termos = fs.readFileSync(path.join(__dirname, 'termos.html'), 'utf8');
+    assert.ok(/7 dias/.test(termos) && /Zen'oh/.test(termos) && /Mercado Pago/.test(termos));
+  });
+
   console.log('\n[Doar / ranking de apoiadores]');
 
   await test('elenco padrão de doadores começa vazio (nunca inventar apoiador)', () => {
@@ -1324,7 +1357,7 @@ async function main(){
     assert.ok(/object-src 'none'/.test(have) && /base-uri 'self'/.test(have) && /form-action 'self'/.test(have));
     const connect = (have.match(/connect-src ([^;]*)/) || [])[1] || '';
     assert.ok(!/\*|https:\s|https:$/.test(connect), 'connect-src só pode ter o próprio site e o Supabase (' + connect + ')');
-    assert.strictEqual(csp.inlineScripts(html).length, 3, 'esperava 3 scripts inline (chave da prévia do visual novo, Supabase e site); se mudou, confira a CSP');
+    assert.strictEqual(csp.inlineScripts(html).length, 2, 'esperava 2 scripts inline (chave da prévia do visual novo e Supabase); o código do site vem de js/ (liberado por self); se mudou, confira a CSP');
   });
 
   await test('não existe handler inline (onerror, onclick, onload…) no HTML — a CSP bloquearia', () => {

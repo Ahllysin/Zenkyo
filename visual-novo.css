@@ -1409,3 +1409,6 @@ html.nv-lite .kz-nvc-ball.lit{animation:none;}
 .kz-nvd-who .av{overflow:hidden;}
 .kz-nvd-who .av img{width:100%;height:100%;object-fit:cover;transform:skewX(10deg) scale(1.25);}
 .kz-nvd-zenoh{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0;font-size:13.5px;color:#E2D2C2;position:relative;}
+
+.kz-nvf-share{margin-left:auto;}
+@media (max-width:700px){.kz-nvf-share{grid-column:1/-1;margin-left:0;}}
