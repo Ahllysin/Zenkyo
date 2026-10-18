@@ -31,7 +31,8 @@ function inRange(cp, ur) {
 }
 
 (async () => {
-  const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+  const arquivos = ['index.html', 'base.css', 'visual-novo.css', ...fs.readdirSync(path.join(__dirname, 'js')).map(f => 'js/' + f)];
+  const html = arquivos.map(f => fs.readFileSync(path.join(__dirname, f), 'utf8')).join('');
   const used = [...new Set([...html])];
   const cjk = used.filter(ch => /[　-ヿ㐀-鿿＀-￯]/.test(ch) && !/[゠-ヿ]/.test(ch)).map(c => c.codePointAt(0));   // sem katakana
   const kana = used.filter(ch => /[゠-ヿ]/.test(ch)).map(c => c.codePointAt(0));
