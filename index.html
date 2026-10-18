@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-XJA/FPstX6fRHmBZuBcIOhP+0nrC4Mx6f0ODyfRYBnE=' 'sha256-m0xiRN26+YX3GRVyoMqA8Fd5P+JeujWgV1IRIeBVpMU='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-DzHsMtBjpod+Mj0ZBIFH1JSiO2l4umZaUdzwbaOOlSU=' 'sha256-8c3MPziI/gZqkqbZdgv9fM7agrGaqofEOBpg+nu8u/Y='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Zenkyo — guerreiros, combos e tier list</title>
@@ -1406,6 +1406,7 @@ label.field-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;col
         <button class="kz-nav-btn" data-tab="favs" title="Favoritos"><span class="kz-nav-glyph">★</span><span class="kz-nav-label">Favoritos</span></button>
         <button class="kz-nav-btn" data-tab="perfil" title="Perfil"><span class="kz-nav-glyph">印</span><span class="kz-nav-label">Perfil</span></button>
         <button class="kz-nav-btn" data-tab="doar" title="Doar"><span class="kz-nav-glyph">援</span><span class="kz-nav-label">Doar</span></button>
+        <button class="kz-nav-btn" data-tab="admin" id="navAdminBtn" title="Admin (só o dono)" style="display:none"><span class="kz-nav-glyph">王</span><span class="kz-nav-label">Admin</span></button>
         <a class="kz-privacy-link" href="privacidade.html" target="_blank" rel="noopener noreferrer">Privacidade e dados</a>
         <div class="kz-sidebar-spacer"></div>
         <div class="kz-sidebar-watermark" aria-hidden="true">龍</div>
@@ -4656,6 +4657,7 @@ let state = {
   nextDonorNumber: 1,               // próximo número permanente a distribuir (nunca reaproveita número de quem foi removido)
   donorWidgetCollapsed: false,      // widget flutuante "Top 3 apoiadores" recolhido pro canto
   mpDoacao: { valor:20, outro:false, outroValor:'', nome:'', anonimo:false, estado:'', msg:'' },   // aba Doar (Mercado Pago)
+  admin: { lista:null, carregando:false, erro:'', filtro:'pagas', busca:'' },   // aba Admin (só o dono)
   mpRetorno: null,                  // 'aprovada' | 'pendente' | 'recusada' ao voltar do Mercado Pago
   myDonationTotal: null,            // soma real das doações do próprio login (null = desconhecido)
   donorProfileId: null,             // id do apoiador com o perfil aberto no popup, ou null
@@ -4759,7 +4761,7 @@ async function loadState(){
   loaded = true;
   render();
 }
-const NAV_TABS = ['chars','collection','combos','guias','tierlist','comunidade','favs','perfil','doar'];
+const NAV_TABS = ['chars','collection','combos','guias','tierlist','comunidade','favs','perfil','doar','admin'];
 async function saveFavs(){ await persist('favs', JSON.stringify(state.favs)); }
 async function saveDonorWidgetCollapsed(){ await persist('donor_widget_collapsed', state.donorWidgetCollapsed ? '1' : '0'); }
 async function saveUiTab(){ await persist('ui_tab', state.tab); }
@@ -5494,6 +5496,8 @@ function render(){
   document.querySelectorAll('.kz-nav-btn[data-tab]').forEach(b=>{
     b.classList.toggle('active', b.dataset.tab === state.tab);
   });
+  const navAdmin = document.getElementById('navAdminBtn');   // a aba Admin só aparece no menu para o dono
+  if(navAdmin) navAdmin.style.display = isDonorAdmin() ? '' : 'none';
   // barra de abas do celular (visual novo): as 4 principais; o resto fica em "Mais", que abre o menu
   const tbFixas = ['chars','combos','tierlist','guias'];
   document.querySelectorAll('.kz-nv-tb[data-tbtab]').forEach(b=>{ const on = b.dataset.tbtab === state.tab; b.classList.toggle('on', on); if(on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
@@ -5508,6 +5512,7 @@ function render(){
     : tab === 'favs' ? renderFavsTab()
     : tab === 'perfil' ? renderPerfilTab()
     : tab === 'doar' ? renderDoarTab()
+    : tab === 'admin' ? renderAdminTab()
     : renderCombosTab();
   nvDecorate(view);
   nvWatchPause(view);
@@ -5520,6 +5525,7 @@ function render(){
   attachComunidadeHandlers();
   attachPerfilHandlers();
   attachDoarHandlers();
+  attachAdminHandlers();
   document.getElementById('accountArea').innerHTML = renderAccountArea();
   attachAccountHandlers();
   document.getElementById('donorWidgetRoot').innerHTML = renderDonorWidget();
@@ -10429,7 +10435,7 @@ ${mpDoacaoHtml()}
         ${nvPodiumHtml(list)}
         ${list.length ? '' : `<p class="kz-nvd-empty">A Aliança Z ainda está vazia — os três primeiros lugares do pódio estão livres. Seja o primeiro.</p>`}
         ${resto.length ? `<div class="kz-donor-grid">${resto.map((d, i)=>renderDonorCard(d, i + 3)).join('')}</div>` : ''}
-        ${admin ? renderDonorAdminHtml() : ''}
+        ${admin ? '<p class="kz-nvd-note mut">Você é o dono: gerencie doações e o mural na aba <b>Admin</b>.</p>' : ''}
       </div>
     </div>
     <section class="kz-nvd-sec">
@@ -10514,7 +10520,7 @@ ${mpDoacaoHtml()}
         ${list.length ? `<div class="kz-donor-grid">${list.map((d,i)=>renderDonorCard(d,i)).join('')}</div>`
           : `<div class="kz-muted">A Aliança Z ainda está vazia — os três primeiros lugares do pódio estão livres. Seja o primeiro.</div>`}
 
-        ${admin ? renderDonorAdminHtml() : ''}
+        ${admin ? '<p class="kz-nvd-note mut">Você é o dono: gerencie doações e o mural na aba <b>Admin</b>.</p>' : ''}
       </div>
     </div>
 
@@ -10628,7 +10634,7 @@ function removeDonor(id){
 
 function attachDoarHandlers(){
   const view = document.getElementById('view');
-  if(!view || state.tab !== 'doar') return;
+  if(!view || (state.tab !== 'doar' && state.tab !== 'admin')) return;   // o painel do mural mora na aba Admin
   attachMpDoacaoHandlers(view);
   const addBtn = document.getElementById('addDonorBtn');
   if(addBtn) addBtn.addEventListener('click', ()=>{
@@ -10653,6 +10659,143 @@ function attachDoarHandlers(){
   view.querySelectorAll('[data-open-donor]').forEach(b=>{
     b.addEventListener('click', ()=> openDonorProfile(b.dataset.openDonor));
   });
+}
+
+/* ======================= ADMIN (só o dono) ======================= */
+// Doações do Mercado Pago (lista, filtros, totais) e o painel do mural. Os dados vêm da função admin_listar_doacoes do
+// Supabase, que só responde para a conta do dono (sem e-mail de ninguém); esconder a aba aqui é só conveniência.
+// Devoluções e estornos feitos no Mercado Pago chegam pelo webhook e descontam o apoio do mural sozinhos.
+const ADM_STATUS = {
+  aprovado:['Aprovado','ok'], criado:['Aguardando','wait'], pending:['Pendente','wait'], in_process:['Em análise','wait'],
+  rejected:['Recusado','err'], cancelled:['Cancelado','err'], devolvido:['Devolvido','info'], estornado:['Estornado','err'], erro:['Falhou','err'],
+};
+const ADM_FILTROS = [['pagas','Pagas'],['devolvidas','Devolvidas'],['aguardando','Aguardando'],['recusadas','Recusadas'],['todas','Todas']];
+const ADM_GRUPOS = {
+  pagas:['aprovado','devolvido','estornado'], devolvidas:['devolvido','estornado'],
+  aguardando:['criado','pending','in_process'], recusadas:['rejected','cancelled','erro'],
+};
+function admStatusInfo(s){ return ADM_STATUS[s] || [String(s || '—'), 'wait']; }
+function admFiltrar(lista, filtro, busca){
+  const q = String(busca || '').trim().toLowerCase();
+  return (lista || []).filter(d=>{
+    if(filtro !== 'todas' && !(ADM_GRUPOS[filtro] || []).includes(d.status)) return false;
+    return !q || String(d.nome || (d.anonimo ? 'anônimo' : '')).toLowerCase().includes(q);
+  });
+}
+function admResumo(lista){
+  let recebido = 0, devolvido = 0, pagas = 0, aguardando = 0;
+  (lista || []).forEach(d=>{
+    const v = Number(d.valor) || 0, dev = Number(d.devolvido) || 0;
+    if(d.status === 'aprovado'){ recebido += v - dev; devolvido += dev; pagas++; }
+    else if(d.status === 'devolvido' || d.status === 'estornado'){ devolvido += dev; pagas++; }
+    else if(ADM_GRUPOS.aguardando.includes(d.status)) aguardando++;
+  });
+  return { recebido, devolvido, pagas, aguardando };
+}
+function admDataHtml(iso){
+  if(!iso) return '—';
+  const d = new Date(iso);
+  return isNaN(d) ? '—' : d.toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', year:'2-digit', hour:'2-digit', minute:'2-digit' });
+}
+function admLinhaHtml(d){
+  const [rot, cls] = admStatusInfo(d.status);
+  const quem = d.anonimo ? '<i class="mut">anônimo</i>' : d.nome ? escapeHtml(d.nome) : '<i class="mut">sem nome</i>';
+  const dev = Number(d.devolvido) || 0;
+  return `<tr>
+      <td data-l="Data">${admDataHtml(d.aprovado_em || d.criado)}</td>
+      <td data-l="Quem">${quem}${d.user_id ? ' <span class="kz-nva-tag">Discord</span>' : ''}</td>
+      <td data-l="Valor" class="num">${formatBRL(d.valor)}${dev > 0 ? `<small>devolvido ${formatBRL(dev)}</small>` : ''}</td>
+      <td data-l="Status"><span class="kz-nva-st ${cls}">${escapeHtml(rot)}</span></td>
+    </tr>`;
+}
+function admDoacoesHtml(){
+  const a = state.admin;
+  if(a.erro) return `<div class="kz-nva-aviso err">${escapeHtml(a.erro)} <button type="button" class="kz-link-btn" id="admRecarregar">Tentar de novo</button></div>`;
+  if(a.carregando || !a.lista) return `<div class="kz-nva-aviso">Carregando as doações…</div>`;
+  const res = admResumo(a.lista), vis = admFiltrar(a.lista, a.filtro, a.busca);
+  return `
+    <div class="kz-nva-cards">
+      <div class="kz-nva-card"><span>Recebido</span><b>${formatBRL(res.recebido)}</b><small>valor bruto, sem a tarifa do Mercado Pago</small></div>
+      <div class="kz-nva-card"><span>Pagamentos</span><b>${res.pagas}</b><small>aprovados, devolvidos e estornados</small></div>
+      <div class="kz-nva-card"><span>Devolvido</span><b>${formatBRL(res.devolvido)}</b><small>já descontado do mural</small></div>
+      <div class="kz-nva-card"><span>Aguardando</span><b>${res.aguardando}</b><small>abriram o link e não pagaram</small></div>
+    </div>
+    <div class="kz-nva-bar">
+      <div class="kz-nva-filtros">${ADM_FILTROS.map(([k, l])=>`<button type="button" class="kz-fchip${a.filtro === k ? ' active' : ''}" data-adm-filtro="${k}" aria-pressed="${a.filtro === k}">${l}</button>`).join('')}</div>
+      <input type="search" class="kz-input" id="admBusca" placeholder="Buscar por nome…" value="${escapeAttr(a.busca)}" autocomplete="off">
+      <button type="button" class="kz-btn kz-btn-sm" id="admRecarregar">↻ Atualizar</button>
+    </div>
+    ${vis.length ? `<div class="kz-nva-tabela"><table><thead><tr><th>Data</th><th>Quem</th><th class="num">Valor</th><th>Status</th></tr></thead><tbody>${vis.map(admLinhaHtml).join('')}</tbody></table></div>`
+                 : `<div class="kz-nva-aviso">Nenhuma doação neste filtro.</div>`}
+    <p class="kz-nva-nota">Devoluções e estornos feitos no painel do Mercado Pago chegam por aviso automático e já descontam o apoio do mural. Mostra as ${a.lista.length} doações mais recentes.</p>`;
+}
+function renderAdminTab(){
+  if(!isDonorAdmin()) return `<section class="kz-page"><div class="kz-empty">Esta área é só para o dono do site.</div></section>`;
+  const cab = visualNovo()
+    ? nvPageHeadHtml({ key:'admin', kanji:'王', tag:'Só para o dono', title:'Admin', kanjiStyle:'right:8%;top:-60px;font-size:380px',
+        sub:'Doações do Mercado Pago, devoluções e o mural da Aliança Z.' })
+    : `<div><h1 class="kz-title">Admin</h1><div class="kz-subtitle">Doações do Mercado Pago, devoluções e o mural da Aliança Z.</div></div>`;
+  const donors = sortedDonors();
+  return `
+  <section class="kz-page kz-nvp kz-nva">
+    ${cab}
+    <div class="kz-nva-sec">
+      <h2 class="kz-nva-h2">Doações</h2>
+      <div id="admDoacoes">${admDoacoesHtml()}</div>
+    </div>
+    <div class="kz-nva-sec">
+      <h2 class="kz-nva-h2">Mural e apoiadores <small>${donors.length} no mural</small></h2>
+      <div class="kz-nva-aviso kz-nva-dica">Aqui você adiciona apoios recebidos por fora (Pix direto, por exemplo), concede Honras e ajusta quem já está. Clique num nome para abrir o perfil e editar ou remover.</div>
+      ${donors.length ? `<div class="kz-nva-mural">${donors.map(d=>{
+        const prof = linkedProfileFor(d), look = patenteLook(d.amount, prof);
+        return `<button type="button" class="kz-nva-ap" data-open-donor="${escapeAttr(d.id)}"><b>${escapeHtml((prof && prof.nickname) || d.name)}</b><span>${formatBRL(d.amount)} · ${escapeHtml(look.p.label)}${d.active === false ? ' · fora do mural' : ''}</span></button>`;
+      }).join('')}</div>` : ''}
+      ${renderDonorAdminHtml()}
+    </div>
+  </section>`;
+}
+async function loadAdminDoacoes(){
+  const a = state.admin;
+  if(a.carregando) return;
+  if(!isSupabaseConfigured() || !window.__sb || !window.__sb.client || !state.discordUser){
+    a.erro = 'Entre com o Discord da conta do dono para ver as doações.'; a.lista = null; return refreshAdminDoacoes();
+  }
+  a.carregando = true; a.erro = ''; refreshAdminDoacoes();
+  try{
+    const { data, error } = await window.__sb.client.rpc('admin_listar_doacoes', { p_limite: 500 });
+    if(error) throw error;
+    a.lista = Array.isArray(data) ? data : [];
+  }catch(e){
+    console.error('Não consegui carregar as doações', e);
+    a.lista = null; a.erro = e && e.code === '42501' ? 'Esta conta não é a do dono do site.' : 'Não consegui carregar as doações agora.';
+  }
+  a.carregando = false;
+  refreshAdminDoacoes();
+}
+function refreshAdminDoacoes(){
+  const box = document.getElementById('admDoacoes');
+  if(!box || state.tab !== 'admin') return;
+  box.innerHTML = admDoacoesHtml();
+  attachAdminDoacoesHandlers(box);
+}
+function attachAdminDoacoesHandlers(root){
+  const a = state.admin;
+  root.querySelectorAll('[data-adm-filtro]').forEach(b=> b.addEventListener('click', ()=>{ a.filtro = b.dataset.admFiltro; refreshAdminDoacoes(); }));
+  const busca = root.querySelector('#admBusca');
+  if(busca) busca.addEventListener('input', ()=>{
+    a.busca = busca.value;
+    const pos = busca.selectionStart;
+    refreshAdminDoacoes();
+    const nova = document.getElementById('admBusca');
+    if(nova){ nova.focus(); try{ nova.setSelectionRange(pos, pos); }catch(e){} }
+  });
+  root.querySelectorAll('#admRecarregar').forEach(b=> b.addEventListener('click', ()=>{ a.erro = ''; loadAdminDoacoes(); }));
+}
+function attachAdminHandlers(){
+  const view = document.getElementById('view');
+  if(!view || state.tab !== 'admin' || !isDonorAdmin()) return;
+  attachAdminDoacoesHandlers(view);
+  if(!state.admin.lista && !state.admin.carregando && !state.admin.erro) loadAdminDoacoes();
 }
 
 /* ======================= WIDGET FLUTUANTE: TOP 3 APOIADORES ======================= */

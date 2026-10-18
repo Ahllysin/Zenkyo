@@ -718,18 +718,18 @@ async function main(){
   await test('sem Supabase configurado, o painel de admin fica aberto (compatível com o que já existia)', () => {
     assert.strictEqual(evalIn(sandbox, 'isSupabaseConfigured()'), false);
     assert.strictEqual(evalIn(sandbox, 'isDonorAdmin()'), true);
-    assert.ok(evalIn(sandbox, 'renderDoarTab()').includes('id="addDonorBtn"'));
+    assert.ok(evalIn(sandbox, 'renderAdminTab()').includes('id="addDonorBtn"'));
   });
 
   await test('com Supabase "configurado", só quem bate com ADMIN_DISCORD_ID vê o painel de admin', () => {
     const r = evalIn(sandbox, `(() => {
       supabaseAvailable = true;
       window.__sb = { client: {} };
-      const withoutLogin = { admin: isDonorAdmin(), hasPanel: renderDoarTab().includes('id="addDonorBtn"') };
+      const withoutLogin = { admin: isDonorAdmin(), hasPanel: renderAdminTab().includes('id="addDonorBtn"') };
       state.discordUser = { id: 'outro-uid', username: 'Fulano' };
-      const wrongUser = { admin: isDonorAdmin(), hasPanel: renderDoarTab().includes('id="addDonorBtn"') };
+      const wrongUser = { admin: isDonorAdmin(), hasPanel: renderAdminTab().includes('id="addDonorBtn"') };
       state.discordUser = { id: window.ADMIN_DISCORD_ID, username: 'Dono' };
-      const rightUser = { admin: isDonorAdmin(), hasPanel: renderDoarTab().includes('id="addDonorBtn"') };
+      const rightUser = { admin: isDonorAdmin(), hasPanel: renderAdminTab().includes('id="addDonorBtn"') };
       state.discordUser = null;
       supabaseAvailable = false;
       window.__sb = undefined;
@@ -1902,6 +1902,53 @@ async function main(){
     const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
     const csp = (html.match(/http-equiv="Content-Security-Policy" content="([^"]+)"/) || [])[1] || '';
     assert.ok(!/livepix/i.test(csp), 'CSP sem o quadro da LivePix');
+  });
+
+  await test('Aba Admin: só o dono vê, totais descontam devoluções, filtros e busca, anônimo sem nome', () => {
+    const r = evalIn(sandbox, `(() => {
+      const antes = { av: supabaseAvailable, sb: window.__sb, u: state.discordUser, a: state.admin };
+      supabaseAvailable = true; window.__sb = { client: {} };
+      state.discordUser = { id: 'outro-uid', username: 'Fulano' };
+      const visitante = renderAdminTab().includes('kz-nva-sec');
+      state.discordUser = { id: window.ADMIN_DISCORD_ID, username: 'Dono' };
+      const lista = [
+        { id:'1', criado:'2026-10-17T10:00:00Z', aprovado_em:'2026-10-17T10:05:00Z', valor:'50.00', devolvido:'0.00', status:'aprovado', metodo:'checkout_pro', anonimo:false, nome:'Ana', user_id:null },
+        { id:'2', criado:'2026-10-17T11:00:00Z', aprovado_em:'2026-10-17T11:02:00Z', valor:'30.00', devolvido:'10.00', status:'aprovado', metodo:'checkout_pro', anonimo:false, nome:'Bia', user_id:'u1' },
+        { id:'3', criado:'2026-10-17T12:00:00Z', aprovado_em:'2026-10-17T12:01:00Z', valor:'20.00', devolvido:'20.00', status:'devolvido', metodo:'checkout_pro', anonimo:true, nome:null, user_id:null },
+        { id:'4', criado:'2026-10-17T13:00:00Z', aprovado_em:null, valor:'10.00', devolvido:'0.00', status:'criado', metodo:'checkout_pro', anonimo:false, nome:null, user_id:null },
+        { id:'5', criado:'2026-10-17T14:00:00Z', aprovado_em:null, valor:'10.00', devolvido:'0.00', status:'rejected', metodo:'checkout_pro', anonimo:false, nome:'Caio', user_id:null },
+      ];
+      state.admin = { lista, carregando:false, erro:'', filtro:'pagas', busca:'' };
+      const html = renderAdminTab();
+      const res = admResumo(lista);
+      const out = {
+        visitante, dono: html.includes('kz-nva-sec'), temPainelMural: html.includes('id="addDonorBtn"'),
+        res,
+        pagas: admFiltrar(lista, 'pagas', '').map(d => d.id),
+        devolvidas: admFiltrar(lista, 'devolvidas', '').map(d => d.id),
+        aguardando: admFiltrar(lista, 'aguardando', '').map(d => d.id),
+        recusadas: admFiltrar(lista, 'recusadas', '').map(d => d.id),
+        todas: admFiltrar(lista, 'todas', '').length,
+        busca: admFiltrar(lista, 'todas', 'bi').map(d => d.id),
+        anonimoNaLista: /anônimo/.test(admLinhaHtml(lista[2])),
+        semEmail: !/@/.test(html),
+        rotulos: ['aprovado','criado','rejected','devolvido','estornado','xyz'].map(x => admStatusInfo(x)[0]),
+      };
+      supabaseAvailable = antes.av; window.__sb = antes.sb; state.discordUser = antes.u; state.admin = antes.a;
+      return out;
+    })()`);
+    assert.strictEqual(r.visitante, false, 'quem não é o dono não vê a aba');
+    assert.ok(r.dono && r.temPainelMural, 'o dono vê as doações e o painel do mural');
+    assert.deepStrictEqual(r.res, { recebido: 70, devolvido: 30, pagas: 3, aguardando: 1 }, 'recebido = pago menos devolvido');
+    assert.deepStrictEqual(r.pagas, ['1', '2', '3']);
+    assert.deepStrictEqual(r.devolvidas, ['3']);
+    assert.deepStrictEqual(r.aguardando, ['4']);
+    assert.deepStrictEqual(r.recusadas, ['5']);
+    assert.strictEqual(r.todas, 5);
+    assert.deepStrictEqual(r.busca, ['2'], 'a busca é por nome');
+    assert.ok(r.anonimoNaLista, 'anônimo aparece como anônimo');
+    assert.ok(r.semEmail, 'nenhum e-mail aparece na aba');
+    assert.deepStrictEqual(r.rotulos, ['Aprovado', 'Aguardando', 'Recusado', 'Devolvido', 'Estornado', 'xyz']);
   });
 
   console.log(`\n${passed} passaram, ${failed} falharam.`);
