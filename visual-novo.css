@@ -682,8 +682,12 @@ html.vis-novo :is(.btn,.kz-back-btn,.kz-btn,.kz-build-btn,.kz-edit-btn,.kz-fav-t
 @media (max-width:700px){
   .kz-nvf-hero{margin:-20px -14px 0;padding:16px 14px 80px;}
   .kz-nvf-hero .kz-nv-kbig{font-size:260px;right:-30px;top:-40px;}
-  .kz-nvf-grid{padding-top:20px;}
-  .kz-nvf-art{width:250px;height:308px;}
+  .kz-nvf-top{gap:10px;}
+  .kz-nvf-steps{position:relative;z-index:3;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .kz-nvf-steps .kz-step-btn{max-width:none;min-width:0;padding:8px 12px;gap:8px;}
+  .kz-nvf-steps .kz-step-btn.next{justify-content:flex-end;}
+  .kz-nvf-grid{padding-top:34px;}
+  .kz-nvf-art{width:min(210px,56vw);height:calc(min(210px,56vw) * 1.232);}
   .kz-nvf-mini{width:74px;left:-18px;}
   .kz-nvf-titlewrap .kz-nv-sfx{display:none;}
   .kz-nvf-h1 .kz-nv-ttl{font-size:min(var(--fs,116px),12vw);}
