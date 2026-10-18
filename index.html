@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-WhtjwjxQoASwLN901SdEWSYh7yQnksgWfNVv1yIr2vk=' 'sha256-pVsea903qPowVcgSDUUNeus5e7UFX3XuWHrA6AXlfMQ='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-a4l1Q5LejV4DuwF6mwVK2nZr17/iov8bbHwLqtVdK/8=' 'sha256-iMKH1tGecXaDTJtnWXK09ZDeoQE7PX3SSDntH6uhAUY='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Zenkyo — guerreiros, combos e tier list</title>
@@ -4634,6 +4634,7 @@ let state = {
   recRarity: 'all',
   autoMode: 'equilibrado',
   autoOpts: null,
+  descText: '', descRes: null,      // aba Combos: "Descreva o time" (texto e resultado, não persiste)
   communityPosts: [],                // posts da aba Comunidade (vêm do Supabase, já sanitizados)
   communityLoaded: false, communityLoading: false, communityError: null, communityFor: null,
   communityMyLikes: [], communityReported: [],
@@ -7797,6 +7798,216 @@ function applyAutoOption(i){
   showToast('Equipe montada!');
 }
 
+/* ======================= DESCREVA O TIME ======================= */
+// A pessoa escreve o que quer ("quero um time de queimadura", "time feminino de Fogo") e o site monta a equipe.
+// Sem IA externa: lê o texto por palavras-chave e escolhe guerreiros pelo que está nos dados (habilidades, gênero, raça,
+// afinidade, papéis). Gênero/raça/afinidade/raridade/grupo são filtros; efeito, papel e tipo pontuam; o resto vem do Montador.
+const DESC_MECHS = [
+  { key:'queimadura', label:'Queimadura',    q:/queim|burn|incendi|ardente/,       d:/queima/ },
+  { key:'sangramento', label:'Sangramento',  q:/sangr|bleed|hemorrag/,             d:/sangr|lacera|ferimento|ferida mortal/ },
+  { key:'veneno',     label:'Veneno',        q:/venen|poison|toxic/,               d:/envenen|veneno/ },
+  { key:'atordoamento', label:'Atordoamento', q:/atordo|stun/,                     d:/atordo/ },
+  { key:'silencio',   label:'Silêncio',      q:/silenc/,                           d:/sil[eê]nc/ },
+  { key:'paralisia',  label:'Paralisia',     q:/paralis/,                          d:/paralis|imobiliza|prisão|preso/ },
+  { key:'petrificacao', label:'Petrificação', q:/petrific/,                        d:/petrific/ },
+  { key:'confusao',   label:'Confusão',      q:/confus/,                           d:/confus/ },
+  { key:'encanto',    label:'Encanto',       q:/encant|charme/,                    d:/encant/ },
+  { key:'cegueira',   label:'Cegueira',      q:/cegueira|cegar/,                   d:/cegueira/ },
+  { key:'escudo',     label:'Escudo',        q:/escudo|shield|barreira/,           d:/escudo|muralha de energia|parede de energia/ },
+  { key:'critico',    label:'Crítico',       q:/critic|crit\b/,                    d:/cr[ií]t/ },
+  { key:'furia',      label:'Fúria/Raiva',   q:/furia|raiva|rage/,                 d:/raiva|f[uú]ria/ },
+  { key:'derrubada',  label:'Derrubada',     q:/derrub|knock/,                     d:/derrub/ },
+  { key:'empurrao',   label:'Empurrão',      q:/empurr|push/,                      d:/empurr/ },
+  { key:'elevacao',   label:'Elevação',      q:/eleva|juggle|aereo/,               d:/eleva[cç]/ },
+];
+const DESC_ROLES = [
+  ['tank', /\btank|resistente|aguent|defensiv/], ['suporte', /suporte|buff|apoio|support/],
+  ['controle', /controle|\bcc\b|crowd|travar|incapacit/], ['cura', /\bcura\b|curandeir|healer|\bheal|regenera/],
+  ['dot', /dano continuo|dano por turno|\bdot\b/], ['dano', /\bdano\b|ofensiv|agressiv|\bdps\b|burst|\bforte\b/],
+];
+const DESC_TYPES = [['Ataque', /tipo ataque|\bde ataque\b|atacantes?\b/], ['Defesa', /tipo defesa|\bde defesa\b/], ['Habilidade', /tipo habilidade|\bde habilidade\b/]];
+const DESC_RACES = [['Saiyajin', /saiyajin|saiyan|sayajin|saiya\b/], ['Androide', /androide|android/], ['Humano', /humano/]];
+const DESC_TAGS = [
+  ['Guerreiro Maligno', /malign|\bvila(o|s|oes)\b|do mal\b/], ['Guerreiro de Fusão', /fusa|fusion/], ['Guerreiro Dourado', /dourad|golden/],
+  ['Artista Marcial', /artista marcial|artistas marciais/], ['Anjo', /\banjos?\b/], ['SSG', /\bssg\b|super saiyajin god|deus saiyajin/],
+  ['SS4', /\bss4\b|super saiyajin 4/], ['Tropa do Orgulho', /orgulho/], ['Deus da Destruição', /deus(es)? da destrui/],
+];
+const DESC_AFFS = [['Fogo', /\bfogo\b|vermelh/], ['Raio', /\braio\b|eletric|amarel/], ['Pedra', /\bpedra\b|\bterra\b|\bverde\b/], ['Luz', /\bluz\b|branc/]];
+function descNorm(s){ return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
+function parseTeamPrompt(text){
+  const t = descNorm(text);
+  const crit = { mechs:[], roles:[], types:[], genders:[], races:[], tags:[], affs:[], rars:[], names:[], mode:'equilibrado', labels:[] };
+  DESC_MECHS.forEach(m => { if(m.q.test(t)){ crit.mechs.push(m); crit.labels.push(m.label); } });
+  DESC_ROLES.forEach(([r, re]) => { if(re.test(t)){ crit.roles.push(r); crit.labels.push(ROLE_INFO[r].label); } });
+  DESC_TYPES.forEach(([ty, re]) => { if(re.test(t)){ crit.types.push(ty); crit.labels.push('Tipo ' + ty); } });
+  if(/feminin|mulher|garota|menina|guerreira|\belas\b/.test(t)){ crit.genders.push('Feminino'); crit.labels.push('Feminino'); }
+  else if(/masculin|homens|\bhomem\b|\beles\b/.test(t)){ crit.genders.push('Masculino'); crit.labels.push('Masculino'); }
+  DESC_RACES.forEach(([r, re]) => { if(re.test(t)){ crit.races.push(r); crit.labels.push(r); } });
+  DESC_TAGS.forEach(([g, re]) => { if(re.test(t)){ crit.tags.push(g); crit.labels.push(g.replace(/^Guerreiro (de |)/, '')); } });
+  DESC_AFFS.forEach(([a, re]) => { if(re.test(t)){ crit.affs.push(a); crit.labels.push('Afinidade ' + a); } });
+  if(/\bssr\b/.test(t)){ crit.rars.push('SSR'); crit.labels.push('SSR'); }
+  else if(/\bsr\b/.test(t)){ crit.rars.push('SR'); crit.labels.push('SR'); }
+  if(/limitad/.test(t)){ crit.rars.push('SSR [Limitado]'); crit.labels.push('Limitado'); }
+  if(/lendari/.test(t)){ crit.rars.push('SSR [Lendário]'); crit.labels.push('Lendário'); }
+  if(/ultimate/.test(t)){ crit.rars.push('SSR [Ultimate]'); crit.labels.push('Ultimate'); }
+  if(/combo/.test(t)) crit.mode = 'combos'; else if(/sinergia/.test(t)) crit.mode = 'sinergias';
+  // guerreiros citados pelo nome completo ("com Vegetto SSGSS") entram obrigatoriamente
+  (state.characters || []).forEach(c => {
+    const n = descNorm(c.name);
+    if(n.length >= 4 && new RegExp('(^|[^a-z0-9])' + n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '([^a-z0-9]|$)').test(t)) crit.names.push(c.id);
+  });
+  crit.vazio = !(crit.mechs.length || crit.roles.length || crit.types.length || crit.genders.length || crit.races.length || crit.tags.length
+    || crit.affs.length || crit.rars.length || crit.names.length);
+  return crit;
+}
+function descHardOk(c, crit){
+  if(crit.genders.length && !crit.genders.includes(c.gender)) return false;
+  if(crit.races.length && !crit.races.includes(c.element)) return false;
+  if(crit.tags.length && !crit.tags.some(g => (c.tags || []).includes(g))) return false;
+  if(crit.affs.length && !crit.affs.includes(c.affinity)) return false;
+  if(crit.rars.length && !crit.rars.some(r => r === 'SSR' ? rarityLabel(c.rarity) === 'SSR' : c.rarity === r)) return false;
+  return true;
+}
+// Quanto o guerreiro combina com o que foi pedido em efeitos, papéis e tipo (0 a 1) e por quê.
+function descRelevance(c, crit){
+  const texts = roleTexts(c).map(x => String(x).toLowerCase());
+  const roles = rolesOf(c);
+  let sum = 0, n = 0;
+  const tags = [];
+  crit.mechs.forEach(m => {
+    n++;
+    const v = Math.min(1, texts.filter(x => m.d.test(x)).length / 2);
+    if(v > 0){ sum += v; tags.push(m.label); }
+  });
+  crit.roles.forEach(r => {
+    n++;
+    const i = roles.indexOf(r);
+    if(i >= 0){ sum += i === 0 ? 1 : 0.6; tags.push(ROLE_INFO[r].label); }
+  });
+  crit.types.forEach(ty => { n++; if(c.type === ty){ sum += 1; tags.push('Tipo ' + ty); } });
+  return { rel: n ? sum / n : 0, tags, soft: n > 0 };
+}
+function buildDescribedTeams(crit, maxOptions){
+  const mode = crit.mode;
+  const hasSoft = !!(crit.mechs.length || crit.roles.length || crit.types.length);
+  const info = new Map();
+  state.characters.forEach(c => info.set(c.id, descRelevance(c, crit)));
+  const hardPool = state.characters.filter(c => descHardOk(c, crit) || crit.names.includes(c.id));
+  const byRel = [...hardPool].sort((a, b) => info.get(b.id).rel - info.get(a.id).rel || rarityRank(a.rarity) - rarityRank(b.rarity));
+  const relevantN = hasSoft ? byRel.filter(c => info.get(c.id).rel > 0).length : byRel.length;
+  // se faltar gente com o efeito pedido, completa a equipe com os melhores do filtro
+  const pool = byRel.slice(0, hasSoft ? Math.max(relevantN + 8, 16) : 40).slice(0, 36);
+  if(!pool.length) return { list:[], hardN:hardPool.length, relevantN:0, hasSoft };
+  const forced = crit.names.filter(id => pool.some(c => c.id === id)).slice(0, 6);
+  const base = [null, null, null, null, null, null];
+  forced.forEach((id, i) => { base[i] = id; });
+  const objective = team => {
+    const o = autoObjective(team, mode);
+    const ids = team.filter(Boolean);
+    const rel = ids.reduce((s, id) => s + info.get(id).rel, 0) / Math.max(ids.length, 1);
+    return { ...o, rel, score: hasSoft ? 0.55 * rel + 0.45 * o.score : o.score };
+  };
+  const steps = Math.min(6 - forced.length, pool.length - forced.length);
+  let beam = [{ team:base, obj:objective(base) }];
+  for(let step = 0; step < steps; step++){
+    const seen = new Map();
+    beam.forEach(st => {
+      const slot = st.team.indexOf(null);
+      const used = new Set(st.team.filter(Boolean));
+      pool.forEach(c => {
+        if(used.has(c.id)) return;
+        const t = [...st.team]; t[slot] = c.id;
+        const key = t.filter(Boolean).sort().join(',');
+        const obj = objective(t);
+        const prev = seen.get(key);
+        if(!prev || obj.score > prev.obj.score) seen.set(key, { team:t, obj });
+      });
+    });
+    if(!seen.size) break;
+    beam = [...seen.values()].sort((a, b) => b.obj.score - a.obj.score).slice(0, 12);
+  }
+  const want = Math.max(maxOptions || 3, 1), cands = beam.filter(b => b.team.filter(Boolean).length > 0);
+  const diff = (x, y) => { const sx = new Set(x.team.filter(Boolean)); return y.team.filter(id => id && !sx.has(id)).length; };
+  const picked = [];
+  cands.forEach(b => { if(picked.length < want && picked.every(p => diff(p, b) >= 2)) picked.push(b); });
+  cands.forEach(b => { if(picked.length < want && !picked.includes(b)) picked.push(b); });
+  const list = picked.map(b => {
+    const best = optimizeTeamOrder(b.team);
+    const team = best && best.changed ? best.team : b.team;
+    const obj = objective(team);
+    return { team, ...obj, missing: missingPillars(team), syn: synergyReport(team).ativos,
+      why: team.filter(Boolean).map(id => ({ id, tags: info.get(id).tags })),
+      match: team.filter(Boolean).filter(id => !hasSoft || info.get(id).rel > 0).length };
+  }).sort((a, b) => b.score - a.score);
+  return { list, hardN:hardPool.length, relevantN, hasSoft };
+}
+function runDescribeTeam(text){
+  const txt = String(text || '').trim().slice(0, 200);
+  state.descText = txt;
+  if(!txt){ state.descRes = null; render(); return; }
+  const crit = parseTeamPrompt(txt);
+  if(crit.vazio){ state.descRes = { texto:txt, crit, vazio:true, list:[] }; render(); return; }
+  showToast('Montando o time…');
+  setTimeout(() => {
+    const r = buildDescribedTeams(crit, 3);
+    state.descRes = { texto:txt, crit, ...r };
+    render();
+  }, 30);
+}
+function applyDescOption(i){
+  const o = state.descRes && state.descRes.list[i];
+  if(!o) return;
+  const prev = [...state.team];
+  commitTeam([...o.team]);
+  state.optUndo = { before:prev, after:[...o.team] };
+  state.optInfo = `Equipe montada pelo pedido “${escapeHtml(state.descRes.texto)}”: <b>${o.combos} combos</b> · equilíbrio <b>${Math.round(o.balance * 100)}%</b>`;
+  render();
+  showToast('Equipe montada!');
+}
+const DESC_EXAMPLES = ['quero um time de queimadura', 'time feminino', 'time de saiyajins de fogo', 'time de controle com atordoamento', 'time de sangramento e veneno', 'time tank com escudo'];
+function renderDescribePanel(){
+  const r = state.descRes;
+  let out = '';
+  if(r){
+    if(r.vazio){
+      out = `<p class="kz-desc-msg warn">Não entendi o pedido. Fale de um efeito (queimadura, sangramento, atordoamento…), gênero, raça, afinidade, papel (tank, suporte, controle, dano) ou raridade.</p>`;
+    } else {
+      const chips = r.crit.labels.concat(r.crit.names.map(id => (getChar(id) || {}).name).filter(Boolean)).map(l => `<span class="kz-desc-chip">${escapeHtml(l)}</span>`).join('');
+      const aviso = !r.list.length ? 'Nenhum guerreiro do elenco atende a esse conjunto de filtros.'
+        : (r.hasSoft && r.relevantN < 6) ? `Só ${r.relevantN} guerreiro${r.relevantN === 1 ? '' : 's'} se encaixa${r.relevantN === 1 ? '' : 'm'} no que você pediu; completei o resto pelo equilíbrio.`
+        : (!r.hasSoft && r.hardN < 6) ? `Só existem ${r.hardN} guerreiro${r.hardN === 1 ? '' : 's'} com esses filtros, então a equipe fica incompleta.` : '';
+      out = `<div class="kz-desc-understood"><span>Entendi:</span>${chips}</div>
+        ${aviso ? `<p class="kz-desc-msg warn">${aviso}</p>` : ''}
+        ${r.list.length ? `<div class="kz-auto-rows">${r.list.map((o, i) => renderDescOptionRow(o, i, r)).join('')}</div>` : ''}`;
+    }
+  }
+  return `<section class="kz-desc" aria-label="Descreva o time">
+    <div class="kz-desc-head"><span class="kz-label">Descreva o time</span><span class="kz-desc-sub">Escreva o que você quer e eu monto a equipe a partir dos guerreiros do site.</span></div>
+    <form class="kz-desc-form" id="descForm" autocomplete="off">
+      <label for="descInput" class="kz-sr">Descreva o time que você quer</label>
+      <input type="text" id="descInput" class="kz-input" maxlength="200" placeholder="Ex.: quero um time de queimadura" value="${escapeAttr(state.descText || '')}">
+      <button type="submit" class="kz-btn kz-btn-primary" id="descBtn">Montar time</button>
+      ${r ? '<button type="button" class="kz-btn" id="descClear">Limpar</button>' : ''}
+    </form>
+    <div class="kz-desc-ex"><span>Exemplos:</span>${DESC_EXAMPLES.map(e => `<button type="button" class="kz-desc-exbtn" data-desc-ex="${escapeAttr(e)}">${escapeHtml(e)}</button>`).join('')}</div>
+    ${out}
+  </section>`;
+}
+function renderDescOptionRow(o, i, r){
+  const minis = o.team.map((id, slot) => {
+    const c = id && getChar(id);
+    return c ? `<span class="kz-auto-mini" title="${escapeAttr('Casa ' + (slot + 1) + ' — ' + c.name)}">${portraitInner(c)}</span>` : '<span class="kz-auto-mini empty"></span>';
+  }).join('');
+  const why = o.why.map(w => { const c = getChar(w.id); return c ? `<div class="kz-desc-why"><b>${escapeHtml(c.name)}</b>${w.tags.length ? ' — ' + w.tags.map(escapeHtml).join(', ') : ''}</div>` : ''; }).join('');
+  return `<div class="kz-auto-row${i === 0 ? ' top' : ''}">
+    <div class="kz-auto-row-team">${minis}</div>
+    <div class="kz-auto-row-info"><b>${i === 0 ? 'Melhor opção' : 'Opção ' + (i + 1)}</b>
+      <span>${r.hasSoft ? `<b>${o.match}</b> de ${o.team.filter(Boolean).length} combinam · ` : ''}<b>${o.combos}</b> combos · equilíbrio <b>${Math.round(o.balance * 100)}%</b></span></div>
+    <button type="button" class="kz-btn kz-btn-sm kz-btn-primary" data-desc-apply="${i}">Usar</button>
+    <div class="kz-desc-whys">${why}</div>
+  </div>`;
+}
+
 /* ======================= COMUNIDADE (times e tier lists compartilhados) ======================= */
 // Qualquer um vê; pra publicar, curtir ou denunciar precisa estar logado com Discord. Tudo mora no Supabase
 // (tabelas community_posts / community_likes / community_reports — SQL no comentário de instalação lá em cima).
@@ -8688,6 +8899,7 @@ function renderCombosTabNovo(){
         <div class="kz-roster-grid" id="rosterList">${renderRosterList(state.rosterSearch)}</div>
       </aside>
       <div class="kz-combos-main">
+        ${renderDescribePanel()}
         <div class="kz-nvcb-teamhead">
           <h2>${nvTtl('Equipe')}</h2>
           <button type="button" class="kz-btn" id="autoBuildBtn" ${filledCount === 0 || filledCount === 6 ? 'disabled' : ''} title="${filledCount === 0 ? 'Coloque ao menos 1 guerreiro em campo' : filledCount === 6 ? 'A equipe já está completa' : 'Completa a equipe a partir dos guerreiros em campo, olhando combos e papéis'}">⚡ ${state.autoOpts && state.autoOpts.base === JSON.stringify(state.team) ? 'Gerar de novo' : 'Completar equipe'}</button>
@@ -9149,6 +9361,12 @@ function attachCombosHandlers(){
   if(autoClose) autoClose.addEventListener('click', ()=>{ state.autoOpts = null; render(); });
   const autoBtn = document.getElementById('autoBuildBtn');
   if(autoBtn) autoBtn.addEventListener('click', runAutoBuild);
+  const descForm = document.getElementById('descForm');
+  if(descForm) descForm.addEventListener('submit', e=>{ e.preventDefault(); runDescribeTeam(document.getElementById('descInput').value); });
+  view.querySelectorAll('[data-desc-ex]').forEach(b=>b.addEventListener('click', ()=> runDescribeTeam(b.dataset.descEx)));
+  view.querySelectorAll('[data-desc-apply]').forEach(b=>b.addEventListener('click', ()=> applyDescOption(parseInt(b.dataset.descApply, 10))));
+  const descClear = document.getElementById('descClear');
+  if(descClear) descClear.addEventListener('click', ()=>{ state.descText = ''; state.descRes = null; render(); });
   view.querySelectorAll('[data-auto-apply]').forEach(b=>b.addEventListener('click', ()=> applyAutoOption(parseInt(b.dataset.autoApply, 10))));
   const optBtn = document.getElementById('optimizeBtn');
   if(optBtn) optBtn.addEventListener('click', runOptimizeTeam);

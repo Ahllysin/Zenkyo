@@ -582,6 +582,56 @@ async function main(){
       'o selo de prioridade deveria estar no card de C (casa menor), não no de B');
   });
 
+  console.log('\n[Descreva o time]');
+
+  await test('parseTeamPrompt entende efeito, gênero, raça, afinidade e papel (sem acento, em português)', () => {
+    const r = evalIn(sandbox, `(() => {
+      const f = t => { const c = parseTeamPrompt(t); return { mechs:c.mechs.map(m=>m.key), genders:c.genders, races:c.races, affs:c.affs, roles:c.roles, vazio:c.vazio, mode:c.mode }; };
+      return { burn:f('quero um time de burn'), fem:f('quero um time feminino'), mix:f('time de saiyajins de Fogo com atordoamento e controle'), nada:f('oi tudo bem'), combos:f('time de combos de sangramento') };
+    })()`);
+    assert.deepStrictEqual(r.burn.mechs, ['queimadura']);
+    assert.deepStrictEqual(r.fem.genders, ['Feminino']);
+    assert.deepStrictEqual(r.mix.races, ['Saiyajin']);
+    assert.deepStrictEqual(r.mix.affs, ['Fogo']);
+    assert.ok(r.mix.mechs.includes('atordoamento') && r.mix.roles.includes('controle'));
+    assert.strictEqual(r.nada.vazio, true, 'texto sem pedido reconhecível não monta time');
+    assert.strictEqual(r.combos.mode, 'combos');
+    assert.deepStrictEqual(r.combos.mechs, ['sangramento']);
+  });
+
+  await test('"time de queimadura" só escolhe quem causa Queimadura; "time feminino" só escolhe mulheres', () => {
+    const r = evalIn(sandbox, `(() => {
+      const burn = buildDescribedTeams(parseTeamPrompt('quero um time de queimadura'), 3);
+      const fem = buildDescribedTeams(parseTeamPrompt('quero um time feminino'), 3);
+      const ids = o => o.team.filter(Boolean);
+      return {
+        burnN: burn.list.length, burnTam: ids(burn.list[0]).length,
+        burnTodos: ids(burn.list[0]).every(id => descRelevance(getChar(id), parseTeamPrompt('queimadura')).rel > 0),
+        femTodas: fem.list.every(o => ids(o).every(id => getChar(id).gender === 'Feminino')),
+        femTam: ids(fem.list[0]).length,
+      };
+    })()`);
+    assert.ok(r.burnN >= 1 && r.burnTam === 6);
+    assert.ok(r.burnTodos, 'todos os 6 deveriam ter Queimadura nas habilidades');
+    assert.ok(r.femTodas && r.femTam === 6);
+  });
+
+  await test('filtro que ninguém atende não quebra e avisa; painel renderiza e Usar aplica o time', () => {
+    const r = evalIn(sandbox, `(() => {
+      const nenhum = buildDescribedTeams(parseTeamPrompt('time feminino de androides lendario'), 3);
+      const crit = parseTeamPrompt('time de queimadura');
+      state.descRes = { texto:'time de queimadura', crit, ...buildDescribedTeams(crit, 3) };
+      const html = renderDescribePanel();
+      applyDescOption(0);
+      const depois = state.team.filter(Boolean).length;
+      state.team = [null,null,null,null,null,null]; state.descRes = null; state.descText = '';
+      return { nenhum: nenhum.list.length, painel: html.includes('data-desc-apply') && html.includes('Entendi'), depois };
+    })()`);
+    assert.strictEqual(r.nenhum, 0);
+    assert.ok(r.painel);
+    assert.strictEqual(r.depois, 6);
+  });
+
   console.log('\n[Doar / ranking de apoiadores]');
 
   await test('elenco padrão de doadores começa vazio (nunca inventar apoiador)', () => {
