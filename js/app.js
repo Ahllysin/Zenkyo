@@ -1010,6 +1010,11 @@ function iconeSrc(c){
   const s = slug(c.name);
   return Object.prototype.hasOwnProperty.call(nvIconeVer, s) ? `icones/${s}.webp?v=${nvIconeVer[s]}` : null;
 }
+// Ícone de quem ainda não está no site mas aparece num presente (ex.: Vegeta Instinto Superior): vale se existir icones/<nome>.webp.
+function iconeSrcNome(nome){
+  const s = slug(nome);
+  return Object.prototype.hasOwnProperty.call(nvIconeVer, s) ? `icones/${s}.webp?v=${nvIconeVer[s]}` : null;
+}
 function faixaSrc(c){
   const s = slug(c.name), v = Object.prototype.hasOwnProperty.call(nvFaixaVer, s) ? nvFaixaVer[s] : '';
   return `faixas/${s}.webp${v ? '?v=' + v : ''}`;
@@ -2234,7 +2239,10 @@ function affinityPopHtml(giftSlug, atual){
   if(!users.length) return '';
   const av = n=>{
     const o = state.characters.find(x=>x.name === n);
-    if(!o) return `<span class="cdp-pop-av fora" title="${escapeAttr(n)} (ainda não está no site)"><span class="face"><span class="ini">${escapeHtml(initials(n))}</span></span><span class="nm">${escapeHtml(n)}</span></span>`;
+    if(!o){
+      const fora = iconeSrcNome(n);
+      return `<span class="cdp-pop-av fora" title="${escapeAttr(n)} (ainda não está no site)"><span class="face">${fora ? `<img src="${fora}" alt="" loading="lazy" data-onerr="hide">` : `<span class="ini">${escapeHtml(initials(n))}</span>`}</span><span class="nm">${escapeHtml(n)}</span></span>`;
+    }
     const ico = iconeSrc(o);   // ícone da pasta Icones; sem ele, o rosto recortado da carta
     const img = ico ? `<img src="${ico}" alt="" loading="lazy" data-onerr="hide">`
       : `<img src="portraits/mini/${slug(o.name)}.webp" alt="" loading="lazy" style="${heroStyleOf(heroFrame('detail', o.id))}" data-onerr="hide">`;

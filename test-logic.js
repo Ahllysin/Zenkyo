@@ -744,6 +744,22 @@ async function main(){
     assert.ok(r.html && r.vazio);
   });
 
+  await test('"Quem usa este presente": quem ainda não está no site usa o ícone da pasta Icones se existir (senão, iniciais)', () => {
+    const fs = require('fs'), path = require('path');
+    const r = evalIn(sandbox, `(() => {
+      const bak = nvIconeVer;
+      nvIconeVer = { 'vegeta-instinto-superior': 'abc123' };
+      const gift = AFFINITY_CHAR_GIFTS['Vegeta Instinto Superior'][0];
+      const com = affinityPopHtml(gift, '');
+      nvIconeVer = {};
+      const sem = affinityPopHtml(gift, '');
+      nvIconeVer = bak;
+      return { com: com.includes('icones/vegeta-instinto-superior.webp?v=abc123'), sem: !sem.includes('vegeta-instinto-superior.webp') && sem.includes('ini') };
+    })()`);
+    assert.ok(r.com && r.sem);
+    assert.ok(fs.existsSync(path.join(__dirname, 'icones', 'vegeta-instinto-superior.webp')), 'o ícone do Vegeta Instinto Superior deveria existir');
+  });
+
   console.log(String.fromCharCode(10) + '[Estrutura: arquivos, rotas, offline, SEO]');
 
   await test('links por aba e guerreiro (#/guerreiro/<nome>, #/combos) são lidos e inválidos são ignorados', () => {
