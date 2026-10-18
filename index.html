@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-2dn/U+dq0PB3EtI364aSyMbVOQ84a6GTgTEYSfqPGec=' 'sha256-fkj9sFu/fBWfOfjY+Iu7YppXsriP4h1IDY0MXFWBZw8='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-XJA/FPstX6fRHmBZuBcIOhP+0nrC4Mx6f0ODyfRYBnE=' 'sha256-m0xiRN26+YX3GRVyoMqA8Fd5P+JeujWgV1IRIeBVpMU='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Zenkyo — guerreiros, combos e tier list</title>
@@ -1005,6 +1005,8 @@ input::placeholder,textarea::placeholder{color:var(--text-faint);}
 .kz-mp-total{margin:0;font-size:15px;color:var(--text-soft);}
 .kz-mp-total strong{font-size:22px;color:var(--gold-light);}
 .kz-mp-metodos,.kz-mp-dica,.kz-mp-quem{margin:0;font-size:13px;line-height:1.5;color:var(--text-dim);}
+.kz-mp-pixdica{margin:0;padding:8px 12px;border-radius:10px;background:rgba(255,194,26,.1);border:1px solid rgba(255,194,26,.35);font-size:13px;line-height:1.45;color:var(--text-soft);}
+.kz-mp-pixdica b{color:var(--gold-light);}
 .kz-mp-retorno,.kz-mp-status{padding:10px 14px;border-radius:10px;font-size:14px;font-weight:700;line-height:1.45;}
 .kz-mp-retorno.ok{background:rgba(47,158,79,.18);border:1px solid #2f9e4f;color:#bff0cc;}
 .kz-mp-retorno.wait{background:rgba(201,162,55,.15);border:1px solid #c9a237;color:#f3e2a8;}
@@ -9726,6 +9728,7 @@ function mpDoacaoHtml(){
   return `
         ${ret ? `<div class="kz-mp-retorno ${ret[0]}" role="status">${escapeHtml(ret[1])}</div>` : ''}
         <p class="kz-mp-metodos">Pix, cartão ou saldo do Mercado Pago — você paga na página segura do Mercado Pago e volta pra cá.</p>
+        <p class="kz-mp-pixdica"><b>Dica:</b> pagando por <b>Pix</b> a tarifa é bem menor, então chega mais apoio pro site. 💛</p>
         <div class="kz-mp-valores" role="group" aria-label="Valor da doação">
           ${MP_VALORES.map(x=>{ const on = !d.outro && d.valor === x; return `<button type="button" class="kz-fchip${on ? ' active' : ''}" data-mp-valor="${x}" aria-pressed="${on}">R$ ${x}</button>`; }).join('')}
           <button type="button" class="kz-fchip${d.outro ? ' active' : ''}" data-mp-outro aria-pressed="${d.outro}">Outro valor</button>

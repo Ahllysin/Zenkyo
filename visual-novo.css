@@ -1297,3 +1297,5 @@ html.vis-novo .kz-mp-retorno.ok{background:rgba(47,158,79,.2);color:#9FF0B8;}
 html.vis-novo .kz-mp-retorno.wait{background:rgba(255,194,26,.12);color:#FFE27A;}
 html.vis-novo .kz-mp-retorno.err,html.vis-novo .kz-mp-status.err{background:rgba(232,38,27,.16);color:#FF9A8A;}
 html.vis-novo .kz-nvd-pix .kz-donate-cta:disabled{filter:grayscale(.3) brightness(.85);}
+html.vis-novo .kz-mp-pixdica{border:0;border-radius:0;padding:10px 16px;background:rgba(255,194,26,.1);box-shadow:inset 4px 0 0 #FFC21A;font-size:14.5px;line-height:1.5;color:#E9D9C8;}
+html.vis-novo .kz-mp-pixdica b{color:#FFC21A;}
