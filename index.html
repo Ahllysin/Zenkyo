@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-hEz6TAwjFI4W8PlX8yjM7qQwrtcmGfrrzsSgfyL95xk=' 'sha256-Gi+zoXWcyXn39nDp9e354XwHXQ0VSwagvPMyUQn5b38='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-XTmvxLFSOnt9UvwtIp+p50wAN4G5rsAFs9EUPUZzURE=' 'sha256-zd0cx5FJAm24ILvK4v47UITi19buEQL/b+CShRBzawo='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Zenkyo — guerreiros, combos e tier list</title>
@@ -8583,7 +8583,8 @@ function renderCommunityCompose(){
     <div><label class="field-label">Título (${COMMUNITY.title} caracteres)</label>
       <input type="text" id="comTitleInput" maxlength="${COMMUNITY.title}" value="${escapeAttr(c.title)}" placeholder="Ex.: Time de combos pra arena"></div>
     <div><label class="field-label">Descrição (<span id="comDescCount">${c.desc.length}</span>/${COMMUNITY.desc})</label>
-      <textarea id="comDescInput" maxlength="${COMMUNITY.desc}" rows="3" placeholder="Como usar, estratégia, por que montou assim… (opcional)">${escapeHtml(c.desc)}</textarea></div>
+      <textarea id="comDescInput" maxlength="${COMMUNITY.desc}" rows="3" placeholder="Do que se trata o time? Ex.: burn, controle, time feminino, rush… Como usar, estratégia… (opcional)">${escapeHtml(c.desc)}</textarea>
+      <div class="field-hint" style="font-size:12px;color:var(--text-faint);margin-top:4px;">Dica: dizer do que se trata o time (efeito, papel, estilo) ajuda o site a sugerir ele para quem usa o &quot;Descreva o time&quot; na aba Combos.</div></div>
     ${middle}
     <div class="kz-com-compose-actions">
       <button type="button" class="kz-btn kz-btn-primary" id="comPublishBtn" ${data && !teamFull ? '' : 'disabled'}>Publicar</button>
