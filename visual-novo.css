@@ -1405,3 +1405,7 @@ html.nv-lite .kz-nvc-ball.lit{animation:none;}
 .kz-donor-card.patente-zenoh{box-shadow:inset 0 0 0 2px #ffe27a,0 0 24px rgba(255,236,150,.55);}
 .kz-donor-patsel{display:flex;flex-direction:column;gap:6px;align-items:stretch;width:100%;max-width:320px;text-align:left;margin-top:6px;}
 .kz-donor-patsel select{width:100%;}
+
+.kz-nvd-who .av{overflow:hidden;}
+.kz-nvd-who .av img{width:100%;height:100%;object-fit:cover;transform:skewX(10deg) scale(1.25);}
+.kz-nvd-zenoh{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0;font-size:13.5px;color:#E2D2C2;position:relative;}

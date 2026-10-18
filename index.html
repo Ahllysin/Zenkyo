@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-Hz3i+jLCe3Vy4aeRiJDDC9jU29qJ59Vw5aTf8XYYLKU=' 'sha256-qBR3ODTfdcTJLGRhb1jbF1qCmkhR95sbfxzm+9kmIZ8='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-k4GG/tLr3wUJirBy0tL1jvBoitz2Slb6hZWnIZE/HPw=' 'sha256-L7Uxh0uTcbXWU8u8Jfrit+SEM0AnDCvt1jjwrrjEfbM='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Zenkyo — guerreiros, combos e tier list</title>
@@ -10187,7 +10187,15 @@ function formatBRL(n){
   return 'R$ ' + Number(n||0).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
 }
 // Mural público: só quem está ativo (devolução total desativa o apoio). A aba Admin pede com incluirInativos para ver todos.
-function sortedDonors(incluirInativos){ return state.donors.filter(d=> incluirInativos || d.active !== false).sort((a,b)=> (isZenoh(b) - isZenoh(a)) || (b.amount - a.amount)); }
+function sortedDonors(incluirInativos){ return state.donors.filter(d=> incluirInativos || (d.active !== false && !isZenoh(d))).sort((a,b)=> (isZenoh(b) - isZenoh(a)) || (b.amount - a.amount)); }
+// Ícone de quem apoia: a foto de perfil escolhida; para o próprio dono da conta, a foto do Discord; senão as iniciais.
+function donorAvatarHtml(d, prof, nome){
+  const foto = prof && avatarFoto(prof.avatarCharId);
+  if(foto) return avatarFotoImg(foto);
+  if(state.discordUser && d && d.linkedUserId === state.discordUser.id && state.discordUser.avatarUrl)
+    return `<img src="${escapeAttr(state.discordUser.avatarUrl)}" alt="" data-onerr="hide" style="width:100%;height:100%;object-fit:cover;">`;
+  return escapeHtml(initials(nome));
+}
 function donorAvatarInner(name){
   return `<span class="avatar-fallback" style="width:100%;height:100%;font-size:inherit;">${initials(name)}</span>`;
 }
@@ -10801,11 +10809,16 @@ function nvPodiumHtml(list){
     let topo = `<span class="kz-nvd-free${pos === 1 ? ' gold' : ''}">Livre</span>`;
     if(d){
       const prof = linkedProfileFor(d), nome = (prof && prof.nickname) || d.name;
-      topo = `<button type="button" class="kz-nvd-who" data-open-donor="${d.id}" title="Ver o perfil de ${escapeAttr(nome)}"><span class="av">${escapeHtml(initials(nome))}</span><span class="nm">${escapeHtml(nome)}</span></button>`;
+      topo = `<button type="button" class="kz-nvd-who" data-open-donor="${d.id}" title="Ver o perfil de ${escapeAttr(nome)}"><span class="av">${donorAvatarHtml(d, prof, nome)}</span><span class="nm">${escapeHtml(nome)}</span></button>`;
     }
     return `<div class="kz-nvd-place p${pos}">${pos === 1 ? `<img class="kz-nvd-ball" src="${ballSrc(4)}" alt="" aria-hidden="true">` : ''}${topo}<div class="kz-nvd-step" style="height:${alto}px">${nvTtl(String(pos))}</div></div>`;
   };
   return `<div class="kz-nvd-podium">${lugar(2, 130)}${lugar(1, 186)}${lugar(3, 100)}</div>`;
+}
+// A patente única Zen'oh aparece só como título (o dono não ocupa lugar no ranking nem no pódio).
+function zenohTituloHtml(){
+  const z = state.donors.find(d => d.active !== false && isZenoh(d));
+  return z ? `<p class="kz-nvd-zenoh">${patenteBadgeHtml(z, '', linkedProfileFor(z))}<span>Patente única: só o criador do Zenkyo tem.</span></p>` : '';
 }
 function renderDoarTabNovo(){
   const list = sortedDonors();
@@ -10827,6 +10840,7 @@ ${mpDoacaoHtml()}
         <div class="kz-nv-rays" aria-hidden="true"></div>
         <div class="kz-nvd-glow" aria-hidden="true"></div>
         <div class="kz-nvd-allyhead"><h2>${nvTtl('Aliança Z')}</h2><span><b>${list.length}</b> ${list.length === 1 ? 'nome' : 'nomes'} no mural</span></div>
+        ${zenohTituloHtml()}
         ${nvPodiumHtml(list)}
         ${list.length ? '' : `<p class="kz-nvd-empty">A Aliança Z ainda está vazia — os três primeiros lugares do pódio estão livres. Seja o primeiro.</p>`}
         ${resto.length ? `<div class="kz-donor-grid">${resto.map((d, i)=>renderDonorCard(d, i + 3)).join('')}</div>` : ''}
@@ -11163,7 +11177,7 @@ function renderAdminTab(){
     ? nvPageHeadHtml({ key:'admin', kanji:'王', tag:'Só para o dono', title:'Admin', kanjiStyle:'right:8%;top:-60px;font-size:380px',
         sub:'Doações do Mercado Pago, devoluções e o mural da Aliança Z.' })
     : `<div><h1 class="kz-title">Admin</h1><div class="kz-subtitle">Doações do Mercado Pago, devoluções e o mural da Aliança Z.</div></div>`;
-  const donors = sortedDonors(true), noMural = donors.filter(d=> d.active !== false).length;
+  const donors = sortedDonors(true), noMural = donors.filter(d=> d.active !== false && !isZenoh(d)).length;
   return `
   <section class="kz-page kz-nvp kz-nva">
     ${cab}

@@ -709,11 +709,11 @@ async function main(){
       const c = { id:'c', number:3, name:'Fraude', amount:10, active:true, linkedUserId:'outro', patenteManual:'zenoh', honras:[] };
       const e = { id:'e', number:4, name:'Promovido', amount:5, active:true, linkedUserId:null, patenteManual:'ssj_blue', honras:[] };
       state.donors = [b, c, e, a];
-      const ordem = sortedDonors().map(d => d.id).join(',');
+      const ordem = sortedDonors(true).map(d => d.id).join(','), publica = sortedDonors().map(d => d.id).join(','), titulo = zenohTituloHtml();
       const out = {
         zenoh: patenteFor(a).key, auto: patenteFor(b).key, fraude: patenteFor(c).key, manual: patenteFor(e).key, numero: patenteFor(120).key,
         badge: patenteBadgeHtml(a, '', null).includes('patente-zenoh') && patenteBadgeHtml(a, '', null).includes('Zen'),
-        ordem, selDono: donorPatenteSelectHtml(a).includes('value="zenoh"'), selOutro: donorPatenteSelectHtml(b).includes('value="zenoh"'),
+        ordem, publica, titulo: titulo.includes('Zen') && titulo.includes('patente-zenoh'), selDono: donorPatenteSelectHtml(a).includes('value="zenoh"'), selOutro: donorPatenteSelectHtml(b).includes('value="zenoh"'),
       };
       state.donors = bak; window.ADMIN_DISCORD_ID = donoAntes;
       return out;
@@ -724,7 +724,9 @@ async function main(){
     assert.strictEqual(r.manual, 'ssj_blue', 'a patente manual substitui a automática (5 reais viram SSJ Blue)');
     assert.strictEqual(r.numero, 'ssj_god', 'passar só o valor continua funcionando');
     assert.ok(r.badge);
-    assert.ok(r.ordem.startsWith('a'), "Zen'oh sempre em primeiro, mesmo com valor 0");
+    assert.ok(r.ordem.startsWith('a'), "na lista do dono (Admin), Zen'oh vem em primeiro, mesmo com valor 0");
+    assert.ok(!r.publica.split(',').includes('a'), "o dono não ocupa lugar no ranking/pódio público: só o título Zen'oh");
+    assert.ok(r.titulo, "o título Zen'oh aparece como faixa na Aliança Z");
     assert.ok(r.selDono && !r.selOutro, "a opção Zen'oh só aparece para a conta do dono");
   });
 
