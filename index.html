@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-XTmvxLFSOnt9UvwtIp+p50wAN4G5rsAFs9EUPUZzURE=' 'sha256-zd0cx5FJAm24ILvK4v47UITi19buEQL/b+CShRBzawo='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-kAp8h2ZmubR/VEYpsLS630ZvaSuRvP2LMKQOkkvBLo0=' 'sha256-3hLS1wYsR+KHowMT0Hao1D2j7yoNWWEtloa3Dv1lp8E='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Zenkyo — guerreiros, combos e tier list</title>
@@ -4908,7 +4908,8 @@ function renderAccountArea(){
     return `
       <div class="kz-account">
         <button class="kz-account-name" id="accountGoPerfilBtn" title="Ver meu perfil">
-          ${state.discordUser.avatarUrl ? `<img src="${escapeAttr(state.discordUser.avatarUrl)}" alt="" style="width:24px;height:24px;border-radius:50%;">` : ''}
+          ${avatarFoto(state.myProfile && state.myProfile.avatarCharId) ? `<span style="display:inline-block;width:24px;height:24px;border-radius:50%;overflow:hidden;vertical-align:middle;">${avatarFotoImg(avatarFoto(state.myProfile.avatarCharId))}</span>`
+            : state.discordUser.avatarUrl ? `<img src="${escapeAttr(state.discordUser.avatarUrl)}" alt="" style="width:24px;height:24px;border-radius:50%;">` : ''}
           <span class="kz-account-email">${escapeHtml(state.discordUser.username)}</span>
         </button>
         <button class="kz-btn kz-btn-sm" id="logoutBtn">Sair</button>
@@ -10429,6 +10430,28 @@ function linkedProfileFor(d){
 // Escolha de avatar por guerreiro desligada por enquanto: o campo some do perfil e o avatar volta a ser o do Discord.
 // O valor já salvo (avatar_char_id) não é apagado — é só ligar de novo aqui.
 const PROFILE_CHAR_AVATAR = false;
+// Fotos de perfil prontas (assets/avatares/*.webp, recortes quadrados). O valor escolhido vai em avatar_char_id como "foto:<id>";
+// o que vem do banco só vale se o id estiver nesta lista. Para incluir mais: coloque o .webp na pasta e acrescente uma linha aqui.
+const AVATARES_FOTO = [
+  { id:'foto:android-21', nome:'Android 21',  src:'assets/avatares/android-21.webp' },
+  { id:'foto:broly-dbs',  nome:'Broly (DBS)', src:'assets/avatares/broly-dbs.webp' },
+  { id:'foto:gohan-ssj2', nome:'Gohan SSJ2',  src:'assets/avatares/gohan-ssj2.webp' },
+];
+function avatarFoto(id){ return AVATARES_FOTO.find(a => a.id === id) || null; }
+function avatarFotoImg(a){ return `<img src="${escapeAttr(a.src)}" alt="" loading="lazy" decoding="async" data-onerr="hide" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">`; }
+// Avatar do perfil: a foto escolhida, se houver; senão o que o chamador usaria (Discord ou iniciais).
+function avatarFotoOr(prof, fallbackHtml){
+  const a = prof && avatarFoto(prof.avatarCharId);
+  return a ? avatarFotoImg(a) : fallbackHtml;
+}
+function avatarPickerHtml(p, discordHtml){
+  const atual = (avatarFoto(p.avatarCharId) || {}).id || '';
+  const opt = (id, nome, inner) => `<label class="kz-avpick-opt${atual === id ? ' on' : ''}" title="${escapeAttr(nome)}"><input type="radio" name="perfilAvatarFoto" value="${escapeAttr(id)}" ${atual === id ? 'checked' : ''}><span class="kz-avpick-img">${inner}</span><span class="kz-avpick-nm">${escapeHtml(nome)}</span></label>`;
+  return `<div class="kz-avpick" role="radiogroup" aria-label="Foto de perfil">
+    <span class="kz-nvpf-lb">Foto de perfil</span>
+    <div class="kz-avpick-grid">${opt('', 'Foto do Discord', discordHtml)}${AVATARES_FOTO.map(a => opt(a.id, a.nome, avatarFotoImg(a))).join('')}</div>
+  </div>`;
+}
 // Apoio vinculado a este login (o admin liga o User UID na Aliança Z) — é dele que vem a patente.
 function myDonorEntry(){
   if(!state.discordUser) return null;
@@ -10468,8 +10491,8 @@ function renderPerfilTab(){
   const myLook = myDonor ? patenteLook(myDonor.amount, p) : { p: PATENTES[0], label: PATENTES[0].label, style: '' };
   if(visualNovo()){   // formato do canvas: formulário à esquerda, prévia em fogo à direita (mesmos ids dos campos)
     const nome = p.nickname || state.discordUser.username;
-    const av = avatarChar ? portraitInner(avatarChar)
-      : state.discordUser.avatarUrl ? `<img src="${escapeAttr(state.discordUser.avatarUrl)}" alt="" data-onerr="hide">` : donorAvatarInner(nome);
+    const discordAv = state.discordUser.avatarUrl ? `<img src="${escapeAttr(state.discordUser.avatarUrl)}" alt="" data-onerr="hide">` : donorAvatarInner(nome);
+    const av = avatarChar ? portraitInner(avatarChar) : avatarFotoOr(p, discordAv);
     const redes = p.showSocials && (p.instagram||p.twitch||p.youtube) ? [p.instagram,p.twitch,p.youtube].filter(Boolean).map(escapeHtml).join(' · ') : '';
     return `
   <section class="kz-page kz-nvp kz-nvpf">
@@ -10488,6 +10511,7 @@ function renderPerfilTab(){
           <div><label class="kz-nvpf-lb" for="perfilYoutubeInput">YouTube</label><input type="text" class="kz-input" id="perfilYoutubeInput" value="${escapeAttr(p.youtube)}" placeholder="Link do canal" maxlength="120"></div>
         </div>
         ${patenteChoiceHtml(p)}
+        ${avatarPickerHtml(p, state.discordUser.avatarUrl ? `<img src="${escapeAttr(state.discordUser.avatarUrl)}" alt="" data-onerr="hide">` : donorAvatarInner(p.nickname || state.discordUser.username))}
         ${PROFILE_CHAR_AVATAR ? `<div><label class="kz-nvpf-lb" for="perfilAvatarSelect">Avatar</label><select id="perfilAvatarSelect"><option value="">Foto do Discord</option>${state.characters.map(c=>`<option value="${c.id}" ${c.id===p.avatarCharId?'selected':''}>${escapeHtml(c.name)}</option>`).join('')}</select></div>` : ''}
         <div class="kz-nvpf-checks">
           <label class="kz-honor-check"><input type="checkbox" id="perfilShowSocialsInput" ${p.showSocials?'checked':''}> Mostrar minhas redes no perfil público</label>
@@ -10549,6 +10573,7 @@ function renderPerfilTab(){
           <input type="text" id="perfilYoutubeInput" value="${escapeAttr(p.youtube)}" placeholder="Link do canal" maxlength="120">
         </div>
         ${patenteChoiceHtml(p)}
+        ${avatarPickerHtml(p, state.discordUser.avatarUrl ? `<img src="${escapeAttr(state.discordUser.avatarUrl)}" alt="" data-onerr="hide">` : donorAvatarInner(p.nickname || state.discordUser.username))}
         ${PROFILE_CHAR_AVATAR ? `<div>
           <label class="field-label">Avatar</label>
           <select id="perfilAvatarSelect">
@@ -10567,7 +10592,7 @@ function renderPerfilTab(){
       <div class="kz-panel kz-donor-list">
         <span class="kz-label">Prévia</span>
         <div class="kz-donor-card patente-${myLook.p.key}" style="pointer-events:none;${myLook.style}">
-          <span class="kz-donor-avatar">${avatarChar ? portraitInner(avatarChar) : donorAvatarInner(p.nickname||state.discordUser.username)}</span>
+          <span class="kz-donor-avatar">${avatarChar ? portraitInner(avatarChar) : avatarFotoOr(p, donorAvatarInner(p.nickname||state.discordUser.username))}</span>
           <span class="kz-donor-name">${escapeHtml(p.nickname || state.discordUser.username)}</span>
           ${p.servidor ? `<span class="kz-donate-note" style="margin:0;">${escapeHtml(p.servidor)}</span>` : ''}
         </div>
@@ -10669,7 +10694,9 @@ function attachPerfilHandlers(){
       youtube: document.getElementById('perfilYoutubeInput').value.trim(),
       patenteForma: (document.getElementById('perfilPatenteForma') || {}).value || ((state.myProfile && state.myProfile.patenteForma) || ''),
       patenteCor: ((document.getElementById('perfilPatenteCor') || {}).value) || ((state.myProfile && state.myProfile.patenteCor) || ''),
-      avatarCharId: PROFILE_CHAR_AVATAR ? document.getElementById('perfilAvatarSelect').value : ((state.myProfile && state.myProfile.avatarCharId) || ''),
+      avatarCharId: PROFILE_CHAR_AVATAR ? document.getElementById('perfilAvatarSelect').value
+        : document.querySelector('input[name="perfilAvatarFoto"]') ? ((document.querySelector('input[name="perfilAvatarFoto"]:checked') || {}).value || '')
+        : ((state.myProfile && state.myProfile.avatarCharId) || ''),
       showSocials: document.getElementById('perfilShowSocialsInput').checked,
       public: document.getElementById('perfilPublicInput').checked,
     };
@@ -10919,7 +10946,7 @@ function renderDonorCard(d, i){
   return `
   <button class="kz-donor-card patente-${p.key}" data-open-donor="${d.id}"${look.style ? ` style="${look.style}"` : ''}>
     <span class="kz-donor-number">Nº ${d.number != null ? d.number : (i+1)}</span>
-    <span class="kz-donor-avatar">${avatarChar ? portraitInner(avatarChar) : donorAvatarInner(name)}</span>
+    <span class="kz-donor-avatar">${avatarChar ? portraitInner(avatarChar) : avatarFotoOr(prof, donorAvatarInner(name))}</span>
     <span class="kz-donor-name">${escapeHtml(name)}</span>
     ${prof && prof.servidor ? `<span class="kz-donate-note" style="margin:0;">${escapeHtml(prof.servidor)}</span>` : ''}
     ${patenteBadgeHtml(d.amount, '', prof)}
@@ -10948,7 +10975,7 @@ function donorProfileModalHtml(d){
         <button class="kz-close-btn" id="closeDonorProfileBtn" aria-label="Fechar">✕</button>
       </div>
       <div class="modal-body" style="align-items:center;text-align:center;">
-        <span class="kz-donor-avatar" style="width:72px;height:72px;font-size:24px;">${avatarChar ? portraitInner(avatarChar) : donorAvatarInner(name)}</span>
+        <span class="kz-donor-avatar" style="width:72px;height:72px;font-size:24px;">${avatarChar ? portraitInner(avatarChar) : avatarFotoOr(prof, donorAvatarInner(name))}</span>
         <span class="kz-donor-number">Nº ${d.number}</span>
         ${prof && prof.servidor ? `<div class="kz-donate-note">${escapeHtml(prof.servidor)}</div>` : ''}
         ${patenteBadgeHtml(d.amount, '', prof)}

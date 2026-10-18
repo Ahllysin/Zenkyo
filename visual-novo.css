@@ -1378,3 +1378,15 @@ html.vis-novo .kz-mp-pixdica b{color:#FFC21A;}
 .kz-desc-com{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
 .kz-desc-com .kz-label{font-family:"Barlow Condensed",sans-serif;font-weight:900;font-style:italic;font-size:16px;text-transform:uppercase;color:#FF9A4D;}
 .kz-desc-postdesc{display:block;font-size:12.5px;color:#9a8c7e;font-style:italic;}
+
+/* ---- Foto de perfil: seletor ---- */
+.kz-avpick{display:flex;flex-direction:column;gap:10px;}
+.kz-avpick-grid{display:flex;flex-wrap:wrap;gap:12px;}
+.kz-avpick-opt{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;width:84px;cursor:pointer;}
+.kz-avpick-opt input{position:absolute;opacity:0;pointer-events:none;}
+.kz-avpick-img{display:block;width:72px;height:72px;border-radius:50%;overflow:hidden;background:#1A0D0A;box-shadow:0 0 0 2px #3A1E16;transition:box-shadow .15s,transform .15s;}
+.kz-avpick-img .avatar-fallback{width:100%;height:100%;font-size:22px;}
+.kz-avpick-opt:hover .kz-avpick-img{transform:scale(1.05);box-shadow:0 0 0 2px #FF6A13;}
+.kz-avpick-opt input:focus-visible + .kz-avpick-img{box-shadow:0 0 0 3px #FFC21A;}
+.kz-avpick-opt.on .kz-avpick-img,.kz-avpick-opt input:checked + .kz-avpick-img{box-shadow:0 0 0 3px #FFC21A,0 0 16px rgba(255,194,26,.55);}
+.kz-avpick-nm{font-size:12px;line-height:1.2;text-align:center;color:#C9B8A6;}

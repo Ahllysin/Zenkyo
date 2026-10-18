@@ -682,6 +682,23 @@ async function main(){
     assert.ok(r.html);
   });
 
+  await test('fotos de perfil: só vale id da lista, arquivos existem e o seletor marca a escolhida', () => {
+    const fs = require('fs'), path = require('path');
+    const r = evalIn(sandbox, `(() => {
+      const lista = AVATARES_FOTO.map(a => ({ id:a.id, src:a.src }));
+      const ok = avatarFoto('foto:broly-dbs') && !avatarFoto('foto:inexistente') && !avatarFoto('<img onerror=1>') && !avatarFoto('');
+      const html = avatarPickerHtml({ avatarCharId:'foto:broly-dbs' }, '<span>D</span>');
+      const usa = avatarFotoOr({ avatarCharId:'foto:gohan-ssj2' }, 'FALLBACK').includes('gohan-ssj2.webp');
+      const cai = avatarFotoOr({ avatarCharId:'foto:xx' }, 'FALLBACK') === 'FALLBACK' && avatarFotoOr(null, 'FALLBACK') === 'FALLBACK';
+      return { lista, ok, marcada: /value="foto:broly-dbs" checked/.test(html), opcoes: (html.match(/name="perfilAvatarFoto"/g) || []).length, usa, cai };
+    })()`);
+    assert.ok(r.lista.length >= 3);
+    r.lista.forEach(a => assert.ok(fs.existsSync(path.join(__dirname, a.src)), a.src + ' deveria existir'));
+    assert.ok(r.ok && r.usa && r.cai);
+    assert.ok(r.marcada);
+    assert.strictEqual(r.opcoes, r.lista.length + 1, 'Discord + uma opção por foto');
+  });
+
   console.log('\n[Doar / ranking de apoiadores]');
 
   await test('elenco padrão de doadores começa vazio (nunca inventar apoiador)', () => {
