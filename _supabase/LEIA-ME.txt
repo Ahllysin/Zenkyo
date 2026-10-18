@@ -1,0 +1,41 @@
+DOAÇÕES PELO MERCADO PAGO — COMO FUNCIONA E ONDE FICAM AS CHAVES
+==================================================================
+
+Peças (todas no Supabase, projeto luyuprliobxtxnppdohw):
+  - Função mp-doacao   → o botão "Doar com Mercado Pago" da aba Doar chama esta função. Ela cria a
+                         preferência do Checkout Pro e devolve o link de pagamento do Mercado Pago.
+  - Função mp-webhook  → o Mercado Pago avisa aqui quando um pagamento muda. Ela confere a assinatura,
+                         busca o pagamento no Mercado Pago e, se aprovado, lança o apoio na Aliança Z.
+  - Tabela mp_pagamentos e função registrar_apoio_mp (no banco) → guardam cada doação e somam no mural.
+  Cópias do código: functions/mp-doacao, functions/mp-webhook e migrations/ (esta pasta).
+
+SEGREDOS (Painel do Supabase → Edge Functions → Secrets → Add new secret)
+  MP_ACCESS_TOKEN    Painel do Mercado Pago → app Zenkyo → Credenciais.
+                     Para testar: aba "Teste". Para receber de verdade: aba "Produção".
+  MP_WEBHOOK_SECRET  Painel do Mercado Pago → Suas integrações → app Zenkyo → Webhooks →
+                     "Assinatura secreta" (aparece depois de cadastrar o endereço do webhook).
+  SITE_URL           (opcional) endereço do site para a volta do pagamento.
+                     Padrão: https://zenkyo.com.br/ (o site no ar)
+  Nunca cole essas chaves no código do site (o repositório é público) nem em conversa nenhuma.
+
+ENDEREÇO DO WEBHOOK (cadastrar no painel do Mercado Pago, evento "Pagamentos"):
+  https://luyuprliobxtxnppdohw.supabase.co/functions/v1/mp-webhook
+
+QUEM APARECE NO MURAL
+  - Logado com Discord: soma no apoiador ligado ao perfil (patente sobe sozinha).
+  - Sem login, com nome: entra uma linha nova no mural com esse nome.
+  - Anônimo (ou sem nome e sem login): fica só registrado em mp_pagamentos, fora do mural.
+
+SE ALGO DER ERRADO
+  Painel do Supabase → Edge Functions → mp-doacao / mp-webhook → Logs.
+
+--- Funções do Supabase (pasta supabase/functions) ---
+mp-doacao (cria a preferência), mp-webhook (aviso do Mercado Pago), mp-retorno (confirma na volta ao site),
+mp-conferir (conferir um pagamento, só o dono), mp-reconciliar (confere os pedidos abertos, só o dono; roda na aba Admin).
+Funções antigas que podem ser apagadas no painel (Edge Functions): mp-pix, ia-time (não são mais usadas).
+
+--- Esta pasta (_supabase) ---
+É a CÓPIA DE SEGURANÇA do backend do Zenkyo: funções (functions/), migração dos pagamentos (migrations/) e o retrato do banco
+(schema-snapshot.sql: tabelas, funções, vistas, políticas, gatilhos e tarefas). Não contém segredos nem dados de pessoas.
+O GitHub Pages não publica pastas que começam com "_", então ela fica no repositório mas fora do site.
+Depois de mudar uma função ou o banco no Supabase, atualize aqui também (e rode node build.js se mudar o site).
