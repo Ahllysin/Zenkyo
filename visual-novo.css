@@ -1343,3 +1343,12 @@ html.vis-novo .kz-mp-pixdica b{color:#FFC21A;}
   .kz-nva-tabela td[data-l="Data"]{grid-column:1/-1;font-size:12.5px;color:#9C8574;}
   .kz-nva-tabela td.num{text-align:right;}
 }
+
+.kz-nva-conferir{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:18px 20px;background:#120A08;box-shadow:inset 0 0 0 1.5px #3A1E16,inset 0 3px 0 #FF6A13;}
+.kz-nva-conferir label{font-family:"Barlow Condensed",sans-serif;font-weight:900;font-style:italic;font-size:18px;text-transform:uppercase;color:#FFC21A;}
+.kz-nva-conferir .kz-input{flex:1 1 240px;max-width:360px;}
+.kz-nva-conferir .kz-nva-nota,.kz-nva-conferir .kz-nva-resp{flex-basis:100%;margin:0;}
+.kz-nva-resp:empty{display:none;}
+.kz-nva-resp{padding:10px 14px;font-size:14.5px;line-height:1.45;color:#E2D2C2;box-shadow:inset 4px 0 0 #FFC21A;background:rgba(255,194,26,.08);}
+.kz-nva-resp.ok{color:#9FF0B8;box-shadow:inset 4px 0 0 #2f9e4f;background:rgba(47,158,79,.12);}
+.kz-nva-resp.err{color:#FF9A8A;box-shadow:inset 4px 0 0 #E8261B;background:rgba(232,38,27,.12);}

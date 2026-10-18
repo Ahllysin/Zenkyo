@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-IgjGmmd6Ai0qSRDP837VuNwH2Fh1MkGYOTOvxUa1a7Q=' 'sha256-Ozciuqwgv0pjxayyMyeH9qj74ZM5WRrhXkdoNCWNoOU='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-bP5RZZXI9OlQjlcKppChcMgGChRn8EYMEIxHCOoG4Jo=' 'sha256-dPebcmKtzDrwNbP0yjQ0bMqtMZqb4GEOyY2YEXO7OX4='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Zenkyo — guerreiros, combos e tier list</title>
@@ -10749,6 +10749,13 @@ function renderAdminTab(){
     <div class="kz-nva-sec">
       <h2 class="kz-nva-h2">Doações</h2>
       <div id="admDoacoes">${admDoacoesHtml()}</div>
+      <form class="kz-nva-conferir" id="admConferirForm" autocomplete="off">
+        <label for="admConferirNum">Conferir pagamento</label>
+        <input type="text" id="admConferirNum" class="kz-input" inputmode="numeric" placeholder="Número da operação no Mercado Pago" maxlength="24">
+        <button type="submit" class="kz-btn kz-btn-sm" id="admConferirBtn">Conferir e lançar</button>
+        <p class="kz-nva-nota">Use se um pagamento aprovado não apareceu no mural: o site consulta o Mercado Pago e lança o apoio (uma vez só, mesmo se você repetir). O número da operação está em Seu negócio → Atividades.</p>
+        <div class="kz-nva-resp" id="admConferirResp" role="status" aria-live="polite"></div>
+      </form>
     </div>
     <div class="kz-nva-sec">
       <h2 class="kz-nva-h2">Mural e apoiadores <small>${donors.length} no mural</small></h2>
@@ -10814,9 +10821,45 @@ function attachAdminDoacoesHandlers(root){
     });
   });
 }
+const ADM_RESULTADOS = { novo:'entrou no mural', somado:'somado ao apoio da conta no mural', anonimo:'doação anônima: registrada, fora do mural', sem_nome:'sem nome e sem login: registrada, fora do mural', ja_registrado_ou_inexistente:'já estava registrado, nada mudou', status_atualizado:'status atualizado' };
+async function conferirPagamento(numero){
+  const { data, error } = await window.__sb.client.functions.invoke('mp-conferir', { body: { pagamento: numero } });
+  if(error){
+    let msg = '';
+    try{ msg = (await error.context.json()).erro || ''; }catch(e){}
+    throw new Error(msg || 'Não consegui conferir agora. Tente de novo.');
+  }
+  return data || {};
+}
+function attachAdminConferir(view){
+  const form = view.querySelector('#admConferirForm');
+  if(!form) return;
+  form.addEventListener('submit', async e=>{
+    e.preventDefault();
+    const inp = form.querySelector('#admConferirNum'), btn = form.querySelector('#admConferirBtn'), resp = form.querySelector('#admConferirResp');
+    const numero = String(inp.value || '').replace(/\D/g, '');
+    resp.className = 'kz-nva-resp';
+    if(numero.length < 6){ resp.textContent = 'Digite o número da operação (só números).'; resp.classList.add('err'); return; }
+    btn.disabled = true; resp.textContent = 'Consultando o Mercado Pago…';
+    try{
+      const r = await conferirPagamento(numero);
+      const st = admStatusInfo(r.status === 'approved' ? 'aprovado' : r.status === 'refunded' ? 'devolvido' : r.status === 'charged_back' ? 'estornado' : r.status)[0];
+      resp.textContent = `Pagamento ${st.toLowerCase()} de ${formatBRL(r.valor)}${r.nome ? ' (' + r.nome + ')' : ''}: ${ADM_RESULTADOS[String(r.resultado).split(' ')[0]] || r.resultado}.`;
+      resp.classList.add('ok');
+      inp.value = '';
+      state.admin.lista = null; state.admin.erro = '';
+      await refreshDonorsRemote();
+      loadAdminDoacoes();
+    }catch(err){
+      resp.textContent = err.message; resp.classList.add('err');
+    }
+    btn.disabled = false;
+  });
+}
 function attachAdminHandlers(){
   const view = document.getElementById('view');
   if(!view || state.tab !== 'admin' || !isDonorAdmin()) return;
+  attachAdminConferir(view);
   attachAdminDoacoesHandlers(view);
   if(!state.admin.lista && !state.admin.carregando && !state.admin.erro) loadAdminDoacoes();
 }
