@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-DzHsMtBjpod+Mj0ZBIFH1JSiO2l4umZaUdzwbaOOlSU=' 'sha256-8c3MPziI/gZqkqbZdgv9fM7agrGaqofEOBpg+nu8u/Y='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-IgjGmmd6Ai0qSRDP837VuNwH2Fh1MkGYOTOvxUa1a7Q=' 'sha256-Ozciuqwgv0pjxayyMyeH9qj74ZM5WRrhXkdoNCWNoOU='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Zenkyo — guerreiros, combos e tier list</title>
@@ -10692,6 +10692,12 @@ function admResumo(lista){
   });
   return { recebido, devolvido, pagas, aguardando };
 }
+// Pedidos que nunca foram pagos (link aberto e abandonado, recusado, falhou) com mais de 1 dia: o botão "Limpar" apaga estes.
+const ADM_NAO_PAGOS = ['criado','pending','in_process','rejected','cancelled','erro'];
+function admLimpaveis(lista, agora){
+  const corte = (agora || Date.now()) - 24 * 3600 * 1000;
+  return (lista || []).filter(d=> !d.aprovado_em && ADM_NAO_PAGOS.includes(d.status) && new Date(d.criado).getTime() < corte).length;
+}
 function admDataHtml(iso){
   if(!iso) return '—';
   const d = new Date(iso);
@@ -10712,7 +10718,7 @@ function admDoacoesHtml(){
   const a = state.admin;
   if(a.erro) return `<div class="kz-nva-aviso err">${escapeHtml(a.erro)} <button type="button" class="kz-link-btn" id="admRecarregar">Tentar de novo</button></div>`;
   if(a.carregando || !a.lista) return `<div class="kz-nva-aviso">Carregando as doações…</div>`;
-  const res = admResumo(a.lista), vis = admFiltrar(a.lista, a.filtro, a.busca);
+  const res = admResumo(a.lista), vis = admFiltrar(a.lista, a.filtro, a.busca), limpaveis = admLimpaveis(a.lista);
   return `
     <div class="kz-nva-cards">
       <div class="kz-nva-card"><span>Recebido</span><b>${formatBRL(res.recebido)}</b><small>valor bruto, sem a tarifa do Mercado Pago</small></div>
@@ -10724,10 +10730,11 @@ function admDoacoesHtml(){
       <div class="kz-nva-filtros">${ADM_FILTROS.map(([k, l])=>`<button type="button" class="kz-fchip${a.filtro === k ? ' active' : ''}" data-adm-filtro="${k}" aria-pressed="${a.filtro === k}">${l}</button>`).join('')}</div>
       <input type="search" class="kz-input" id="admBusca" placeholder="Buscar por nome…" value="${escapeAttr(a.busca)}" autocomplete="off">
       <button type="button" class="kz-btn kz-btn-sm" id="admRecarregar">↻ Atualizar</button>
+      <button type="button" class="kz-btn kz-btn-sm" id="admLimpar"${limpaveis ? '' : ' disabled'} title="Apaga os pedidos que nunca foram pagos e têm mais de 1 dia. Pagamentos aprovados, devolvidos e estornados nunca são apagados.">🧹 Limpar não pagos (${limpaveis})</button>
     </div>
     ${vis.length ? `<div class="kz-nva-tabela"><table><thead><tr><th>Data</th><th>Quem</th><th class="num">Valor</th><th>Status</th></tr></thead><tbody>${vis.map(admLinhaHtml).join('')}</tbody></table></div>`
                  : `<div class="kz-nva-aviso">Nenhuma doação neste filtro.</div>`}
-    <p class="kz-nva-nota">Devoluções e estornos feitos no painel do Mercado Pago chegam por aviso automático e já descontam o apoio do mural. Mostra as ${a.lista.length} doações mais recentes.</p>`;
+    <p class="kz-nva-nota">Devoluções e estornos feitos no painel do Mercado Pago chegam por aviso automático e já descontam o apoio do mural. Mostra as ${a.lista.length} doações mais recentes. Pedidos que ninguém pagou são apagados sozinhos depois de 30 dias.</p>`;
 }
 function renderAdminTab(){
   if(!isDonorAdmin()) return `<section class="kz-page"><div class="kz-empty">Esta área é só para o dono do site.</div></section>`;
@@ -10790,6 +10797,22 @@ function attachAdminDoacoesHandlers(root){
     if(nova){ nova.focus(); try{ nova.setSelectionRange(pos, pos); }catch(e){} }
   });
   root.querySelectorAll('#admRecarregar').forEach(b=> b.addEventListener('click', ()=>{ a.erro = ''; loadAdminDoacoes(); }));
+  const limpar = root.querySelector('#admLimpar');
+  if(limpar) limpar.addEventListener('click', ()=>{
+    const n = admLimpaveis(a.lista);
+    if(!n) return;
+    customConfirm(`Apagar ${n} pedido${n === 1 ? '' : 's'} que nunca ${n === 1 ? 'foi pago' : 'foram pagos'} (mais de 1 dia)? Pagamentos aprovados, devolvidos e estornados não são apagados. Não dá pra desfazer.`, async ()=>{
+      try{
+        const { data, error } = await window.__sb.client.rpc('admin_limpar_aguardando', { p_dias: 1 });
+        if(error) throw error;
+        showToast(`${Number(data) || 0} pedido(s) apagado(s)`);
+      }catch(e){
+        console.error('Não consegui limpar os pedidos', e);
+        showToast('Não consegui limpar agora. Tente de novo.');
+      }
+      loadAdminDoacoes();
+    });
+  });
 }
 function attachAdminHandlers(){
   const view = document.getElementById('view');

@@ -1933,6 +1933,7 @@ async function main(){
         anonimoNaLista: /anônimo/.test(admLinhaHtml(lista[2])),
         semEmail: !/@/.test(html),
         rotulos: ['aprovado','criado','rejected','devolvido','estornado','xyz'].map(x => admStatusInfo(x)[0]),
+        limpaveis: { depois: admLimpaveis(lista, Date.parse('2026-10-19T00:00:00Z')), antes: admLimpaveis(lista, Date.parse('2026-10-17T13:30:00Z')) },
       };
       supabaseAvailable = antes.av; window.__sb = antes.sb; state.discordUser = antes.u; state.admin = antes.a;
       return out;
@@ -1949,6 +1950,7 @@ async function main(){
     assert.ok(r.anonimoNaLista, 'anônimo aparece como anônimo');
     assert.ok(r.semEmail, 'nenhum e-mail aparece na aba');
     assert.deepStrictEqual(r.rotulos, ['Aprovado', 'Aguardando', 'Recusado', 'Devolvido', 'Estornado', 'xyz']);
+    assert.deepStrictEqual(r.limpaveis, { depois: 2, antes: 0 }, 'só pedidos não pagos com mais de 1 dia entram na limpeza');
   });
 
   console.log(`\n${passed} passaram, ${failed} falharam.`);
