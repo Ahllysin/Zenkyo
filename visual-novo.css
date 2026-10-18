@@ -1390,3 +1390,12 @@ html.vis-novo .kz-mp-pixdica b{color:#FFC21A;}
 .kz-avpick-opt input:focus-visible + .kz-avpick-img{box-shadow:0 0 0 3px #FFC21A;}
 .kz-avpick-opt.on .kz-avpick-img,.kz-avpick-opt input:checked + .kz-avpick-img{box-shadow:0 0 0 3px #FFC21A,0 0 16px rgba(255,194,26,.55);}
 .kz-avpick-nm{font-size:12px;line-height:1.2;text-align:center;color:#C9B8A6;}
+
+/* Esferas da Coleção: arte das esferas do dragão (assets/balls) no lugar das bolas desenhadas em CSS */
+.kz-nvc-ball,.kz-nvc-ball.lit,.kz-nvc-ball.off{background:none;box-shadow:none;padding:0;display:block;}
+.kz-nvc-ball img{display:block;width:100%;height:100%;object-fit:contain;transition:filter .3s,opacity .3s;}
+.kz-nvc-ball.lit img{filter:drop-shadow(0 0 10px rgba(255,150,30,.85));}
+.kz-nvc-ball.lit{animation:kzNvGlowImg 1.8s ease-in-out infinite;}
+.kz-nvc-ball.off img{filter:brightness(.22) saturate(.55);opacity:.9;}
+@keyframes kzNvGlowImg{0%,100%{filter:drop-shadow(0 0 4px rgba(255,140,30,.5));}50%{filter:drop-shadow(0 0 12px rgba(255,140,30,.95));}}
+html.nv-lite .kz-nvc-ball.lit{animation:none;}

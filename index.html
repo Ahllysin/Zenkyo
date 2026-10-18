@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-kAp8h2ZmubR/VEYpsLS630ZvaSuRvP2LMKQOkkvBLo0=' 'sha256-3hLS1wYsR+KHowMT0Hao1D2j7yoNWWEtloa3Dv1lp8E='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-+mWSNBS+keAlVb8n7i3NOlzn3rPBezDgEK9RUEZ2LTQ=' 'sha256-Zl9hy+96koYXhLJQtRybRyM/SCB1xyMvkt3D5ttFX+Q='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Zenkyo — guerreiros, combos e tier list</title>
@@ -6633,7 +6633,7 @@ function collCounterInner(){
   const pct = total ? owned / total : 0;
   if(visualNovo()){   // canvas: esferas desenhadas (com as estrelas dentro) e o número grande embaixo
     const lit = [1,2,3,4,5,6,7].filter(i=> pct >= i/7 - 1e-9 || (i === 1 && owned > 0)).length;
-    const balls = [1,2,3,4,5,6,7].map(i=>`<span class="kz-nvc-ball ${i <= lit ? 'lit' : 'off'}"><i></i>${'★'.repeat(i)}</span>`).join('');
+    const balls = [1,2,3,4,5,6,7].map(i=>`<span class="kz-nvc-ball ${i <= lit ? 'lit' : 'off'}"><img src="${ballSrc(i)}" alt="" loading="lazy" decoding="async"></span>`).join('');
     return `<div class="kz-nvc-balls" role="img" aria-label="Progresso da coleção: ${lit} de 7 esferas">${balls}</div>${nvCountHtml(owned, `de ${total} adquiridos`)}`;
   }
   const balls = [1,2,3,4,5,6,7].map(i=>{
