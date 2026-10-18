@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-blnNodUyvf9tMp37wKbosN2Jm+zksTLL7KMGGsa+QDc=' 'sha256-I9suenfF6yn89vuJm3ohHObwYfm1qd21cImyMUnDJ38='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-WhtjwjxQoASwLN901SdEWSYh7yQnksgWfNVv1yIr2vk=' 'sha256-pVsea903qPowVcgSDUUNeus5e7UFX3XuWHrA6AXlfMQ='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Zenkyo — guerreiros, combos e tier list</title>
@@ -1181,49 +1181,8 @@ input::placeholder,textarea::placeholder{color:var(--text-faint);}
 .kz-discord-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;border-radius:8px;border:1.5px solid #5865F2;background:#5865F2;color:#fff;font-weight:700;font-size:13px;width:100%;}
 .kz-discord-btn:hover{filter:brightness(1.12);}
 
-/* ---- widget flutuante "Top 3 apoiadores" (aparece em qualquer aba) ---- */
-.kz-donor-widget{position:fixed;right:20px;bottom:20px;z-index:40;font-family:'Nunito',sans-serif;transition:transform .25s ease;}
-.kz-donor-widget.collapsed{transform:translateX(calc(100% - 40px));}
-.kz-dw-card{
-  width:230px;border-radius:16px;border:1.5px solid rgba(255,150,50,.55);
-  background:linear-gradient(180deg,#1a1220,#0e0c14);box-shadow:0 8px 28px rgba(0,0,0,.5), 0 0 24px rgba(255,120,30,.18);
-  padding:16px 14px 14px;position:relative;
-}
-.kz-dw-toggle{
-  position:absolute;left:-18px;top:50%;transform:translateY(-50%);width:26px;height:52px;border-radius:10px 0 0 10px;
-  border:1.5px solid rgba(255,150,50,.55);border-right:none;background:linear-gradient(180deg,#1a1220,#0e0c14);
-  color:var(--gold);font-size:14px;display:flex;align-items:center;justify-content:center;
-}
-.kz-dw-head{display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:12px;}
-.kz-dw-title{font-family:'Kaushan Script',cursive;font-size:22px;color:var(--text-strong);text-shadow:0 2px 0 #3a1200;}
-.kz-dw-sub{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);font-weight:700;}
-.kz-dw-podium{display:flex;align-items:flex-end;justify-content:center;gap:10px;}
-.kz-dw-slot{display:flex;flex-direction:column;align-items:center;gap:5px;width:60px;}
-.kz-dw-slot .kz-dw-avatar{width:44px;height:44px;border-radius:50%;flex-shrink:0;border:2px solid var(--gold-light);position:relative;}
-.kz-dw-slot .kz-dw-avatar .avatar-fallback{border-radius:50%;font-size:15px;}
-.kz-dw-slot.first .kz-dw-avatar{width:60px;height:60px;border-color:#ffd23f;box-shadow:0 0 14px rgba(255,190,50,.5);}
-.kz-dw-crown{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:18px;}
-.kz-dw-slot .kz-dw-rank{
-  width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;
-  position:absolute;right:-2px;bottom:-2px;border:1.5px solid #0e0c14;color:#fff;
-}
-.kz-dw-slot.first .kz-dw-rank{background:linear-gradient(150deg,#ffe08a,#c9860b);color:#2a1a00;}
-.kz-dw-slot.second .kz-dw-rank{background:linear-gradient(150deg,#dfe4ea,#9aa5b1);color:#1a1e24;}
-.kz-dw-slot.third .kz-dw-rank{background:linear-gradient(150deg,#e0a868,#8a5a2a);color:#2a1a00;}
-.kz-dw-slot .name{font-size:11px;font-weight:800;color:var(--text-strong);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.kz-dw-slot .amount{font-size:9.5px;font-family:'JetBrains Mono',monospace;color:var(--gold-light);}
-.kz-dw-slot .kz-dw-patente{font-size:8.5px;padding:2px 7px;white-space:normal;text-align:center;line-height:1.2;}
-.kz-dw-cta{
-  display:block;text-align:center;margin-top:12px;padding:8px 0;border-radius:8px;border:1px solid rgba(255,170,70,.4);
-  color:var(--gold-light);font-size:12px;font-weight:700;
-}
-.kz-dw-cta:hover{background:rgba(255,120,30,.1);}
 @media(max-width:700px){
   .kz-donate-layout{grid-template-columns:1fr;}
-  .kz-donor-widget{right:10px;bottom:10px;}
-  .kz-donor-widget.collapsed{transform:translateX(calc(100% - 30px));}
-  .kz-dw-card{width:190px;padding:12px 10px 10px;}
-  .kz-dw-slot{width:50px;}
 }
 
 /* ======================= MODAIS (editor, importar, login, confirmação) ======================= */
@@ -1438,7 +1397,6 @@ label.field-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;col
   </nav>
 </div>
 <div id="modalRoot"></div>
-<div id="donorWidgetRoot"></div>
 
 <!--
   ======================= SUPABASE + DISCORD (login único do site inteiro) =======================
@@ -4655,7 +4613,7 @@ let state = {
   favs: [],                         // ids dos personagens favoritados (aba Favoritos)
   donors: [],                       // [{id, number, name, amount, quote, discord, link, honras:[], active}] — Aliança Z (aba Doar + widget flutuante)
   nextDonorNumber: 1,               // próximo número permanente a distribuir (nunca reaproveita número de quem foi removido)
-  donorWidgetCollapsed: false,      // widget flutuante "Top 3 apoiadores" recolhido pro canto
+  rankingAberto: false,             // aba Doar: ranking expandido até o top 10
   mpDoacao: { valor:20, outro:false, outroValor:'', nome:'', anonimo:false, estado:'', msg:'' },   // aba Doar (Mercado Pago)
   admin: { lista:null, carregando:false, erro:'', filtro:'pagas', busca:'' },   // aba Admin (só o dono)
   mpRetorno: null,                  // 'aprovada' | 'pendente' | 'recusada' ao voltar do Mercado Pago
@@ -4763,7 +4721,6 @@ async function loadState(){
 }
 const NAV_TABS = ['chars','collection','combos','guias','tierlist','comunidade','favs','perfil','doar','admin'];
 async function saveFavs(){ await persist('favs', JSON.stringify(state.favs)); }
-async function saveDonorWidgetCollapsed(){ await persist('donor_widget_collapsed', state.donorWidgetCollapsed ? '1' : '0'); }
 async function saveUiTab(){ await persist('ui_tab', state.tab); }
 
 // Ranking de apoiadores: sem gateway de pagamento integrado (ver comentário em
@@ -5528,8 +5485,6 @@ function render(){
   attachAdminHandlers();
   document.getElementById('accountArea').innerHTML = renderAccountArea();
   attachAccountHandlers();
-  document.getElementById('donorWidgetRoot').innerHTML = renderDonorWidget();
-  attachDonorWidgetHandlers();
   if(state.editingChar && isHeroAdmin()) renderModal();
   else if(state.ioModalOpen && isHeroAdmin()) renderIOModal();
   else if(state.pickerSlot!==null) renderPickerModal();
@@ -9941,7 +9896,6 @@ function applyStoredValue(key, raw){
       case 'collection': state.collection = JSON.parse(raw); break;
       case 'tier_list': state.tierList = JSON.parse(raw); break;
       case 'favs': state.favs = JSON.parse(raw); break;
-      case 'donor_widget_collapsed': state.donorWidgetCollapsed = raw === '1'; break;
       case 'ui_tab': if(NAV_TABS.includes(raw)) state.tab = raw; break;
     }
   }catch(e){ console.error('Não consegui aplicar o dado salvo de "'+key+'"', e); }
@@ -10435,7 +10389,8 @@ function nvPodiumHtml(list){
 function renderDoarTabNovo(){
   const list = sortedDonors();
   const admin = isDonorAdmin();
-  const resto = list.slice(3);
+  const limite = state.rankingAberto ? 10 : 5;
+  const resto = list.slice(3, limite), maisRanking = list.slice(0, 10).length > 5;
   return `
   <section class="kz-page kz-nvp kz-nvd">
     ${nvPageHeadHtml({ key:'doar', kanji:'援', tag:'Apoie o site', title:'Doar', kanjiStyle:'right:8%;top:-60px;font-size:380px',
@@ -10454,6 +10409,7 @@ ${mpDoacaoHtml()}
         ${nvPodiumHtml(list)}
         ${list.length ? '' : `<p class="kz-nvd-empty">A Aliança Z ainda está vazia — os três primeiros lugares do pódio estão livres. Seja o primeiro.</p>`}
         ${resto.length ? `<div class="kz-donor-grid">${resto.map((d, i)=>renderDonorCard(d, i + 3)).join('')}</div>` : ''}
+        ${maisRanking ? `<button type="button" class="kz-btn kz-btn-sm kz-nvd-more" id="rankingToggle" aria-expanded="${state.rankingAberto}">${state.rankingAberto ? 'Mostrar menos ▴' : 'Ver top 10 ▾'}</button>` : ''}
         ${admin ? '<p class="kz-nvd-note mut">Você é o dono: gerencie doações e o mural na aba <b>Admin</b>.</p>' : ''}
       </div>
     </div>
@@ -10655,6 +10611,8 @@ function attachDoarHandlers(){
   const view = document.getElementById('view');
   if(!view || (state.tab !== 'doar' && state.tab !== 'admin')) return;   // o painel do mural mora na aba Admin
   attachMpDoacaoHandlers(view);
+  const rankBtn = document.getElementById('rankingToggle');
+  if(rankBtn) rankBtn.addEventListener('click', ()=>{ state.rankingAberto = !state.rankingAberto; render(); });
   const addBtn = document.getElementById('addDonorBtn');
   if(addBtn) addBtn.addEventListener('click', ()=>{
     const name = document.getElementById('donorNameInput').value.trim();
@@ -10881,56 +10839,6 @@ function attachAdminHandlers(){
   attachAdminConferir(view);
   attachAdminDoacoesHandlers(view);
   if(!state.admin.lista && !state.admin.carregando && !state.admin.erro) loadAdminDoacoes();
-}
-
-/* ======================= WIDGET FLUTUANTE: TOP 3 APOIADORES ======================= */
-// Aparece em cima de qualquer aba (fica fora do #view, só é atualizado quando os
-// doadores mudam). Recolhido, fica só uma aba fininha encostada na borda direita.
-function renderDonorWidget(){
-  const top3 = sortedDonors().slice(0, 3);
-  if(!top3.length) return ''; // sem doador nenhum ainda, não mostra caixa vazia
-  const collapsed = state.donorWidgetCollapsed;
-  // ordem visual do pódio: 2º à esquerda, 1º no meio (maior), 3º à direita
-  const order = [top3[1], top3[0], top3[2]];
-  const classFor = d => d===top3[0] ? 'first' : d===top3[1] ? 'second' : 'third';
-  const slotHtml = d => {
-    if(!d) return `<div class="kz-dw-slot" style="visibility:hidden;"></div>`;
-    const cls = classFor(d);
-    return `
-    <div class="kz-dw-slot ${cls}">
-      <div class="kz-dw-avatar">
-        ${cls==='first' ? '<span class="kz-dw-crown">👑</span>' : ''}
-        ${donorAvatarInner(d.name)}
-        <span class="kz-dw-rank">${top3.indexOf(d)+1}</span>
-      </div>
-      <span class="name">${escapeHtml(d.name)}</span>
-      ${patenteBadgeHtml(d.amount, 'kz-dw-patente', linkedProfileFor(d))}
-    </div>`;
-  };
-  return `
-  <div class="kz-donor-widget ${collapsed?'collapsed':''}">
-    <div class="kz-dw-card">
-      <button class="kz-dw-toggle" id="donorWidgetToggle" title="${collapsed?'Mostrar':'Esconder'} ranking de apoiadores">${collapsed?'‹':'›'}</button>
-      <div class="kz-dw-head">
-        <span class="kz-dw-title">Top 3</span>
-        <span class="kz-dw-sub">Maiores Apoiadores</span>
-      </div>
-      <div class="kz-dw-podium">${order.map(slotHtml).join('')}</div>
-      <a class="kz-dw-cta" id="donorWidgetCta" href="#">Ver ranking completo ▸</a>
-    </div>
-  </div>`;
-}
-
-function attachDonorWidgetHandlers(){
-  const toggle = document.getElementById('donorWidgetToggle');
-  if(toggle) toggle.addEventListener('click', ()=>{
-    state.donorWidgetCollapsed = !state.donorWidgetCollapsed;
-    saveDonorWidgetCollapsed();
-    document.getElementById('donorWidgetRoot').innerHTML = renderDonorWidget();
-    attachDonorWidgetHandlers();
-  });
-  const cta = document.getElementById('donorWidgetCta');
-  if(cta) cta.addEventListener('click', e=>{ e.preventDefault(); goTab('doar'); });
 }
 
 /* ======================= RENDER: MODAL (add/edit char) ======================= */

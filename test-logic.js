@@ -588,44 +588,22 @@ async function main(){
     assert.deepStrictEqual(evalIn(sandbox, 'DEFAULT_DONORS'), []);
   });
 
-  await test('aba Doar e o widget flutuante renderizam sem erro; widget some sozinho sem doadores', () => {
-    const out = evalIn(sandbox, `(() => {
-      const r = {};
-      r.doarEmpty = renderDoarTab();
-      r.widgetEmpty = renderDonorWidget();
-      state.donors = [
-        {id:'d1', name:'Fulano', amount:50},
-        {id:'d2', name:'Ciclana', amount:200},
-        {id:'d3', name:'Beltrano', amount:10},
-        {id:'d4', name:'Quarto Lugar', amount:5},
-      ];
-      r.doarFilled = renderDoarTab();
-      r.widgetFilled = renderDonorWidget();
-      state.donors = [];
-      return Object.fromEntries(Object.entries(r).map(([k,v]) => [k, typeof v === 'string' ? v.length : -1]));
-    })()`);
-    assert.ok(out.doarEmpty > 200 && out.doarFilled > 200);
-    assert.strictEqual(out.widgetEmpty, 0, 'sem doadores o widget deveria vir vazio (nada de caixa "Top 3" zerada)');
-    assert.ok(out.widgetFilled > 100);
-  });
-
-  await test('widget mostra só o top 3 por valor, maior primeiro no pódio (2º-1º-3º)', () => {
+  await test('aba Doar renderiza sem erro; ranking mostra 5 e expande até 10 (sem widget flutuante)', () => {
     const r = evalIn(sandbox, `(() => {
-      state.donors = [
-        {id:'d1', name:'Fulano', amount:50},
-        {id:'d2', name:'Ciclana', amount:200},
-        {id:'d3', name:'Beltrano', amount:10},
-        {id:'d4', name:'Quarto Lugar', amount:5},
-      ];
-      const html = renderDonorWidget();
-      state.donors = [];
-      return html;
+      const out = {};
+      out.vazio = renderDoarTab().length;
+      state.donors = Array.from({length:12}, (_, i) => ({id:'d'+i, name:'Apoiador'+String(i+1).padStart(2,'0'), amount:1000 - i*10, active:true}));
+      state.rankingAberto = false; const f = renderDoarTabNovo();
+      state.rankingAberto = true; const a = renderDoarTabNovo();
+      state.donors = []; state.rankingAberto = false;
+      const n = h => new Set(h.match(/Apoiador[0-9][0-9]/g) || []).size;
+      return { vazio: out.vazio, fechado: n(f), aberto: n(a), botaoF: f.includes('id="rankingToggle"'), botaoA: a.includes('Mostrar menos'), widget: typeof renderDonorWidget };
     })()`);
-    assert.ok(r.includes('Ciclana'), 'maior doador deveria aparecer');
-    assert.ok(!r.includes('Quarto Lugar'), 'só top 3, o 4º não deveria aparecer');
-    // no HTML, o 2º lugar (Fulano) vem ANTES do 1º (Ciclana), que vem antes do 3º (Beltrano) — 2-1-3 no pódio
-    const iFulano = r.indexOf('Fulano'), iCiclana = r.indexOf('Ciclana'), iBeltrano = r.indexOf('Beltrano');
-    assert.ok(iFulano < iCiclana && iCiclana < iBeltrano, 'ordem do pódio deveria ser 2º, 1º, 3º');
+    assert.ok(r.vazio > 200);
+    assert.strictEqual(r.widget, 'undefined', 'widget flutuante foi removido');
+    assert.ok(r.botaoF && r.botaoA);
+    assert.ok(r.fechado >= 5 && r.fechado < r.aberto, 'fechado mostra o top 5, aberto vai além');
+    assert.ok(r.aberto >= 10 && !JSON.stringify(r).includes('Apoiador11'));
   });
 
   await test('adicionar e remover apoiador persiste no storage', async () => {
@@ -1422,19 +1400,17 @@ async function main(){
 
   await test('applyStoredValue aplica cada chave certinho em cima do state ao vivo', () => {
     const r = evalIn(sandbox, `(() => {
-      const backup = JSON.parse(JSON.stringify({team:state.team, tab:state.tab, favs:state.favs, collapsed:state.donorWidgetCollapsed}));
+      const backup = JSON.parse(JSON.stringify({team:state.team, tab:state.tab, favs:state.favs}));
       applyStoredValue('team_state', JSON.stringify({team:['a','b',null,null,null,null]}));
       applyStoredValue('favs', JSON.stringify(['x','y']));
-      applyStoredValue('donor_widget_collapsed', '1');
       applyStoredValue('ui_tab', 'guias');
       applyStoredValue('ui_tab', 'aba-que-nao-existe'); // chave inválida não deveria mudar nada
-      const out = {team: state.team, favs: state.favs, collapsed: state.donorWidgetCollapsed, tab: state.tab};
-      state.team = backup.team; state.tab = backup.tab; state.favs = backup.favs; state.donorWidgetCollapsed = backup.collapsed;
+      const out = {team: state.team, favs: state.favs, tab: state.tab};
+      state.team = backup.team; state.tab = backup.tab; state.favs = backup.favs;
       return out;
     })()`);
     assert.deepStrictEqual(r.team, ['a','b',null,null,null,null]);
     assert.deepStrictEqual(r.favs, ['x','y']);
-    assert.strictEqual(r.collapsed, true);
     assert.strictEqual(r.tab, 'guias', 'aba inválida não deveria ter sido aplicada, deveria continuar na última válida (guias)');
   });
 
