@@ -658,6 +658,30 @@ async function main(){
     assert.ok(r.iaOff, 'a IA está desligada até haver chave: sem texto de IA no painel');
   });
 
+  await test('Descreva o time usa times da Comunidade: descrição que fala do assunto, filtros respeitados', () => {
+    const r = evalIn(sandbox, `(() => {
+      const burners = state.characters.filter(c => descRelevance(c, parseTeamPrompt('queimadura')).rel > 0).slice(0, 6).map(c => c.id);
+      const homens = state.characters.filter(c => c.gender === 'Masculino').slice(0, 6).map(c => c.id);
+      const post = (id, title, desc, ids, likes) => ({ id, userId:'u'+id, kind:'team', data:{ team:[...ids, null, null, null, null, null, null].slice(0, 6), levels:{} }, title, desc, author:'Fulano', createdAt:'2026-10-17', likes, reports:0 });
+      const bak = state.communityPosts;
+      state.communityPosts = [
+        post('p1', 'Time do fogo', 'Time de burn: empilha queimadura e deixa o chefe derretendo', burners, 8),
+        post('p2', 'Time de homens', 'Só porrada no meio', homens, 3),
+        post('p3', 'Denunciado', 'queimadura queimadura', burners, 50),
+      ];
+      state.communityPosts[2].reports = 5;
+      const burn = descPostsParecidos(parseTeamPrompt('quero um time de burn'), 'quero um time de burn');
+      const fem = descPostsParecidos(parseTeamPrompt('quero um time feminino'), 'quero um time feminino');
+      const html = renderDescComunidade(burn);
+      state.communityPosts = bak;
+      return { ids: burn.map(b => b.post.id), falaDe: burn[0] && burn[0].falaDe, fem: fem.length, html: html.includes('Da Comunidade') && html.includes('data-desc-com="p1"') };
+    })()`);
+    assert.deepStrictEqual(r.ids, ['p1'], 'só o post cuja descrição/guerreiros combinam, sem o denunciado nem o de homens');
+    assert.ok(r.falaDe.includes('Queimadura'));
+    assert.strictEqual(r.fem, 0, 'time feminino não sugere time de homens');
+    assert.ok(r.html);
+  });
+
   console.log('\n[Doar / ranking de apoiadores]');
 
   await test('elenco padrão de doadores começa vazio (nunca inventar apoiador)', () => {

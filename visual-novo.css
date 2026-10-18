@@ -1375,3 +1375,6 @@ html.vis-novo .kz-mp-pixdica b{color:#FFC21A;}
 .kz-desc-whys{flex-basis:100%;display:flex;flex-wrap:wrap;gap:4px 18px;font-size:12.5px;color:#B9A998;}
 .kz-desc-why b{color:#FFE9CF;}
 .kz-desc-ia{margin:0;font-size:12.5px;color:#9a8c7e;}
+.kz-desc-com{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
+.kz-desc-com .kz-label{font-family:"Barlow Condensed",sans-serif;font-weight:900;font-style:italic;font-size:16px;text-transform:uppercase;color:#FF9A4D;}
+.kz-desc-postdesc{display:block;font-size:12.5px;color:#9a8c7e;font-style:italic;}

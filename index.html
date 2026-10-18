@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-Cj/OlLMqYbCWsSYp6Y98xFxrmhDm1Jc+E/N6UNNfxNY=' 'sha256-f+p+0OOQkg4GzdzZmWlmO28iTTfSW6yVx0wWSREMVa0='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-hEz6TAwjFI4W8PlX8yjM7qQwrtcmGfrrzsSgfyL95xk=' 'sha256-Gi+zoXWcyXn39nDp9e354XwHXQ0VSwagvPMyUQn5b38='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Zenkyo — guerreiros, combos e tier list</title>
@@ -7858,7 +7858,7 @@ function descLerTrecho(t){
   if(/ultimate/.test(t)){ crit.rars.push('SSR [Ultimate]'); crit.labels.push('Ultimate'); }
   return crit;
 }
-const DESC_PALAVRAS_SOLTAS = /^(time|equipe|quero|pra|para|com|sem|que|uma|uns|das|dos|ssr|tipo|forte|bom|jogo|cartas|monte|monta)$/;
+const DESC_PALAVRAS_SOLTAS = /^(time|times|equipe|equipes|quero|pra|para|com|sem|que|uma|uns|das|dos|ssr|tipo|forte|bom|jogo|cartas|monte|monta|montar|sobre|ajuda|jogar|alguem|fazer|alguma|melhor|possivel|inimigo|inimigos|pessoal)$/;
 function parseTeamPrompt(text){
   const t = descNorm(text);
   // "sem X": o que vem depois do marcador (até vírgula, "mas" ou "quero") é o que NÃO pode entrar
@@ -7962,7 +7962,9 @@ function buildDescribedTeams(crit, maxOptions){
     const o = autoObjective(team, mode);
     const ids = team.filter(Boolean);
     const rel = ids.reduce((s, id) => s + info.get(id).rel, 0) / Math.max(ids.length, 1);
-    return { ...o, rel, score: hasSoft ? 0.55 * rel + 0.45 * o.score : o.score };
+    const com = crit._com ? ids.reduce((s2, id) => s2 + Math.min(1, (crit._com.get(id) || 0) / 2), 0) / Math.max(ids.length, 1) : 0;
+    const sc = hasSoft ? 0.55 * rel + 0.45 * o.score : o.score;
+    return { ...o, rel, score: sc + 0.08 * com };   // times da Comunidade parecidos com o pedido dão um empurrãozinho
   };
   const steps = Math.min(6 - forced.length, pool.length - forced.length);
   let beam = [{ team:base, obj:objective(base) }];
@@ -8026,6 +8028,50 @@ async function pedirIADescricao(txt){
 // A IA (função ia-time no Supabase) está pronta, mas desligada: vira true quando houver chave da API configurada.
 const DESC_IA_ATIVA = false;
 function descIAdisponivel(){ return DESC_IA_ATIVA && !!(state.discordUser && window.__sb && window.__sb.client); }
+// Times da Comunidade que combinam com o pedido: pelo que a descrição/título fala, pelo que os guerreiros do time fazem e pelas curtidas.
+function descPostsParecidos(crit, texto){
+  const posts = (state.communityPosts || []).filter(p => p.kind === 'team' && (p.reports || 0) < 3);
+  if(!posts.length) return [];
+  const quer = new Set(crit.labels.filter(l => !/^sem /.test(l) && !/^Citado/.test(l)));
+  const palavras = descNorm(texto).split(/[^a-z0-9]+/).filter(w => w.length >= 5 && !DESC_PALAVRAS_SOLTAS.test(w));
+  const temSoft = !!(crit.mechs.length || crit.roles.length || crit.types.length);
+  const out = [];
+  posts.forEach(p => {
+    const team = communityTeamStats(p).team.filter(Boolean);
+    const chars = team.map(getChar).filter(Boolean);
+    if(chars.length < 2 || !chars.every(c => descHardOk(c, crit))) return;
+    const hay = descNorm(p.title + ' ' + p.desc);
+    const lido = new Set(descLerTrecho(hay).labels);
+    const falaDe = [...quer].filter(l => lido.has(l));
+    const palavrasHit = palavras.filter(w => hay.includes(w)).length;
+    const meanRel = temSoft ? chars.reduce((a, c) => a + descRelevance(c, crit).rel, 0) / chars.length : 0;
+    const texto01 = quer.size ? falaDe.length / quer.size : 0;
+    const score = 0.5 * texto01 + 0.35 * meanRel + Math.min(0.2, palavrasHit * 0.1) + Math.min(0.15, Math.log10(1 + (p.likes || 0)) * 0.1);
+    if(!falaDe.length && !palavrasHit && meanRel < 0.5) return;   // nem a descrição fala disso, nem os guerreiros fazem
+    if(score < 0.3) return;
+    out.push({ post:p, team, score, falaDe, palavrasHit, meanRel });
+  });
+  return out.sort((a, b) => b.score - a.score).slice(0, 3);
+}
+function descPostsBonus(coms){
+  const m = new Map();
+  coms.forEach(c => c.team.forEach(id => m.set(id, (m.get(id) || 0) + 1)));
+  return m;
+}
+function renderDescComunidade(coms){
+  if(!coms || !coms.length) return '';
+  const rows = coms.map(c => {
+    const minis = c.team.map(id => { const ch = getChar(id); return ch ? `<span class="kz-auto-mini" title="${escapeAttr(ch.name)}">${portraitInner(ch)}</span>` : ''; }).join('');
+    const motivo = c.falaDe.length ? `A descrição fala de: ${c.falaDe.map(escapeHtml).join(', ')}` : c.palavrasHit ? 'A descrição tem palavras do seu pedido' : 'Os guerreiros combinam com o pedido';
+    return `<div class="kz-auto-row">
+      <div class="kz-auto-row-team">${minis}</div>
+      <div class="kz-auto-row-info"><b>${escapeHtml(c.post.title)}</b>
+        <span>por ${escapeHtml(c.post.author)} · ♥ ${c.post.likes || 0} · ${motivo}</span>${c.post.desc ? `<span class="kz-desc-postdesc">“${escapeHtml(c.post.desc.length > 110 ? c.post.desc.slice(0, 110) + '…' : c.post.desc)}”</span>` : ''}</div>
+      <button type="button" class="kz-btn kz-btn-sm kz-btn-primary" data-desc-com="${escapeAttr(c.post.id)}">Usar</button>
+    </div>`;
+  }).join('');
+  return `<div class="kz-desc-com"><span class="kz-label">Da Comunidade</span><div class="kz-auto-rows">${rows}</div></div>`;
+}
 async function runDescribeTeam(text){
   const txt = String(text || '').trim().slice(0, 200);
   state.descText = txt;
@@ -8047,11 +8093,15 @@ async function runDescribeTeam(text){
     }catch(e){ console.error('Descreva o time: IA indisponível', e); state.descNota = 'A IA não respondeu agora. Usei a leitura simples.'; }
   }
   if(!crit) crit = parseTeamPrompt(txt);
-  if(crit.vazio){ state.descRes = { texto:txt, crit, vazio:true, list:[], ia:false }; render(); return; }
+  // ideias da Comunidade: carrega os posts se ainda não vieram
+  if(isSupabaseConfigured() && !state.communityLoaded && !state.communityLoading){ try{ await refreshCommunity(); }catch(e){} }
+  const coms = descPostsParecidos(crit, txt);
+  if(crit.vazio){ state.descRes = { texto:txt, crit, vazio:true, list:[], com:coms, ia:false }; render(); return; }
+  crit._com = descPostsBonus(coms);
   showToast('Montando o time…');
   setTimeout(() => {
     const r = buildDescribedTeams(crit, 3);
-    state.descRes = { texto:txt, crit, ...r, ia:viaIA };
+    state.descRes = { texto:txt, crit, ...r, com:coms, ia:viaIA };
     render();
   }, 30);
 }
@@ -8071,7 +8121,8 @@ function renderDescribePanel(){
   let out = '';
   if(r){
     if(r.vazio){
-      out = `<p class="kz-desc-msg warn">Não entendi o pedido. Fale de um efeito (queimadura, sangramento, atordoamento…), gênero, raça, afinidade, papel (tank, suporte, controle, dano) ou raridade.</p>`;
+      out = (r.com && r.com.length ? `<p class="kz-desc-msg">Não consegui montar um time só pelo texto, mas achei times parecidos na Comunidade:</p>`
+        : `<p class="kz-desc-msg warn">Não entendi o pedido. Fale de um efeito (queimadura, sangramento, atordoamento…), gênero, raça, afinidade, papel (tank, suporte, controle, dano) ou raridade.</p>`) + renderDescComunidade(r.com);
     } else {
       const chips = r.crit.labels.concat(r.crit.names.map(id => (getChar(id) || {}).name).filter(Boolean)).map(l => `<span class="kz-desc-chip">${escapeHtml(l)}</span>`).join('');
       const aviso = !r.list.length ? 'Nenhum guerreiro do elenco atende a esse conjunto de filtros.'
@@ -8079,7 +8130,8 @@ function renderDescribePanel(){
         : (!r.hasSoft && r.hardN < 6) ? `Só existem ${r.hardN} guerreiro${r.hardN === 1 ? '' : 's'} com esses filtros, então a equipe fica incompleta.` : '';
       out = `<div class="kz-desc-understood"><span>${r.ia ? '✦ IA entendeu:' : 'Entendi:'}</span>${chips}</div>
         ${aviso ? `<p class="kz-desc-msg warn">${aviso}</p>` : ''}
-        ${r.list.length ? `<div class="kz-auto-rows">${r.list.map((o, i) => renderDescOptionRow(o, i, r)).join('')}</div>` : ''}`;
+        ${r.list.length ? `<div class="kz-auto-rows">${r.list.map((o, i) => renderDescOptionRow(o, i, r)).join('')}</div>` : ''}
+        ${renderDescComunidade(r.com)}`;
     }
   }
   return `<section class="kz-desc" aria-label="Descreva o time">
@@ -9477,6 +9529,7 @@ function attachCombosHandlers(){
   if(descForm) descForm.addEventListener('submit', e=>{ e.preventDefault(); runDescribeTeam(document.getElementById('descInput').value); });
   view.querySelectorAll('[data-desc-ex]').forEach(b=>b.addEventListener('click', ()=> runDescribeTeam(b.dataset.descEx)));
   view.querySelectorAll('[data-desc-apply]').forEach(b=>b.addEventListener('click', ()=> applyDescOption(parseInt(b.dataset.descApply, 10))));
+  view.querySelectorAll('[data-desc-com]').forEach(b=>b.addEventListener('click', ()=> useCommunityTeam(b.dataset.descCom)));
   const descClear = document.getElementById('descClear');
   if(descClear) descClear.addEventListener('click', ()=>{ state.descText = ''; state.descRes = null; render(); });
   view.querySelectorAll('[data-auto-apply]').forEach(b=>b.addEventListener('click', ()=> applyAutoOption(parseInt(b.dataset.autoApply, 10))));
