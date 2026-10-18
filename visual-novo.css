@@ -1399,3 +1399,9 @@ html.vis-novo .kz-mp-pixdica b{color:#FFC21A;}
 .kz-nvc-ball.off img{filter:brightness(.22) saturate(.55);opacity:.9;}
 @keyframes kzNvGlowImg{0%,100%{filter:drop-shadow(0 0 4px rgba(255,140,30,.5));}50%{filter:drop-shadow(0 0 12px rgba(255,140,30,.95));}}
 html.nv-lite .kz-nvc-ball.lit{animation:none;}
+
+/* ---- Zen'oh: patente única do dono ---- */
+.kz-patente-badge.patente-zenoh{background:linear-gradient(110deg,#fff7cf,#ffe27a 45%,#fff 60%,#ffd24a);color:#4a3200;border-color:#fff3b0;box-shadow:0 0 14px rgba(255,236,150,.8);font-weight:900;letter-spacing:.04em;}
+.kz-donor-card.patente-zenoh{box-shadow:inset 0 0 0 2px #ffe27a,0 0 24px rgba(255,236,150,.55);}
+.kz-donor-patsel{display:flex;flex-direction:column;gap:6px;align-items:stretch;width:100%;max-width:320px;text-align:left;margin-top:6px;}
+.kz-donor-patsel select{width:100%;}

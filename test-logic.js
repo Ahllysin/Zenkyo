@@ -699,6 +699,35 @@ async function main(){
     assert.strictEqual(r.opcoes, r.lista.length + 1, 'Discord + uma opção por foto');
   });
 
+  await test("patente manual: o dono define a de qualquer um; Zen'oh é única, só da conta do dono e sempre em primeiro", () => {
+    const r = evalIn(sandbox, `(() => {
+      const donoAntes = window.ADMIN_DISCORD_ID, dono = donoAntes || 'dono-teste';
+      window.ADMIN_DISCORD_ID = dono;
+      const bak = state.donors;
+      const a = { id:'a', number:1, name:'Dono', amount:0, active:true, linkedUserId:dono, patenteManual:'zenoh', honras:[] };
+      const b = { id:'b', number:2, name:'Rico', amount:5000, active:true, linkedUserId:'outro', patenteManual:'', honras:[] };
+      const c = { id:'c', number:3, name:'Fraude', amount:10, active:true, linkedUserId:'outro', patenteManual:'zenoh', honras:[] };
+      const e = { id:'e', number:4, name:'Promovido', amount:5, active:true, linkedUserId:null, patenteManual:'ssj_blue', honras:[] };
+      state.donors = [b, c, e, a];
+      const ordem = sortedDonors().map(d => d.id).join(',');
+      const out = {
+        zenoh: patenteFor(a).key, auto: patenteFor(b).key, fraude: patenteFor(c).key, manual: patenteFor(e).key, numero: patenteFor(120).key,
+        badge: patenteBadgeHtml(a, '', null).includes('patente-zenoh') && patenteBadgeHtml(a, '', null).includes('Zen'),
+        ordem, selDono: donorPatenteSelectHtml(a).includes('value="zenoh"'), selOutro: donorPatenteSelectHtml(b).includes('value="zenoh"'),
+      };
+      state.donors = bak; window.ADMIN_DISCORD_ID = donoAntes;
+      return out;
+    })()`);
+    assert.strictEqual(r.zenoh, 'zenoh');
+    assert.strictEqual(r.auto, 'anjo', 'sem patente manual vale o valor acumulado');
+    assert.notStrictEqual(r.fraude, 'zenoh', "Zen'oh em conta que não é a do dono não vale");
+    assert.strictEqual(r.manual, 'ssj_blue', 'a patente manual substitui a automática (5 reais viram SSJ Blue)');
+    assert.strictEqual(r.numero, 'ssj_god', 'passar só o valor continua funcionando');
+    assert.ok(r.badge);
+    assert.ok(r.ordem.startsWith('a'), "Zen'oh sempre em primeiro, mesmo com valor 0");
+    assert.ok(r.selDono && !r.selOutro, "a opção Zen'oh só aparece para a conta do dono");
+  });
+
   console.log('\n[Doar / ranking de apoiadores]');
 
   await test('elenco padrão de doadores começa vazio (nunca inventar apoiador)', () => {

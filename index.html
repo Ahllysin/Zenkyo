@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-+mWSNBS+keAlVb8n7i3NOlzn3rPBezDgEK9RUEZ2LTQ=' 'sha256-Zl9hy+96koYXhLJQtRybRyM/SCB1xyMvkt3D5ttFX+Q='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-Hz3i+jLCe3Vy4aeRiJDDC9jU29qJ59Vw5aTf8XYYLKU=' 'sha256-qBR3ODTfdcTJLGRhb1jbF1qCmkhR95sbfxzm+9kmIZ8='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Zenkyo — guerreiros, combos e tier list</title>
@@ -1042,6 +1042,7 @@ input::placeholder,textarea::placeholder{color:var(--text-faint);}
 .patente-ultra{--pc:140,180,255;--pctx:#d7e6ff;}  /* cor padrão — a pessoa pode escolher outra no Perfil */
 .patente-deus_destruicao{--pc:139,95,191;--pctx:#c3aaf0;}
 .patente-anjo{--pc:232,241,255;--pctx:#ffffff;}
+.patente-zenoh{--pc:255,236,150;--pctx:#fffbe6;}
 .kz-com-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 .kz-com-chips{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .kz-com-sep{width:1px;height:22px;background:rgba(255,255,255,.2);margin:0 4px;}
@@ -8395,7 +8396,7 @@ function renderCommunityCardNovo(p){
   }
   return `
   <article class="kz-com-card kz-nvco" data-com-open="${escapeAttr(p.id)}" tabindex="0" role="button" aria-label="Abrir ${escapeAttr(p.title)}">
-    <div class="kz-nvco-who"><span class="av" aria-hidden="true">${escapeHtml(initials(p.author))}</span><div><span class="wn">${communityAuthorLink(p)}${donor ? ' ' + patenteBadgeHtml(donor.amount, '', linkedProfileFor(donor)) : ''}</span><span class="ws">${escapeHtml(communityAgo(p.createdAt))}</span></div><span class="kind${p.kind === 'team' ? '' : ' tl'}">${p.kind === 'team' ? 'Time' : 'Tier list'}</span></div>
+    <div class="kz-nvco-who"><span class="av" aria-hidden="true">${escapeHtml(initials(p.author))}</span><div><span class="wn">${communityAuthorLink(p)}${donor ? ' ' + patenteBadgeHtml(donor, '', linkedProfileFor(donor)) : ''}</span><span class="ws">${escapeHtml(communityAgo(p.createdAt))}</span></div><span class="kind${p.kind === 'team' ? '' : ' tl'}">${p.kind === 'team' ? 'Time' : 'Tier list'}</span></div>
     <h3 class="kz-nvco-pt">${escapeHtml(p.title)}</h3>
     ${corpo}
     ${p.desc ? `<p class="kz-nvco-desc">${escapeHtml(p.desc)}</p>` : ''}
@@ -8425,7 +8426,7 @@ function renderCommunityCard(p){
     ${renderCommunityPreview(p)}
     <div class="kz-com-card-top"><span class="kz-com-kind ${p.kind}">${p.kind === 'team' ? '連 Time' : '番 Tier List'}</span><span class="kz-com-likes">♥ ${p.likes}</span></div>
     <h3 class="kz-com-title">${escapeHtml(p.title)}</h3>
-    <div class="kz-com-card-by">${communityAuthorLink(p)}${donor ? ' ' + patenteBadgeHtml(donor.amount, '', linkedProfileFor(donor)) : ''}<span class="kz-com-ago">${escapeHtml(communityAgo(p.createdAt))}</span></div>
+    <div class="kz-com-card-by">${communityAuthorLink(p)}${donor ? ' ' + patenteBadgeHtml(donor, '', linkedProfileFor(donor)) : ''}<span class="kz-com-ago">${escapeHtml(communityAgo(p.createdAt))}</span></div>
   </article>`;
 }
 // Tela do post: time/tier list completos + ações.
@@ -8455,7 +8456,7 @@ function renderCommunityDetail(p){
     <article class="kz-panel kz-com-detail" data-com-id="${escapeAttr(p.id)}">
       <header class="kz-com-head">
         <span class="kz-com-kind ${p.kind}">${p.kind === 'team' ? '連 Time' : '番 Tier List'}</span>
-        <span class="kz-com-by">por ${communityAuthorLink(p)}${donor ? ' ' + patenteBadgeHtml(donor.amount, '', linkedProfileFor(donor)) : ''}<span class="kz-com-ago">${escapeHtml(communityAgo(p.createdAt))}</span></span>
+        <span class="kz-com-by">por ${communityAuthorLink(p)}${donor ? ' ' + patenteBadgeHtml(donor, '', linkedProfileFor(donor)) : ''}<span class="kz-com-ago">${escapeHtml(communityAgo(p.createdAt))}</span></span>
       </header>
       <h1 class="kz-com-detail-title">${escapeHtml(p.title)}</h1>
       ${p.desc ? `<p class="kz-com-desc">${escapeHtml(p.desc)}</p>` : ''}
@@ -8487,7 +8488,7 @@ function communityProfileModalHtml(userId){
       <div class="modal-body" style="align-items:center;text-align:center;">
         <span class="kz-donor-avatar" style="width:72px;height:72px;font-size:24px;">${donorAvatarInner(name)}</span>
         <div class="kz-pill-row" style="justify-content:center;">
-          ${donor ? patenteBadgeHtml(donor.amount, '', linked) : ''}
+          ${donor ? patenteBadgeHtml(donor, '', linked) : ''}
           ${donor && (donor.honras || []).length ? donor.honras.map(honraBadgeHtml).join('') : ''}
           ${me ? '<span class="kz-com-me-tag">Esse é você</span>' : ''}
         </div>
@@ -10186,13 +10187,21 @@ function formatBRL(n){
   return 'R$ ' + Number(n||0).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
 }
 // Mural público: só quem está ativo (devolução total desativa o apoio). A aba Admin pede com incluirInativos para ver todos.
-function sortedDonors(incluirInativos){ return state.donors.filter(d=> incluirInativos || d.active !== false).sort((a,b)=> b.amount - a.amount); }
+function sortedDonors(incluirInativos){ return state.donors.filter(d=> incluirInativos || d.active !== false).sort((a,b)=> (isZenoh(b) - isZenoh(a)) || (b.amount - a.amount)); }
 function donorAvatarInner(name){
   return `<span class="avatar-fallback" style="width:100%;height:100%;font-size:inherit;">${initials(name)}</span>`;
 }
 // Patente é sempre calculada do valor acumulado (nunca escolhida à mão) — quem doou mais
 // sobe sozinho, "ser ultrapassado rebaixa" igual no site de referência.
-function patenteFor(amount){
+// Patente única do criador do site: não existe por valor nenhum, só o dono pode ter (o banco também garante isso).
+const PATENTE_ZENOH = { key:'zenoh', min:Infinity, label:"Zen'oh", desc:'Acima de tudo e de todos. A patente única do criador do Zenkyo — ninguém mais pode ter.', unica:true };
+function isZenoh(d){ return !!(d && typeof d === 'object' && d.patenteManual === 'zenoh' && (!window.ADMIN_DISCORD_ID || d.linkedUserId === window.ADMIN_DISCORD_ID)); }
+// Aceita o apoiador (usa a patente manual, se o dono tiver definido) ou só o valor acumulado.
+function patenteFor(x){
+  const obj = x && typeof x === 'object' ? x : null;
+  const amount = obj ? obj.amount : x;
+  if(isZenoh(obj)) return PATENTE_ZENOH;
+  if(obj && obj.patenteManual && obj.patenteManual !== 'zenoh'){ const m = PATENTES.find(p => p.key === obj.patenteManual); if(m) return m; }
   let cur = PATENTES[0];
   for(const p of PATENTES){ if(amount >= p.min) cur = p; }
   return cur;
@@ -10206,7 +10215,7 @@ function patenteColorVars(hex){
 }
 // Patente + o que a própria pessoa escolheu no Perfil: forma (Ultra Instinto/Ultra Ego/Beast) ou cor (Anjo).
 function patenteLook(amount, prof){
-  const p = patenteFor(amount);
+  const p = patenteFor(amount);   // 'amount' pode ser o apoiador inteiro
   let label = p.label, style = '';
   if(p.forms && prof && p.forms.includes(prof.patenteForma)) label = prof.patenteForma;
   if(p.customColor) style = patenteColorVars(patenteHex(prof && prof.patenteCor) || p.defaultColor);
@@ -10341,7 +10350,7 @@ async function refreshDonorsRemote(){
     state.donors = (data||[]).map(row=>({
       id: row.id, number: row.number, name: row.name, amount: Number(row.amount)||0,
       quote: row.quote||'', discord: row.discord||'', link: row.link||'',
-      honras: row.honras||[], active: row.active !== false, linkedUserId: row.user_id||null,
+      honras: row.honras||[], active: row.active !== false, linkedUserId: row.user_id||null, patenteManual: row.patente_manual||'',
     }));
     state.nextDonorNumber = state.donors.reduce((m,d)=>Math.max(m, d.number||0), 0) + 1;
     // Total real do próprio login (só ele enxerga as próprias doações) — usado no limite de times da Comunidade.
@@ -10461,7 +10470,7 @@ function myDonorEntry(){
 function patenteChoiceHtml(p){
   const d = myDonorEntry();
   if(!d) return '';
-  const pat = patenteFor(d.amount);
+  const pat = patenteFor(d);
   let extra = '';
   if(pat.forms){
     const cur = pat.forms.includes(p.patenteForma) ? p.patenteForma : pat.forms[0];
@@ -10488,7 +10497,7 @@ function renderPerfilTab(){
   const avatarChar = PROFILE_CHAR_AVATAR ? state.characters.find(c=>c.id===p.avatarCharId) : null;
   const bioLen = (p.bio||'').length;
   const myDonor = myDonorEntry();
-  const myLook = myDonor ? patenteLook(myDonor.amount, p) : { p: PATENTES[0], label: PATENTES[0].label, style: '' };
+  const myLook = myDonor ? patenteLook(myDonor, p) : { p: PATENTES[0], label: PATENTES[0].label, style: '' };
   if(visualNovo()){   // formato do canvas: formulário à esquerda, prévia em fogo à direita (mesmos ids dos campos)
     const nome = p.nickname || state.discordUser.username;
     const discordAv = state.discordUser.avatarUrl ? `<img src="${escapeAttr(state.discordUser.avatarUrl)}" alt="" data-onerr="hide">` : donorAvatarInner(nome);
@@ -10534,7 +10543,7 @@ function renderPerfilTab(){
             ${nvTtl(nome)}
           </div>
           ${p.servidor ? `<span class="kz-nvpf-srv">Servidor ${escapeHtml(p.servidor)}</span>` : ''}
-          ${myDonor ? patenteBadgeHtml(myDonor.amount, '', p) : ''}
+          ${myDonor ? patenteBadgeHtml(myDonor, '', p) : ''}
           ${p.bio ? `<p class="kz-nvpf-quote">“${escapeHtml(p.bio)}”</p>` : ''}
           ${redes ? `<span class="kz-nvpf-srv sm">${redes}</span>` : ''}
         </div>
@@ -10596,7 +10605,7 @@ function renderPerfilTab(){
           <span class="kz-donor-name">${escapeHtml(p.nickname || state.discordUser.username)}</span>
           ${p.servidor ? `<span class="kz-donate-note" style="margin:0;">${escapeHtml(p.servidor)}</span>` : ''}
         </div>
-        ${myDonor ? patenteBadgeHtml(myDonor.amount, '', p) : ''}
+        ${myDonor ? patenteBadgeHtml(myDonor, '', p) : ''}
         ${p.bio ? `<div class="kz-profile-quote">"${escapeHtml(p.bio)}"</div>` : ''}
         ${p.showSocials && (p.instagram||p.twitch||p.youtube) ? `<div class="kz-donate-note">${[p.instagram,p.twitch,p.youtube].filter(Boolean).map(escapeHtml).join(' · ')}</div>` : ''}
       </div>
@@ -10783,6 +10792,7 @@ const NV_PATENTE_LOOK = {
   ssj:['#FFD23F','rgba(255,210,63,.9)','#FFE9A8'], ssj_god:['#E0401F','rgba(224,64,31,.9)','#FF9A8A'],
   ssj_blue:['#2F7DEB','rgba(47,125,235,.9)','#8EC0FF'], ultra:['#8CB4FF','rgba(215,230,255,.9)','#D7E6FF'],
   deus_destruicao:['#8B5FBF','rgba(139,95,191,.9)','#C3AAF0'], anjo:['#FFFFFF','rgba(232,241,255,.9)','#FFFFFF'],
+  zenoh:['#FFF4C2','rgba(255,236,150,.95)','#FFFFFF'],
 };
 // Pódio da Aliança Z: 2º, 1º e 3º lugar (lugar vazio = "Livre").
 function nvPodiumHtml(list){
@@ -10825,7 +10835,7 @@ ${mpDoacaoHtml()}
       </div>
     </div>
     <section class="kz-nvd-sec">
-      <div><h2 class="kz-nvd-h2">${nvTtl('Patentes')}</h2><p class="kz-nvd-sub">Sobe conforme o apoio acumulado — do Guerreiro Z ao Anjo.</p></div>
+      <div><h2 class="kz-nvd-h2">${nvTtl('Patentes')}</h2><p class="kz-nvd-sub">Sobe conforme o apoio acumulado — do Guerreiro Z ao Anjo. Existe ainda uma patente única, <b>Zen'oh</b>, que só o criador do site tem.</p></div>
       <div class="kz-nvd-pats">
         ${PATENTES.map((p, i)=>{
           const [aura, glow, cor] = NV_PATENTE_LOOK[p.key] || ['#FF6A13','rgba(255,106,19,.8)','#FFF4E6'];
@@ -10939,7 +10949,7 @@ ${mpDoacaoHtml()}
 
 function renderDonorCard(d, i){
   const prof = linkedProfileFor(d);
-  const look = patenteLook(d.amount, prof);
+  const look = patenteLook(d, prof);
   const p = look.p;
   const name = (prof && prof.nickname) || d.name;
   const avatarChar = PROFILE_CHAR_AVATAR && prof && prof.avatarCharId ? state.characters.find(c=>c.id===prof.avatarCharId) : null;
@@ -10949,7 +10959,7 @@ function renderDonorCard(d, i){
     <span class="kz-donor-avatar">${avatarChar ? portraitInner(avatarChar) : avatarFotoOr(prof, donorAvatarInner(name))}</span>
     <span class="kz-donor-name">${escapeHtml(name)}</span>
     ${prof && prof.servidor ? `<span class="kz-donate-note" style="margin:0;">${escapeHtml(prof.servidor)}</span>` : ''}
-    ${patenteBadgeHtml(d.amount, '', prof)}
+    ${patenteBadgeHtml(d, '', prof)}
     ${(d.honras||[]).length ? `<span class="kz-donor-honras">${d.honras.map(k=>HORRA_GLYPH(k)).join('')}</span>` : ''}
   </button>`;
 }
@@ -10960,8 +10970,28 @@ function HORRA_GLYPH(key){
 
 // HTML puro do popup de perfil, sem tocar no DOM — separado só pra dar pra testar
 // (sandbox de teste não tem document de verdade) e reusar se precisar em outro lugar.
+// Só o dono vê: define a patente de qualquer apoiador (Automática = pelo valor acumulado). Zen'oh só aparece para a conta do dono.
+function donorPatenteSelectHtml(d){
+  const opts = [['', 'Automática (pelo valor)']].concat(PATENTES.map(p => [p.key, p.label]));
+  if(!window.ADMIN_DISCORD_ID || d.linkedUserId === window.ADMIN_DISCORD_ID) opts.push(['zenoh', PATENTE_ZENOH.label + ' (única)']);
+  return `<div class="kz-donor-patsel"><label class="kz-nvpf-lb" for="donorPatenteSelect">Patente (só você vê este controle)</label>
+    <select id="donorPatenteSelect">${opts.map(([k, l]) => `<option value="${escapeAttr(k)}" ${(d.patenteManual || '') === k ? 'selected' : ''}>${escapeHtml(l)}</option>`).join('')}</select></div>`;
+}
+async function setDonorPatente(id, key){
+  const d = state.donors.find(x => x.id === id);
+  if(!d || !isDonorAdmin()) return;
+  if(key === 'zenoh' && window.ADMIN_DISCORD_ID && d.linkedUserId !== window.ADMIN_DISCORD_ID){ showToast("Zen'oh é só da conta do dono."); return; }
+  d.patenteManual = key || '';
+  saveDonors();
+  render();
+  if(isSupabaseConfigured()){
+    const { error } = await window.__sb.client.rpc('admin_definir_patente', { p_id: id, p_patente: key || null });
+    if(error){ console.error('Patente não sincronizou', error); showToast('Salvo só neste aparelho — não consegui sincronizar com a nuvem'); return; }
+  }
+  showToast('Patente atualizada');
+}
 function donorProfileModalHtml(d){
-  const p = patenteFor(d.amount);
+  const p = patenteFor(d);
   const prof = linkedProfileFor(d);
   const name = (prof && prof.nickname) || d.name;
   const avatarChar = PROFILE_CHAR_AVATAR && prof && prof.avatarCharId ? state.characters.find(c=>c.id===prof.avatarCharId) : null;
@@ -10978,8 +11008,9 @@ function donorProfileModalHtml(d){
         <span class="kz-donor-avatar" style="width:72px;height:72px;font-size:24px;">${avatarChar ? portraitInner(avatarChar) : avatarFotoOr(prof, donorAvatarInner(name))}</span>
         <span class="kz-donor-number">Nº ${d.number}</span>
         ${prof && prof.servidor ? `<div class="kz-donate-note">${escapeHtml(prof.servidor)}</div>` : ''}
-        ${patenteBadgeHtml(d.amount, '', prof)}
+        ${patenteBadgeHtml(d, '', prof)}
         <div class="kz-donate-note" style="max-width:320px;">${escapeHtml(p.desc)}</div>
+        ${isDonorAdmin() ? donorPatenteSelectHtml(d) : ''}
         ${quote ? `<div class="kz-profile-quote">"${escapeHtml(quote)}"</div>` : ''}
         ${(d.honras||[]).length ? `<div class="kz-pill-row" style="justify-content:center;">${d.honras.map(honraBadgeHtml).join('')}</div>` : ''}
         ${d.discord ? `<div class="kz-donate-note">Discord: ${escapeHtml(d.discord)}</div>` : ''}
@@ -11000,6 +11031,8 @@ function renderDonorProfileModal(){
   root.innerHTML = donorProfileModalHtml(d);
   document.getElementById('closeDonorProfileBtn').addEventListener('click', closeDonorProfile);
   document.getElementById('donorProfileOverlay').addEventListener('click', e=>{ if(e.target.id==='donorProfileOverlay') closeDonorProfile(); });
+  const patSel = document.getElementById('donorPatenteSelect');
+  if(patSel) patSel.addEventListener('change', ()=> setDonorPatente(d.id, patSel.value));
   const rm = document.getElementById('removeDonorProfileBtn');
   if(rm) rm.addEventListener('click', ()=>{
     customConfirm(`Remover "${d.name}" da Aliança Z?`, ()=>{
@@ -11149,7 +11182,7 @@ function renderAdminTab(){
       <h2 class="kz-nva-h2">Mural e apoiadores <small>${noMural} no mural</small></h2>
       <div class="kz-nva-aviso kz-nva-dica">Aqui você adiciona apoios recebidos por fora (Pix direto, por exemplo), concede Honras e ajusta quem já está. Clique num nome para abrir o perfil e editar ou remover.</div>
       ${donors.length ? `<div class="kz-nva-mural">${donors.map(d=>{
-        const prof = linkedProfileFor(d), look = patenteLook(d.amount, prof);
+        const prof = linkedProfileFor(d), look = patenteLook(d, prof);
         return `<button type="button" class="kz-nva-ap" data-open-donor="${escapeAttr(d.id)}"><b>${escapeHtml((prof && prof.nickname) || d.name)}</b><span>${formatBRL(d.amount)} · ${escapeHtml(look.p.label)}${d.active === false ? ' · fora do mural' : ''}</span></button>`;
       }).join('')}</div>` : ''}
       ${renderDonorAdminHtml()}
