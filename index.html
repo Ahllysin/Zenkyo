@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-bP5RZZXI9OlQjlcKppChcMgGChRn8EYMEIxHCOoG4Jo=' 'sha256-dPebcmKtzDrwNbP0yjQ0bMqtMZqb4GEOyY2YEXO7OX4='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018=' 'sha256-rih29ljJz7wnrL4o1PMbsmgHw/HzsKEPbuqKvZ8agPo=' 'sha256-lIJ2O4T3cMtLRg+8H6221R4YDlE5yuK86cH4OCM16N8='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Zenkyo — guerreiros, combos e tier list</title>
@@ -9748,15 +9748,33 @@ function mpDoacaoHtml(){
 }
 // Ao voltar do Mercado Pago: abre a aba Doar com o aviso e limpa o endereço (o registro de verdade vem do webhook).
 function applyDoacaoRetorno(){
-  let r = null;
-  try{ r = new URLSearchParams(location.search).get('doacao'); }catch(e){}
+  let r = null, pid = '';
+  try{
+    const q = new URLSearchParams(location.search);
+    r = q.get('doacao');
+    pid = String(q.get('payment_id') || q.get('collection_id') || '').replace(/\D/g, '');   // o Mercado Pago devolve o número do pagamento
+  }catch(e){}
   if(!r || !MP_RETORNOS[r]) return;
   state.tab = 'doar';
   state.mpRetorno = r;
   try{ history.replaceState(null, '', location.pathname + location.hash); }catch(e){}
+  if(pid.length >= 6) confirmarRetornoMP(pid);
   if(r === 'aprovada' && typeof setTimeout === 'function'){
     [5000, 15000].forEach(ms=> setTimeout(()=>{ Promise.resolve(refreshDonorsRemote()).then(()=>{ if(state.tab === 'doar') render(); }).catch(()=>{}); }, ms));
   }
+}
+// Segundo caminho, independente do webhook: a função mp-retorno NÃO confia no número da volta; consulta o pagamento no
+// próprio Mercado Pago e só então lança o apoio no mural. Roda sozinha, sem ninguém clicar em nada.
+async function confirmarRetornoMP(pid){
+  const rodar = async ()=>{
+    try{
+      const { data, error } = await window.__sb.client.functions.invoke('mp-retorno', { body: { pagamento: pid } });
+      if(error) throw error;
+      if(data && data.status === 'approved'){ await refreshDonorsRemote(); if(state.tab === 'doar') render(); }
+    }catch(e){ console.error('Não consegui confirmar o pagamento na volta', e); }
+  };
+  if(window.__sb && window.__sb.client) return rodar();
+  window.addEventListener('supabase-ready', rodar, { once:true });
 }
 // Pede à Edge Function (Checkout Pro) a preference da doação. Devolve { init_point } ou null (o erro aparece no bloco).
 async function criarPreferenceMP(funcao){
