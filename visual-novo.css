@@ -1440,3 +1440,8 @@ html.nv-lite .kz-nvc-ball.lit{animation:none;}
 /* arrastando com o dedo: nada de selecionar texto nem menu de segurar */
 [draggable="true"]{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;}
 html.kz-touch-drag,html.kz-touch-drag body{overscroll-behavior:contain;}
+
+/* ---- busca por texto de habilidade: trecho com a palavra destacada no cartão ---- */
+.kz-card-hit{margin-top:6px;font-size:12px;line-height:1.35;color:#C9B8A6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.kz-card-hit b{color:#FF9A4D;font-weight:800;margin-right:3px;}
+.kz-card-hit mark{background:rgba(255,194,26,.28);color:#FFE9A8;padding:0 2px;border-radius:2px;}

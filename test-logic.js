@@ -848,6 +848,25 @@ async function main(){
     assert.ok(/\.kz-slot, \.kz-nv-lineup\.edit \.ln/.test(app), 'as casas da faixa usam os mesmos handlers das casas de baixo');
   });
 
+  await test('busca acha pelo texto das habilidades (sem acento/maiúscula, a partir de 3 letras), mostra o trecho e põe quem tem no nome primeiro', () => {
+    const r = evalIn(sandbox, `(() => {
+      const bak = state.filters.search;
+      const q = t => { state.filters.search = t; return getFilteredChars().map(c => c.name); };
+      const bloqueio = q('bloqueio'), maiusc = q('BLOQUEIO'), curta = q('ab'), vegeta = q('vegeta');
+      const c0 = state.characters.find(c => c.name === bloqueio[0]);
+      const trecho = buscaTrecho(c0, 'bloqueio');
+      state.filters.search = 'bloqueio'; const html = renderCharCardNovo(c0); state.filters.search = 'vegeta';
+      const nome = state.characters.find(c => c.name === vegeta[0]); const semTrecho = renderCharCardNovo(nome);
+      state.filters.search = bak;
+      return { n: bloqueio.length, igual: bloqueio.join() === maiusc.join(), curta: curta.length, vegeta: vegeta.slice(0, 3), trecho: trecho && trecho.rot, html: html.includes('kz-card-hit') && html.includes('<mark>'), semTrecho: !semTrecho.includes('kz-card-hit'), total: state.characters.length };
+    })()`);
+    assert.ok(r.n >= 5 && r.n < r.total, 'bloqueio acha vários guerreiros, não todos (' + r.n + ')');
+    assert.ok(r.igual, 'maiúscula não muda o resultado');
+    assert.ok(r.curta < r.total, 'busca de 2 letras não varre o texto das habilidades');
+    assert.ok(r.vegeta.every(n => /Vegeta|Vegetto/.test(n)), 'quem tem o nome no resultado vem antes: ' + r.vegeta.join());
+    assert.ok(r.trecho && r.html && r.semTrecho, 'o cartão mostra o trecho só quando achou pelo texto da habilidade');
+  });
+
   await test('build em dia: ?v= dos arquivos, versão do offline, uma página por guerreiro e sitemap (rode node build.js)', () => {
     const { execFileSync } = require('child_process');
     try{ execFileSync(process.execPath, [require('path').join(__dirname, 'build.js'), '--check'], { stdio:'pipe' }); }

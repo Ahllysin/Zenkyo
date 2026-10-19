@@ -893,15 +893,60 @@ function effectBadgeRow(effArr){
   if(!effArr || !effArr.length) return `<span style="font-size:10px;color:var(--text-faint)">—</span>`;
   return effArr.map(effectBadge).join('');
 }
+/* ---------- Busca: nome, tags, nomes das habilidades E o texto das habilidades ----------
+   "bloqueio" acha todo guerreiro que tem a palavra no kit (habilidade, suprema, passivas, combinado, em qualquer estágio). Sem acento
+   e sem diferença de maiúscula. O texto das habilidades só entra a partir de 3 letras (senão qualquer "a" acharia todo mundo). */
+const _buscaCache = new Map();
+function buscaNorm(x){ return String(x || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
+const BUSCA_ROTULOS = { habilidade:'Habilidade', suprema:'Suprema', passivaUnica:'Passiva única', passivasSupremo:'Passiva', passivaQuatroEstrelas:'Passiva ★4', combinado:'Ataque combinado', passiva:'Passiva', lr:'LR', skill:'Habilidade', supreme:'Suprema', combo:'Ataque combinado' };
+function charTextoBusca(c){
+  const p = ABILITY_PROGRESSION[c.name];
+  const chave = c.id + '|' + c.name + '|' + (c.skill && c.skill.desc || '').length + '|' + (c.supreme && c.supreme.desc || '').length;
+  const hit = _buscaCache.get(chave);
+  if(hit) return hit;
+  const nomes = buscaNorm([c.name, ...(c.tags || []), c.skill && c.skill.name, c.supreme && c.supreme.name, c.combo && c.combo.name,
+    ...(p ? [p.habilidade && p.habilidade.base && p.habilidade.base.nome, p.suprema && p.suprema.base && p.suprema.base.nome] : []),
+    ...(((c.combo && c.combo.triggers) || []).concat((c.combo && c.combo.effects) || [])).map(e => EFFECT_LABELS[e])].filter(Boolean).join(' '));
+  const textos = [], vistos = new Set();
+  const add = (rot, txt) => { const t = String(txt || '').trim(); if(t.length < 8 || vistos.has(t)) return; vistos.add(t); textos.push({ rot, txt: t, norm: buscaNorm(t) }); };
+  const anda = (o, rot) => {
+    if(!o || typeof o !== 'object') return;
+    if(Array.isArray(o)){ o.forEach(x => anda(x, rot)); return; }
+    if(typeof o.desc === 'string') add(rot, o.desc);
+    Object.keys(o).forEach(k => { if(o[k] && typeof o[k] === 'object') anda(o[k], BUSCA_ROTULOS[k] || rot); });
+  };
+  if(p) Object.keys(p).forEach(k => anda(p[k], BUSCA_ROTULOS[k] || k));
+  ['skill', 'supreme', 'combo', 'passive'].forEach(k => { if(c[k]) add(BUSCA_ROTULOS[k], c[k].desc); });
+  const r = { nomes, textos };
+  _buscaCache.set(chave, r);
+  return r;
+}
+function charMatchesText(c, q){
+  q = buscaNorm(q).trim();
+  if(!q) return true;
+  const b = charTextoBusca(c);
+  return b.nomes.includes(q) || (q.length >= 3 && b.textos.some(t => t.norm.includes(q)));
+}
+// Quando o guerreiro só apareceu por causa do texto de uma habilidade: qual habilidade e o trecho (com a palavra destacada).
+function buscaTrecho(c, q){
+  q = buscaNorm(q).trim();
+  if(q.length < 3) return null;
+  const b = charTextoBusca(c);
+  if(b.nomes.includes(q)) return null;
+  const t = b.textos.find(x => x.norm.includes(q));
+  if(!t) return null;
+  const i = t.norm.indexOf(q), ini = Math.max(0, i - 38), fim = Math.min(t.txt.length, i + q.length + 62);
+  const pre = (ini > 0 ? '…' : '') + t.txt.slice(ini, i), meio = t.txt.slice(i, i + q.length), pos = t.txt.slice(i + q.length, fim) + (fim < t.txt.length ? '…' : '');
+  return { rot: t.rot, html: escapeHtml(pre) + '<mark>' + escapeHtml(meio) + '</mark>' + escapeHtml(pos) };
+}
+function buscaTrechoHtml(c){
+  const q = state.filters && state.filters.search;
+  const h = q ? buscaTrecho(c, q) : null;
+  return h ? `<div class="kz-card-hit"><b>${escapeHtml(h.rot)}</b> ${h.html}</div>` : '';
+}
 function matchesFilters(c){
   const f = state.filters;
-  if(f.search){
-    const s = f.search.toLowerCase();
-    const p = ABILITY_PROGRESSION[c.name];
-    const baseNames = p ? [p.habilidade && p.habilidade.base && p.habilidade.base.nome, p.suprema && p.suprema.base && p.suprema.base.nome] : [];
-    const hay = [c.name, ...c.tags, c.skill.name, c.supreme.name, c.combo.name, ...baseNames, ...((c.combo.triggers||[]).concat(c.combo.effects||[])).map(e=>EFFECT_LABELS[e])].filter(Boolean).join(' ').toLowerCase();
-    if(!hay.includes(s)) return false;
-  }
+  if(f.search && !charMatchesText(c, f.search)) return false;
   if(f.rarity && rarityLabel(c.rarity) !== f.rarity) return false;
   if(f.type && c.type !== f.type) return false;
   if(f.affinity && c.affinity !== f.affinity) return false;
@@ -914,7 +959,12 @@ function hasActiveFilters(){
   return !!(f.search || f.rarity || f.type || f.affinity || f.element || sfCount(state.sf.chars));
 }
 function getFilteredChars(){
-  return sortByRarity(state.characters.filter(matchesFilters));
+  const lista = sortByRarity(state.characters.filter(matchesFilters));
+  const q = buscaNorm(state.filters.search).trim();
+  if(!q) return lista;
+  // quem tem o termo no nome/tags/nome das habilidades vem antes de quem só tem no texto da habilidade
+  const porNome = lista.filter(c => charTextoBusca(c).nomes.includes(q));
+  return porNome.concat(lista.filter(c => !porNome.includes(c)));
 }
 function allTags(){
   const s = new Set();
@@ -1619,7 +1669,7 @@ function renderCharsTabNovo(chars, hero){
           <label class="kz-nv-lb" for="searchInput" style="display:block;margin-bottom:10px">Buscar</label>
           <div class="kz-nv-search"><span class="kz-nv-scan" aria-hidden="true"></span><div>
             <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFC21A" stroke-width="2.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>
-            <input type="text" id="searchInput" placeholder="Nome, tag ou habilidade…" value="${escapeAttr(f.search)}" autocomplete="off">
+            <input type="text" id="searchInput" placeholder="Nome, tag ou texto da habilidade…" value="${escapeAttr(f.search)}" autocomplete="off">
           </div></div>
         </div>
         ${(()=>{   // celular (canvas): botão Filtros + raridade e tipo numa linha que rola; o resto abre no botão
@@ -1665,6 +1715,7 @@ function renderCharCardNovo(c){
     <div class="kz-card-body">
       <div class="kz-card-name">${escapeHtml(c.name)||'(sem nome)'}</div>
       <div class="kz-card-meta">${nvMetaHtml(c)}</div>
+      ${buscaTrechoHtml(c)}
     </div>
   </div>`;
 }
@@ -2485,7 +2536,7 @@ function renderCollectionTabNovo(){
       <div class="kz-nv-search sm"><span class="kz-nv-scan" aria-hidden="true"></span><div>
         <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFC21A" stroke-width="2.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>
         <label for="collSearch" class="kz-sr">Buscar personagem</label>
-        <input type="text" id="collSearch" placeholder="Buscar personagem…" value="${escapeAttr(state.collectionSearch||'')}" autocomplete="off">
+        <input type="text" id="collSearch" placeholder="Buscar personagem ou habilidade…" value="${escapeAttr(state.collectionSearch||'')}" autocomplete="off">
       </div></div>
       <div class="kz-nv-switchwrap">
         <button type="button" class="kz-nv-switch${on ? ' on' : ''}" id="collOnlyOwned" role="switch" aria-checked="${on}" aria-labelledby="collOnlyOwnedLbl"><span></span></button>
@@ -2544,7 +2595,7 @@ function renderCollectionTab(){
     </div>
     <div class="kz-filter-panel">
       <div class="kz-filter-top">
-        <input type="text" class="kz-input" id="collSearch" placeholder="Buscar personagem…" value="${escapeAttr(state.collectionSearch||'')}">
+        <input type="text" class="kz-input" id="collSearch" placeholder="Buscar personagem ou habilidade…" value="${escapeAttr(state.collectionSearch||'')}">
         <button class="kz-owned-toggle ${on?'on':''}" id="collOnlyOwned"><span class="box">${on?'✓':''}</span><span>Só adquiridos</span></button>
       </div>
       ${COLL_FILTER_GROUPS.map(([label,key,vals])=>`
@@ -2605,7 +2656,7 @@ function renderCollectionCard(c){
 
 function getFilteredCollectionChars(){
   const q = (state.collectionSearch||'').toLowerCase();
-  let chars = state.characters.filter(c => !q || c.name.toLowerCase().includes(q));
+  let chars = state.characters.filter(c => !q || charMatchesText(c, q));
   if(state.collectionOnlyOwned) chars = chars.filter(c => getEntry(c.id).owned);
   if(state.collectionType) chars = chars.filter(c => c.type === state.collectionType);
   if(state.collectionAffinity) chars = chars.filter(c => c.affinity === state.collectionAffinity);
@@ -4831,7 +4882,7 @@ function renderCombosTabNovo(){
         <div class="kz-nv-search sm"><div>
           <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFC21A" stroke-width="2.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>
           <label for="rosterSearch" class="kz-sr">Buscar no elenco</label>
-          <input type="text" id="rosterSearch" placeholder="Buscar personagem…" value="${escapeAttr(state.rosterSearch)}" autocomplete="off">
+          <input type="text" id="rosterSearch" placeholder="Buscar personagem ou habilidade…" value="${escapeAttr(state.rosterSearch)}" autocomplete="off">
         </div></div>
         ${renderSF('roster')}
         <div class="kz-roster-grid" id="rosterList">${renderRosterList(state.rosterSearch)}</div>
@@ -4881,7 +4932,7 @@ function renderCombosTab(){
     <div class="kz-combos-layout">
       <aside class="kz-panel kz-roster">
         <div class="kz-roster-head"><span class="kz-label">Elenco</span><span class="kz-roster-hint">${hint}</span></div>
-        <input type="text" class="kz-input" id="rosterSearch" placeholder="Buscar personagem…" value="${escapeAttr(state.rosterSearch)}">
+        <input type="text" class="kz-input" id="rosterSearch" placeholder="Buscar personagem ou habilidade…" value="${escapeAttr(state.rosterSearch)}">
         ${renderSF('roster')}
         <div class="kz-roster-grid" id="rosterList">${renderRosterList(state.rosterSearch)}</div>
       </aside>
@@ -4911,7 +4962,7 @@ function renderCombosTab(){
 
 function renderRosterList(filterText){
   const q = (filterText||'').toLowerCase();
-  const filtrados = sortByRarity(state.characters.filter(c=>(!q || c.name.toLowerCase().includes(q) || c.tags.some(t=>t.toLowerCase().includes(q))) && matchSF(c, state.sf.roster)));
+  const filtrados = sortByRarity(state.characters.filter(c=>(!q || charMatchesText(c, q)) && matchSF(c, state.sf.roster)));
   // quem já está em campo vem primeiro (na ordem das casas), o resto segue por raridade
   const naFormacao = state.team.map(id => filtrados.find(c => c.id === id)).filter(Boolean);
   const chars = naFormacao.concat(filtrados.filter(c => !state.team.includes(c.id)));
