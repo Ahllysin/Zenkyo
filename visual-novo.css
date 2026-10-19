@@ -1425,3 +1425,18 @@ html.nv-lite .kz-nvc-ball.lit{animation:none;}
   html.vis-novo .kz-header-discord-btn .kz-discord-txt{display:none;}
   html.vis-novo .kz-header-discord-btn svg{width:22px;height:22px;}
 }
+
+/* ---- formação editável (aba Combos) ---- */
+.kz-nv-lineup.edit .ln{cursor:pointer;}
+.kz-nv-lineup.edit .ln.filled{cursor:grab;}
+.kz-nv-lineup.edit .ln.dragging{opacity:.35;}
+.kz-nv-lineup.edit .ln.drag-over{filter:brightness(1.35) drop-shadow(0 0 10px #FFC21A);transform:translateY(-4px);}
+.kz-nv-lineup.edit .ln[data-sel="1"]::after{content:'';position:absolute;inset:0;border:2px dashed #FFC21A;clip-path:polygon(0 0,100% 0,100% 79%,0 100%);pointer-events:none;}
+.kz-nv-lineup.edit .ln-x{position:absolute;right:2px;top:6px;width:28px;height:28px;border:0;border-radius:50%;background:rgba(10,6,6,.85);color:#FFC21A;font:700 20px/1 'Barlow Condensed',sans-serif;box-shadow:inset 0 0 0 1.5px #FF6A13;cursor:pointer;opacity:0;transition:opacity .15s;z-index:2;}
+.kz-nv-lineup.edit .ln:hover .ln-x,.kz-nv-lineup.edit .ln:focus-within .ln-x{opacity:1;}
+.kz-nv-lineup.edit .ln-x:hover{background:#E8261B;color:#fff;}
+@media (hover:none){ .kz-nv-lineup.edit .ln-x{opacity:1;width:26px;height:26px;} }
+.kz-nv-lineup.edit .ln.empty:hover::before{background:rgba(255,106,19,.28);}
+/* arrastando com o dedo: nada de selecionar texto nem menu de segurar */
+[draggable="true"]{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;}
+html.kz-touch-drag,html.kz-touch-drag body{overscroll-behavior:contain;}

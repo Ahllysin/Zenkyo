@@ -344,6 +344,93 @@ document.addEventListener('dragend', dragScrollStop, true);
 document.addEventListener('drop', dragScrollStop, true);
 let dragTierItemId = null;          // character id currently being dragged in the tier list
 
+/* ---------- Arrastar com o dedo ----------
+   O navegador do celular não dispara dragstart/dragover/drop (isso só existe com mouse). Aqui, segurar o dedo num elemento
+   com draggable="true" por ~0,25 s começa o arrasto: aparece uma cópia sob o dedo, a tela rola perto das bordas e, ao soltar,
+   os MESMOS handlers do mouse (Tier List, casas do Montador, elenco, Comunidade) recebem os eventos simulados.
+   Mexer o dedo antes disso é rolar a página normalmente. */
+(function touchDragDrop(){
+  if(typeof document === 'undefined' || typeof document.addEventListener !== 'function') return;
+  const ESPERA = 260, FOLGA = 10;
+  let origem = null, dt = null, fantasma = null, ativo = false, timer = 0, x0 = 0, y0 = 0, sobre = null, aceita = false, ignoraClique = 0;
+  const novoDT = () => {
+    const d = {};
+    return { effectAllowed:'all', dropEffect:'move', types:[], files:[], items:[],
+      setData(t, v){ d[t] = String(v); if(!this.types.includes(t)) this.types.push(t); }, getData(t){ return d[t] || ''; },
+      clearData(){ Object.keys(d).forEach(k => delete d[k]); this.types = []; }, setDragImage(){} };
+  };
+  function disparar(el, tipo, x, y){
+    const ev = new Event(tipo, { bubbles:true, cancelable:true });
+    Object.defineProperty(ev, 'dataTransfer', { value: dt });
+    Object.defineProperty(ev, 'clientX', { value: x });
+    Object.defineProperty(ev, 'clientY', { value: y });
+    el.dispatchEvent(ev);
+    return ev;
+  }
+  function limpar(){
+    clearTimeout(timer); timer = 0;
+    if(fantasma && fantasma.parentNode) fantasma.parentNode.removeChild(fantasma);
+    fantasma = null; ativo = false; origem = null; dt = null; sobre = null; aceita = false;
+    document.documentElement.classList.remove('kz-touch-drag');
+  }
+  function comeca(x, y){
+    if(!origem) return;
+    dt = novoDT();
+    const ev = disparar(origem, 'dragstart', x, y);
+    if(ev.defaultPrevented){ limpar(); return; }
+    ativo = true;
+    const r = origem.getBoundingClientRect();
+    fantasma = origem.cloneNode(true);
+    fantasma.removeAttribute('id');
+    Object.assign(fantasma.style, { position:'fixed', left:r.left + 'px', top:r.top + 'px', width:r.width + 'px', height:r.height + 'px', margin:'0', zIndex:'99999',
+      pointerEvents:'none', opacity:'.88', transform:'scale(1.06)', boxShadow:'0 10px 30px rgba(0,0,0,.6)', transition:'none' });
+    fantasma._dx = x - r.left; fantasma._dy = y - r.top;
+    document.body.appendChild(fantasma);
+    document.documentElement.classList.add('kz-touch-drag');
+    try{ if(navigator.vibrate) navigator.vibrate(12); }catch(e){}
+  }
+  document.addEventListener('touchstart', e => {
+    if(e.touches.length !== 1){ limpar(); return; }
+    const alvo = e.target && e.target.closest ? e.target.closest('[draggable="true"]') : null;
+    if(!alvo) return;
+    limpar();
+    origem = alvo; const t = e.touches[0]; x0 = t.clientX; y0 = t.clientY;
+    timer = setTimeout(() => comeca(x0, y0), ESPERA);
+  }, { passive:true });
+  document.addEventListener('touchmove', e => {
+    const t = e.touches[0];
+    if(!ativo){
+      if(timer && Math.hypot(t.clientX - x0, t.clientY - y0) > FOLGA) limpar();   // era rolagem, não arrasto
+      return;
+    }
+    e.preventDefault();   // arrastando: a página não rola com o dedo (a rolagem perto das bordas vem do dragover)
+    fantasma.style.left = (t.clientX - fantasma._dx) + 'px'; fantasma.style.top = (t.clientY - fantasma._dy) + 'px';
+    const alvo = document.elementFromPoint(t.clientX, t.clientY);
+    if(alvo !== sobre){
+      if(sobre) disparar(sobre, 'dragleave', t.clientX, t.clientY);
+      if(alvo) disparar(alvo, 'dragenter', t.clientX, t.clientY);
+      sobre = alvo;
+    }
+    aceita = !!(alvo && disparar(alvo, 'dragover', t.clientX, t.clientY).defaultPrevented);
+  }, { passive:false });
+  function termina(cancelado, e){
+    if(!ativo){ limpar(); return; }
+    const t = e && e.changedTouches && e.changedTouches[0];
+    const x = t ? t.clientX : x0, y = t ? t.clientY : y0;
+    const alvoFinal = sobre;
+    if(!cancelado && alvoFinal && aceita) disparar(alvoFinal, 'drop', x, y);
+    else if(alvoFinal) disparar(alvoFinal, 'dragleave', x, y);
+    const o = origem;
+    ignoraClique = Date.now() + 450;      // o toque que solta não pode virar clique
+    disparar(o, 'dragend', x, y);
+    limpar();
+  }
+  document.addEventListener('touchend', e => { if(ativo) e.preventDefault(); termina(false, e); }, { passive:false });
+  document.addEventListener('touchcancel', e => termina(true, e), { passive:true });
+  document.addEventListener('click', e => { if(Date.now() < ignoraClique){ e.stopPropagation(); e.preventDefault(); } }, true);
+  document.addEventListener('contextmenu', e => { if(timer || ativo) e.preventDefault(); });
+})();
+
 let loaded = false;
 
 /* ======================= STORAGE ======================= */
@@ -1099,12 +1186,15 @@ function nvTtl(text, attrs){
   return `<span class="kz-nv-ttl"${attrs || ''}><span class="o" aria-hidden="true">${t}</span><span class="k" aria-hidden="true">${t}</span><span class="w">${t}</span></span>`;
 }
 // Formação do time em faixas (casa 1 a 6). Faixas em faixas/<slug>.webp (gerar-artes.py); sem faixa, entra a carta recortada.
-function nvLineupHtml(team, small){
+// edit = true (aba Combos): a faixa também é um editor — arraste para trocar de casa, toque no × para tirar, toque numa vaga vazia para escolher.
+function nvLineupHtml(team, small, edit){
   const names = (team || []).map(id => (getChar(id) || {}).name).filter(Boolean);
-  return `<div class="kz-nv-lineup${small ? ' sm' : ''}" role="img" aria-label="Formação: ${escapeAttr(names.join(', ') || 'vazia')}">${[0,1,2,3,4,5].map(i => {
+  const alvo = edit ? '' : ` role="img" aria-label="Formação: ${escapeAttr(names.join(', ') || 'vazia')}"`;
+  return `<div class="kz-nv-lineup${small ? ' sm' : ''}${edit ? ' edit' : ''}"${alvo}>${[0,1,2,3,4,5].map(i => {
     const c = team && team[i] && getChar(team[i]);
-    return c ? `<span class="ln"><img src="${faixaSrc(c)}" alt="" draggable="false" data-onerr="cut" data-card="${portraitSrc(c)}"><b>${i+1}</b></span>`
-             : `<span class="ln empty"><i>+</i><b>${i+1}</b></span>`;
+    const ed = edit ? ` data-slot="${i}"${state.slotSel === i ? ' data-sel="1"' : ''}` : '';
+    if(c) return `<span class="ln${edit ? ' filled' : ''}"${ed}${edit ? ' draggable="true"' : ''}${edit ? ` title="${escapeAttr('Casa ' + (i + 1) + ' — ' + c.name + ' (arraste para mudar de casa)')}"` : ''}><img src="${faixaSrc(c)}" alt="" draggable="false" data-onerr="cut" data-card="${portraitSrc(c)}"><b>${i+1}</b>${edit ? `<button type="button" class="ln-x" data-remove-slot="${i}" aria-label="Tirar ${escapeAttr(c.name)} da formação" title="Tirar da formação">×</button>` : ''}</span>`;
+    return `<span class="ln empty"${ed}${edit ? ` role="button" tabindex="0" aria-label="${'Escolher guerreiro para a casa ' + (i + 1)}"` : ''}><i>+</i><b>${i+1}</b></span>`;
   }).join('')}</div>`;
 }
 // Depois de cada render, com a prévia ligada: título em pincel (data-text alimenta as camadas do CSS), topo com fogo
@@ -4756,7 +4846,7 @@ function renderCombosTabNovo(){
           <button type="button" class="kz-btn kz-btn-primary kz-sim-open" id="openSimBtn"><span class="glyph">連</span><span>Ver combos</span><span class="cnt">${filledCount}/6</span></button>
         </div>
         ${renderAutoBar()}
-        ${nvLineupHtml(team)}
+        ${nvLineupHtml(team, false, true)}
         ${filledCount ? `<div class="kz-nvcb-stats">${nvComboCountHtml(team)}${nvCompositionHtml(team)}</div>` : ''}
         ${state.optInfo && canUndoOptimize() ? `<div class="kz-opt-info">${state.optInfo}</div>` : ''}
         ${nvSynergyListHtml(team)}
@@ -4821,7 +4911,10 @@ function renderCombosTab(){
 
 function renderRosterList(filterText){
   const q = (filterText||'').toLowerCase();
-  const chars = sortByRarity(state.characters.filter(c=>(!q || c.name.toLowerCase().includes(q) || c.tags.some(t=>t.toLowerCase().includes(q))) && matchSF(c, state.sf.roster)));
+  const filtrados = sortByRarity(state.characters.filter(c=>(!q || c.name.toLowerCase().includes(q) || c.tags.some(t=>t.toLowerCase().includes(q))) && matchSF(c, state.sf.roster)));
+  // quem já está em campo vem primeiro (na ordem das casas), o resto segue por raridade
+  const naFormacao = state.team.map(id => filtrados.find(c => c.id === id)).filter(Boolean);
+  const chars = naFormacao.concat(filtrados.filter(c => !state.team.includes(c.id)));
   if(!chars.length) return `<div class="kz-muted" style="grid-column:1/-1;font-size:13px;">Nenhum guerreiro encontrado.</div>`;
   return chars.map(c=>{
     const at = state.team.indexOf(c.id);
@@ -5222,7 +5315,7 @@ function attachCombosHandlers(){
   const undoOpt = document.getElementById('undoOptBtn');
   if(undoOpt) undoOpt.addEventListener('click', undoOptimizeTeam);
 
-  view.querySelectorAll('.kz-slot').forEach(slot=>{
+  view.querySelectorAll('.kz-slot, .kz-nv-lineup.edit .ln').forEach(slot=>{
     slot.addEventListener('click', e=>{
       if(e.target.closest('[data-remove-slot]')) return;
       if(dragSlotIdx !== null) return; // clique logo depois de arrastar

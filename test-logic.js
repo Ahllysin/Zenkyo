@@ -827,6 +827,27 @@ async function main(){
     assert.ok(/kz-header-discord-btn \.kz-discord-txt\{display:none;\}/.test(css), 'no celular o Discord é só o ícone');
   });
 
+  await test('Combos: formação do topo editável (arrastar, × e vaga vazia) e quem está em campo sobe no elenco; arrastar com o dedo existe', () => {
+    const fs = require('fs'), path = require('path');
+    const r = evalIn(sandbox, `(() => {
+      const bak = [...state.team];
+      const ids = state.characters.slice(0, 3).map(c => c.id);
+      state.team = [null, ids[2], null, ids[0], null, null];
+      const edit = nvLineupHtml(state.team, false, true), leitura = nvLineupHtml(state.team);
+      const ordem = renderRosterList('').match(/data-id="([^"]+)"/g).slice(0, 3).map(x => x.slice(9, -1));
+      state.team = bak;
+      return { ids, edit, leitura, ordem };
+    })()`);
+    assert.strictEqual((r.edit.match(/draggable="true"/g) || []).length, 2, 'só as casas ocupadas arrastam');
+    assert.strictEqual((r.edit.match(/data-remove-slot=/g) || []).length, 2, 'um × por guerreiro');
+    assert.strictEqual((r.edit.match(/class="ln empty"/g) || []).length, 4, 'as 4 vagas vazias aceitam toque');
+    assert.ok(!/data-remove-slot|draggable="true"/.test(r.leitura), 'a faixa de leitura (Comunidade) continua sem editar');
+    assert.deepStrictEqual(r.ordem.slice(0, 2), [r.ids[2], r.ids[0]], 'quem está em campo vem primeiro, na ordem das casas');
+    const app = fs.readFileSync(path.join(__dirname, 'js', 'app.js'), 'utf8');
+    assert.ok(/touchDragDrop/.test(app) && /addEventListener\('touchstart'/.test(app) && /dispatchEvent/.test(app) && /'dragstart'/.test(app), 'o arrasto com o dedo (Tier List, casas, elenco) está ligado');
+    assert.ok(/\.kz-slot, \.kz-nv-lineup\.edit \.ln/.test(app), 'as casas da faixa usam os mesmos handlers das casas de baixo');
+  });
+
   await test('build em dia: ?v= dos arquivos, versão do offline, uma página por guerreiro e sitemap (rode node build.js)', () => {
     const { execFileSync } = require('child_process');
     try{ execFileSync(process.execPath, [require('path').join(__dirname, 'build.js'), '--check'], { stdio:'pipe' }); }
