@@ -116,7 +116,7 @@
           "estrelas": 1,
           "tipo": "Ativar",
           "desc": "[Artes Marciais] Ataca uma coluna inimiga, reduz a Velocidade de Recuperação de Ki dos alvos em 50% (1 turno), ganha [Escudo de Energia] (40% de chance de reduzir o dano direto recebido em 25%, removível, dura 1 turno); se o alvo for [Saiyajin], o dano aumenta em 30%; aumenta a própria Velocidade de Recuperação de Ki em 15% (1 turno).",
-          "dano": "160%+15 (3 unidades inimigas aleatórias)",
+          "dano": "160%+15",
           "icone": "ability-icons/Limitado e Lenda/Full_Power_Jiren/Skill.png"
         },
         "max": {
@@ -124,7 +124,7 @@
           "estrelas": 3,
           "tipo": "Despertar",
           "desc": "[Corpo a Corpo] Ataca uma coluna, reduz a recuperação de Fúria de todos os alvos em 50% (1 turno). 30% do dano é convertido em PV. Ganha [Escudo de Energia] (50% de chance de reduzir o dano direto em 30%, dissipável, 1 turno). +40% de dano a Saiyajins. +25% de recuperação de Fúria (1 turno).",
-          "dano": "175%+15 (3 unidades inimigas aleatórias)",
+          "dano": "175%+15",
           "icone": "ability-icons/Limitado e Lenda/Full_Power_Jiren/Skill.png"
         }
       },
@@ -2858,7 +2858,7 @@
           "estrelas": 1,
           "tipo": "Ativar",
           "desc": "[Artes Marciais] Ao ser danificado, Bardock armazena 50% do dano direto recebido (não conta dano ao longo do tempo, máx. de 7x o Ataque, não é zerado ao morrer, dano excedente não é armazenado), ataca um único inimigo priorizando o último atacante, liberando 70% do dano armazenado como dano extra.",
-          "dano": "360%+20 (todas as unidades inimigas)",
+          "dano": "360%+20",
           "icone": "ability-icons/SSR,SR e R/SSR_18_Bardock_Quebrador_do_Tempo/Ultimate.png"
         },
         "max": {
@@ -2866,7 +2866,7 @@
           "estrelas": 5,
           "tipo": "Despertar (dourada)",
           "desc": "[Artes Marciais] Ao ser danificado, Bardock armazena 50% do dano direto recebido (não conta dano ao longo do tempo, máx. de 7x o Ataque, não é zerado ao morrer, dano excedente não é armazenado), ataca um único inimigo priorizando o último atacante, liberando 90% do dano armazenado como dano extra.",
-          "dano": "380%+20 (todas as unidades inimigas)",
+          "dano": "380%+20",
           "icone": "ability-icons/SSR,SR e R/SSR_18_Bardock_Quebrador_do_Tempo/Ultimate.png"
         },
         "smax": {
@@ -2874,7 +2874,7 @@
           "estrelas": 5,
           "tipo": "Despertar (azul)",
           "desc": "[Corpo a Corpo] Bardock armazena 50% do dano direto sofrido (máx. 7x o ATQ, persiste após a morte). Ataca um único inimigo: +15% de dano contra não-Saiyajins. Inflige [Ferida Mortal] (-70% de cura, 1 turno). Prioriza o último atacante. Causa 120% do dano armazenado como dano bônus.",
-          "dano": "400%+20 (todas as unidades inimigas)",
+          "dano": "400%+20",
           "icone": "ability-icons/SSR,SR e R/SSR_18_Bardock_Quebrador_do_Tempo/Ultimate.png"
         }
       },
@@ -6909,7 +6909,7 @@
           "estrelas": 5,
           "tipo": "Despertar (dourada)",
           "desc": "[ATQ Especial] Ataca um único inimigo, aumenta a própria Taxa de Dano em 25%, a Taxa de Redução de Dano em 15% e a Taxa de Crít. em 15%. Se o alvo principal estiver na Fileira da Frente, causa 30% de dano em área aos alvos da Fileira de Trás. Ganha 15 de [Poder Limite] adicionais. Tem chance de consumir todo o [Poder Limite] (1% de chance por ponto) para ativar [Crítico Limite]. Se [Crítico Limite] não ativar, reduz 200 de Fúria do alvo, reduz seu ATQ em 20% e sua Taxa de Crít. em 20% (1 turno). [Poder Limite]: máx. 100 pontos. Cada ponto concede 0,5% de ATQ. [Crítico Limite]: aumenta o dano deste ataque em 50%.",
-          "dano": "ATQ x100%+25 (mesma linha final da base)",
+          "dano": "ATQ x100%+25",
           "icone": "ability-icons/Ultimate/SSR_Ultimate_01_Gohan_BEAST/Ultimate.png"
         },
         "smax": {
@@ -7367,14 +7367,14 @@
           "tipo": "Ativar",
           "desc": "[ATQ Físico] Aumenta a própria Taxa de Dano e Taxa de Redução de Dano em 20%. Ataca uma fileira inimiga, com 70% de chance de aplicar [Queimadura]. Se possuir uma [Marca de Chamas], consome 1 para causar dano adicional igual a 10% do PV Máx. do alvo. Se a [Energia de Chamas] exceder 30%, consome 30% dela para causar dano adicional igual a 30% da [Energia de Chamas] consumida (dividido entre todos os alvos). Armazena 15% do dano total causado (sem excedente) por este Supremo como [Energia de Chamas]. [Queimadura]: sofre dano igual a 25% do ATQ do lançador no início de cada turno. Cada acúmulo reduz os efeitos de cura em 10%, máx. 10 acúmulos, dura 2 turnos.",
           "icone": "ability-icons/Limitado e Lenda/SSG_Trunks/Ultimate.png",
-          "dano": "220%+18 (alvos em uma fileira)"
+          "dano": "220%+18"
         },
         "max": {
           "nome": "MAX. Corte de Fogo Flamejante",
           "estrelas": 5,
           "tipo": "Despertar (dourada)",
           "desc": "[ATQ Físico] Aumenta a própria Taxa de Dano e Taxa de Redução de Dano em 25%. Ataca uma fileira inimiga, com 70% de chance de aplicar [Queimadura]. Causa dano adicional igual a <Taxa de Crítico própria> * ATQ (máx. 50% do ATQ) em alvos com [Queimadura]. Se possuir uma [Marca de Chamas], consome 1 para causar dano adicional igual a 10% do PV Máx. do alvo. Se a [Energia de Chamas] exceder 30%, consome 30% dela para causar dano adicional igual a 30% da [Energia de Chamas] consumida (dividido entre todos os alvos). Armazena 15% do dano total causado (sem excedente) por este Supremo como [Energia de Chamas]. [Queimadura]: sofre dano igual a 25% do ATQ do lançador no início de cada turno. Cada acúmulo reduz os efeitos de cura em 10%, máx. 10 acúmulos, dura 2 turnos.",
-          "dano": "240%+18 (alvos em uma fileira)",
+          "dano": "240%+18",
           "icone": "ability-icons/Limitado e Lenda/SSG_Trunks/Ultimate.png"
         },
         "smax": {
@@ -7382,7 +7382,7 @@
           "estrelas": 5,
           "tipo": "Despertar (azul)",
           "desc": "[ATQ Físico] Aumenta a própria Taxa de Dano e Taxa de Redução de Dano em 30%. Ataca uma fileira inimiga, com 70% de chance de aplicar [Queimadura]. Causa dano adicional igual a <150% * Taxa de Crítico própria> * ATQ (máx. 80% do ATQ) em alvos com [Queimadura]. Se possuir uma [Marca de Chamas], consome 1 para causar dano adicional igual a 12% do PV Máx. do inimigo. Se a [Energia de Chamas] exceder 30%, consome 30% dela para causar dano adicional igual a 30% da [Energia de Chamas] consumida (dividido entre todos os alvos). Armazena 20% do dano total causado (sem excedente) por este Supremo como [Energia de Chamas]. [Queimadura]: sofre dano igual a 25% do ATQ do lançador no início de cada turno. Cada acúmulo reduz os efeitos de cura em 10%, máx. 10 acúmulos, dura 2 turnos. [Efeito Passivo]: aumenta em 1 o número de usos de [Contra-ataque Flamejante] por turno. Cada [Contra-ataque Flamejante] aumenta a Taxa de Crítico deste ataque em 80% e causa dano adicional igual a 12% do PV Máx. próprio.",
-          "dano": "240%+18 (alvos em uma fileira)",
+          "dano": "240%+18",
           "icone": "ability-icons/Limitado e Lenda/SSG_Trunks/Ultimate.png"
         }
       },
@@ -8104,7 +8104,7 @@
           "estrelas": 1,
           "tipo": "Ativar",
           "desc": "[Ataque Especial] Ataca uma fileira de inimigos, com 60% de chance de causar [Derrubada] e 60% de chance de infligir [Encanto] no alvo principal. Tem 30% de chance de infligir [Encanto] nos demais alvos. Para cada inimigo em campo afetado por [Encanto], o dano desta habilidade aumenta em 10% (máx. 60%). [Encanto]: reduz a Velocidade de Recuperação de Fúria e o ATQ em 15%, dura 2 turnos. Durante esse tempo, sempre que o alvo age (exceto ataques de sequência e habilidades especiais), restaura 3% do PV da Towa e 30 de Fúria (máx. 15 vezes por turno). A própria Towa é imune a [Encanto].",
-          "dano": "145%+8 (alvos em uma fileira)",
+          "dano": "145%+8",
           "icone": "ability-icons/Limitado e Lenda/Towa/Skill.png"
         },
         "max": {
@@ -8112,7 +8112,7 @@
           "estrelas": 3,
           "tipo": "Despertar",
           "desc": "Ataca um único inimigo, aumenta a própria Resistência a Crítico e Cura em 30%. +30% de dano se o alvo estiver [Preso], espalha [Prisão] para um inimigo aleatório (1 turno). Por 2 turnos: aliados do tipo Ataque recebem 40% do dano (o próprio recebe 60% a menos de dano compartilhado). Quando o PV da Towa estiver abaixo de 30%, recebe 100% a menos de dano compartilhado. Aumenta em 50 a Fúria ganha pelos aliados do tipo Ataque ao serem atingidos. Causa [Elevação Alta].",
-          "dano": "145%+8 (alvos em uma fileira)",
+          "dano": "145%+8",
           "icone": "ability-icons/Limitado e Lenda/Towa/Skill.png"
         }
       },
@@ -8122,7 +8122,7 @@
           "estrelas": 1,
           "tipo": "Ativar",
           "desc": "[Ataque Especial] Aumenta o próprio ATQ e DEF em 20%. Ataca uma fileira inimiga. Tem 70% de chance de infligir [Encanto] em 1 alvo atingido aleatório. Se um alvo com [Encanto] for atingido, a Taxa de Crítico deste ataque aumenta em 30%. Em seguida, dissipa os efeitos de [Controle] de 1 guerreiro aliado aleatório (incluindo efeitos avançados de [Controle] como [Confusão], com seleção prioritária).",
-          "dano": "200%+15 (alvos em uma coluna)",
+          "dano": "200%+15",
           "icone": "ability-icons/Limitado e Lenda/Towa/Ultimate.png"
         },
         "max": {
@@ -8130,7 +8130,7 @@
           "estrelas": 5,
           "tipo": "Despertar (dourada)",
           "desc": "[Ataque Especial] Aumenta o próprio ATQ e DEF em 30%. Ataca uma fileira inimiga. Tem 70% de chance de infligir [Encanto] em 1 alvo atingido aleatório. Se não houver alvos com [Encanto] em campo, a chance sobe para 100%. Se um alvo com [Encanto] for atingido, a Taxa de Crítico deste ataque aumenta em 30%. Em seguida, dissipa os efeitos de [Controle] de 1 guerreiro aliado aleatório (incluindo efeitos avançados de [Controle] como [Confusão], com seleção prioritária). [Encanto]: reduz a Velocidade de Recuperação de Fúria e o ATQ em 15%, dura 2 turnos. Durante esse tempo, sempre que o alvo age (exceto ataques de sequência e habilidades especiais), restaura 3% do PV da Towa e 30 de Fúria (máx. 12 vezes por turno). A própria Towa é imune a [Encanto].",
-          "dano": "300%+15 (alvos em uma coluna)",
+          "dano": "300%+15",
           "icone": "ability-icons/Limitado e Lenda/Towa/Ultimate.png"
         },
         "smax": {
@@ -8138,7 +8138,7 @@
           "estrelas": 5,
           "tipo": "Despertar (azul)",
           "desc": "[Ataque Especial] Aumenta o próprio ATQ e DEF em 35%. Para cada inimigo em campo afetado por [Encanto], o dano desta habilidade aumenta em 10% (máx. 50%). Ataca uma fileira inimiga. Tem 70% de chance de infligir [Encanto] em 1 alvo atingido aleatório. Se não houver alvos com [Encanto] em campo, a chance sobe para 100%. Se um alvo com [Encanto] for atingido, a Taxa de Crítico deste ataque aumenta em 40%. Em seguida, dissipa os efeitos de [Controle] de 1 guerreiro aliado aleatório (incluindo efeitos avançados de [Controle] como [Confusão], com seleção prioritária). Se houver um alvo na fileira inimiga com proporção de PV abaixo de 40%, muda para um Supremo de alvo único, mirando a unidade da fileira inimiga com menor proporção de PV e causando dano adicional igual a 25% do PV perdido dela. Tem 70% de chance de infligir [Encanto]. Se o alvo já estiver sob [Encanto], a Taxa de Crítico deste ataque aumenta em 40%. Em seguida, dissipa os efeitos de [Controle] de 1 guerreiro aliado aleatório (incluindo efeitos avançados de [Controle] como [Confusão], com seleção prioritária). Efeito de [Encanto] Aprimorado: reduz a Velocidade de Recuperação de Fúria e o ATQ em 20%, reduz o dano causado ao [Encantador] em 20%, aumenta o dano sofrido do [Encantador] em 20%, dura 2 turnos. Durante esse tempo, sempre que o alvo age (exceto ataques de sequência e habilidades especiais), restaura 5% do PV da Towa e 50 de Fúria (máx. 12 vezes por turno). A própria Towa é imune a [Encanto].",
-          "dano": "300%+15 (alvos em uma coluna) / 420%+24 (alvo único)",
+          "dano": "300%+15 (fileira) / 420%+24 (alvo único)",
           "icone": "ability-icons/Limitado e Lenda/Towa/Ultimate.png"
         }
       },
@@ -8336,7 +8336,7 @@
           "estrelas": 1,
           "tipo": "Ativar",
           "desc": "[Ataque Especial] Aumenta o próprio ATQ e DEF em 15%, ataca uma fileira inimiga aleatória, 70% de chance de aplicar [Chamas Azuis] ao(s) alvo(s) e renova a duração de todas as [Chamas Azuis] nos inimigos para 2 turnos. O dano deste Supremo aumenta conforme o número de [Chamas Azuis] em campo (até +20%), causa [Derrubada]. [Chamas Azuis]: reduz o dano de Supremo recebido em 15%. No início do turno, causa dano igual a 50% do ATQ do lançador. Toda vez que o alvo realiza uma ação (exceto perseguições), restaura uma pequena quantidade de Fúria para Kefla. Dura 2 turnos. Enquanto sob [Chamas Azuis], todos os efeitos de [Queimadura] são aprimorados para [Chama do Karma] (tratada como [Queimadura]), causando dano igual a 4% do PV Máx. do alvo no início de cada turno.",
-          "dano": "280%+15 (alvos em uma fileira)",
+          "dano": "280%+15",
           "icone": "ability-icons/Limitado e Lenda/Kefla/Ultimate.png"
         },
         "max": {
@@ -8344,7 +8344,7 @@
           "estrelas": 5,
           "tipo": "Despertar (dourada)",
           "desc": "[Ataque Especial] Aumenta o próprio ATQ e DEF em 20%, ataca uma fileira inimiga aleatória, 70% de chance de aplicar [Chamas Azuis] ao(s) alvo(s) e renova a duração de todas as [Chamas Azuis] nos inimigos para 2 turnos. O dano deste Supremo aumenta conforme o número de [Chamas Azuis] em campo (até +30%). Se a fileira alvo tiver apenas 1 inimigo, causa 30% de dano adicional, causa [Derrubada]. [Chamas Azuis]: reduz o dano de Supremo recebido em 15%. No início do turno, causa dano igual a 50% do ATQ do lançador. Toda vez que o alvo realiza uma ação (exceto perseguições), restaura uma pequena quantidade de Fúria para Kefla. Dura 2 turnos. Enquanto sob [Chamas Azuis], todos os efeitos de [Queimadura] são aprimorados para [Chama do Karma] (tratada como [Queimadura]), causando dano igual a 4% do PV Máx. do alvo no início de cada turno.",
-          "dano": "300%+15 (alvos em uma fileira)",
+          "dano": "300%+15",
           "icone": "ability-icons/Limitado e Lenda/Kefla/Ultimate.png"
         },
         "smax": {
@@ -8352,7 +8352,7 @@
           "estrelas": 5,
           "tipo": "Despertar (azul)",
           "desc": "[Ataque Especial] Aumenta o próprio ATQ e DEF em 30%, ataca uma fileira inimiga aleatória. 70% de chance de infligir 1 acúmulo de [Queimadura], causa dano adicional igual a <60% do ATQ * acúmulos de [Chama do Karma]>, 100% de chance de aplicar [Chamas Azuis] ao(s) alvo(s) e renova a duração de todas as [Chamas Azuis] nos inimigos para 2 turnos. O dano deste Supremo aumenta conforme o número de [Chamas Azuis] em campo (até +30%), causa [Derrubada]. Se a fileira alvo tiver apenas 1 inimigo, causa 35% de dano adicional. [Chamas Azuis]: reduz o dano de Supremo recebido em 15%. No início do turno, causa dano igual a 50% do ATQ do lançador. Toda vez que o alvo realiza uma ação (exceto perseguições), restaura uma pequena quantidade de Fúria para Kefla. Dura 2 turnos. Enquanto sob [Chamas Azuis], todos os efeitos de [Queimadura] são aprimorados para [Chama do Karma] (tratada como [Queimadura]), causando dano igual a 4% do PV Máx. do alvo no início de cada turno.",
-          "dano": "320%+15 (alvos em uma fileira)",
+          "dano": "320%+15",
           "icone": "ability-icons/Limitado e Lenda/Kefla/Ultimate.png"
         }
       },
