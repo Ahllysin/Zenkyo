@@ -794,8 +794,37 @@ async function main(){
     assert.deepStrictEqual(r.a, { tab:'chars', char:'goku-ssgss' });
     assert.deepStrictEqual(r.b, { tab:'combos' });
     assert.strictEqual(r.c, null, 'a aba Admin não vira link público');
-    assert.strictEqual(r.d, null); assert.strictEqual(r.e, null); assert.strictEqual(r.f, null);
+    assert.strictEqual(r.d, null); assert.strictEqual(r.e, null);
+    assert.deepStrictEqual(r.f, { tab:'guias', guide:'x' }, 'o link de um guia abre o guia');
     assert.ok(r.g);
+  });
+
+  await test('histórico do site: aba, ficha, guia e post viram endereços (Voltar do navegador desfaz a ação) e o cabeçalho do celular é enxuto', () => {
+    const fs = require('fs'), path = require('path');
+    const r = evalIn(sandbox, `(() => {
+      const bak = { tab: state.tab, v: state.viewingCharId, g: state.guideId, p: state.communityOpenPost };
+      const out = {};
+      state.tab = 'combos'; state.viewingCharId = null; out.aba = routeHashFor();
+      state.tab = 'chars'; state.viewingCharId = state.characters[0].id; out.ficha = routeHashFor();
+      state.viewingCharId = null; state.tab = 'guias'; state.guideId = 'assistencia'; out.guia = routeHashFor();
+      state.guideId = null; out.guias = routeHashFor();
+      state.tab = 'comunidade'; state.communityOpenPost = '12345678-1234-1234-1234-123456789abc'; out.post = routeHashFor();
+      state.communityOpenPost = '<script>'; out.postRuim = routeHashFor();
+      state.tab = 'admin'; out.admin = routeHashFor();
+      const ap = parseRouteHash('#/comunidade/12345678-1234-1234-1234-123456789abc'); out.parse = ap;
+      state.tab = bak.tab; state.viewingCharId = bak.v; state.guideId = bak.g; state.communityOpenPost = bak.p;
+      return out;
+    })()`);
+    assert.strictEqual(r.aba, '#/combos'); assert.ok(/^#\/guerreiro\/[a-z0-9-]+$/.test(r.ficha));
+    assert.strictEqual(r.guia, '#guia-assistencia'); assert.strictEqual(r.guias, '#/guias');
+    assert.strictEqual(r.post, '#/comunidade/12345678-1234-1234-1234-123456789abc'); assert.strictEqual(r.postRuim, '#/comunidade');
+    assert.strictEqual(r.admin, '', 'o Admin não vira link');
+    assert.deepStrictEqual(r.parse, { tab:'comunidade', post:'12345678-1234-1234-1234-123456789abc' });
+    const app = fs.readFileSync(path.join(__dirname, 'js', 'app.js'), 'utf8');
+    assert.ok(/history\.pushState/.test(app) && /addEventListener\('hashchange'/.test(app), 'cada ação entra no histórico e Voltar/Avançar são tratados');
+    const css = fs.readFileSync(path.join(__dirname, 'visual-novo.css'), 'utf8');
+    assert.ok(/max-width:700px\)\{\s*html\.vis-novo \.kz-menu-btn\{display:none;\}/.test(css), 'no celular não há botão de menu no topo (a barra de baixo tem o MAIS)');
+    assert.ok(/kz-header-discord-btn \.kz-discord-txt\{display:none;\}/.test(css), 'no celular o Discord é só o ícone');
   });
 
   await test('build em dia: ?v= dos arquivos, versão do offline, uma página por guerreiro e sitemap (rode node build.js)', () => {

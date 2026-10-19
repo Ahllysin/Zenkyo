@@ -352,32 +352,47 @@ const ROUTE_TABS = { guerreiros:'chars', colecao:'collection', combos:'combos', 
 const ROUTE_NAMES = Object.fromEntries(Object.entries(ROUTE_TABS).map(([k, v]) => [v, k]));
 function parseRouteHash(h){
   h = String(h || '');
-  const m = /^#\/guerreiro\/([a-z0-9-]{1,60})$/.exec(h);
+  let m = /^#\/guerreiro\/([a-z0-9-]{1,60})$/.exec(h);
   if(m) return { tab:'chars', char:m[1] };
+  m = /^#guia-([a-z0-9-]{1,40})$/.exec(h);
+  if(m) return { tab:'guias', guide:m[1] };
+  m = /^#\/comunidade\/([0-9a-f-]{36})$/.exec(h);
+  if(m) return { tab:'comunidade', post:m[1] };
   const t = /^#\/([a-z]{3,12})$/.exec(h);
   return t && ROUTE_TABS[t[1]] ? { tab: ROUTE_TABS[t[1]] } : null;
 }
 function applyRouteHash(){
   const r = parseRouteHash(typeof location !== 'undefined' ? location.hash : '');
   if(!r) return false;
-  state.tab = r.tab; state.viewingCharId = null;
+  state.tab = r.tab; state.viewingCharId = null; state.communityOpenPost = null; state.communityProfileUser = null;
+  if(r.tab !== 'guias') state.guideId = null;
   if(r.char){
     const ch = state.characters.find(x => slug(x.name) === r.char);
     if(ch){ state.viewingCharId = ch.id; state.charDetailTab = 'habilidades'; }
   }
+  if(r.tab === 'guias'){ if(r.guide){ state.guiasView = 'sistemas'; state.guideId = r.guide; } else state.guideId = null; }
+  if(r.post) state.communityOpenPost = r.post;
   return true;
 }
 function routeHashFor(){
   if(state.tab === 'chars' && state.viewingCharId){ const ch = getChar(state.viewingCharId); return ch ? '#/guerreiro/' + slug(ch.name) : ''; }
+  if(state.tab === 'guias' && state.guideId && /^[a-z0-9-]{1,40}$/.test(state.guideId)) return '#guia-' + state.guideId;
+  if(state.tab === 'comunidade' && state.communityOpenPost && /^[0-9a-f-]{36}$/.test(String(state.communityOpenPost))) return '#/comunidade/' + state.communityOpenPost;
   return ROUTE_NAMES[state.tab] ? '#/' + ROUTE_NAMES[state.tab] : '';
 }
+// Cada mudança de aba, ficha, guia ou post vira uma entrada do histórico: o botão Voltar do navegador/celular volta uma ação
+// dentro do site (a primeira entrada só é ajustada, sem criar uma a mais). Voltar/avançar disparam hashchange (abaixo).
+let rotaPronta = false;
 function setRouteHash(){
   if(!loaded || typeof history === 'undefined' || typeof location === 'undefined') return;
-  if(/^#guia-/.test(location.hash || '') && state.tab === 'guias') return;   // os guias têm o próprio link
-  try{
-    const h = routeHashFor();
-    if(h !== (location.hash || '')) history.replaceState(null, '', location.pathname + location.search + h);
-  }catch(e){}
+  const h = routeHashFor();
+  if(h !== (location.hash || '')){
+    try{
+      const url = location.pathname + location.search + h;
+      if(rotaPronta) history.pushState(null, '', url); else history.replaceState(null, '', url);
+    }catch(e){}
+  }
+  rotaPronta = true;
 }
 function charShareUrl(id){
   const ch = getChar(id);
@@ -391,10 +406,11 @@ async function copyCharLink(id){
 }
 if(typeof window !== 'undefined' && window.addEventListener) window.addEventListener('hashchange', () => {
   if(!loaded) return;
-  if(applyGuideHash2()) return;
-  if(applyRouteHash()){ render(); window.scrollTo(0, 0); }
+  if(applyRouteHash()){
+    render();
+    window.scrollTo(0, (state.tab === 'chars' && !state.viewingCharId) ? (charsListScrollY || 0) : 0);   // voltar da ficha: a lista no mesmo ponto
+  }
 });
-function applyGuideHash2(){ return /^#guia-/.test((typeof location !== 'undefined' && location.hash) || ''); }
 async function loadState(){
   // Lê tudo de window.storage (localStorage) primeiro — sempre funciona, mesmo sem conta.
   // Se der pra logar com Discord (Supabase configurado), pullUserDataFromRemote() roda
@@ -623,9 +639,9 @@ function renderAccountArea(){
         <button class="kz-btn kz-btn-sm" id="logoutBtn">Sair</button>
       </div>`;
   }
-  return `<button class="kz-discord-btn kz-header-discord-btn" id="loginBtn">
+  return `<button class="kz-discord-btn kz-header-discord-btn" id="loginBtn" aria-label="Entrar com o Discord" title="Entrar com o Discord">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg>
-    <span>Entrar</span>
+    <span class="kz-discord-txt">Entrar</span>
   </button>`;
 }
 
@@ -5609,7 +5625,7 @@ function renderGuiasTab(){
     ${state.guiasView === 'combos' ? renderGuiasCombos() : renderGuiasSistemas()}
   </section>`;
 }
-function setGuideHash(id){ try{ history.replaceState(null, '', id ? '#guia-' + id : location.pathname + location.search); }catch(e){} }
+function setGuideHash(id){ /* o endereço do guia é cuidado por setRouteHash() a cada desenho da tela */ }
 function openGuide(id, secIdx){
   state.tab = 'guias'; state.guiasView = 'sistemas'; state.guideId = id;
   if(isNarrowLayout()) state.navCompact = true;

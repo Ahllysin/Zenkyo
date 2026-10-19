@@ -1414,3 +1414,14 @@ html.nv-lite .kz-nvc-ball.lit{animation:none;}
 .kz-nva-aviso-warn{box-shadow:inset 4px 0 0 #FFC21A,inset 0 0 0 1.5px #5a4410;background:rgba(255,194,26,.08);margin-bottom:14px;}
 .kz-nva-aviso-warn .kz-btn{margin-left:8px;}
 .kz-nva-reconresp{display:block;margin-top:6px;font-size:13.5px;color:#FFD86B;}
+
+/* ---- celular: cabeçalho enxuto. A barra de baixo já navega (o MAIS abre o menu), então some o botão de menu do topo;
+        sobra a marca, o botão DOAR escrito e só o ícone do Discord ---- */
+@media (max-width:700px){
+  html.vis-novo .kz-menu-btn{display:none;}
+  html.vis-novo .kz-header-donate-btn .kz-lbl-full{display:inline;}
+  html.vis-novo .kz-header-donate-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 15px;font-size:16px;letter-spacing:.03em;}
+  html.vis-novo .kz-header-discord-btn{width:46px;height:42px;padding:0;justify-content:center;}
+  html.vis-novo .kz-header-discord-btn .kz-discord-txt{display:none;}
+  html.vis-novo .kz-header-discord-btn svg{width:22px;height:22px;}
+}
