@@ -879,8 +879,9 @@ async function main(){
       const busca = guideBlocksText([bloco]);
       const temImg = g.secoes.flatMap(s => s.blocos).some(b => b.t === 'img' && /acessorios-quem-usa/.test(b.src));
       guiasData = antes;
+      const extra = guideBlockHtml({ t:'conjuntos', itens:[{ n:'99', nome:'Teste', efeito:'x', quem:'y', icone:'guias/img/ac/01-1.webp', ex:[{ nome:'Fulano Inexistente', semFicha:true }, { nome:'Shenlong', apoio:'shenlong' }, { texto:'Qualquer um' }] }] });
       return { n: bloco.itens.length, cartoes: (html.match(/class="kz-cj-card"/g) || []).length, botoes: (html.match(/data-guia-char=/g) || []).length,
-        semFicha: html.includes('Ainda não está no site'), apoio: html.includes('assistencia/shenlong-icone'), busca: /Cápsula/.test(busca) && /roubo de vida/.test(busca), temImg, nomes: bloco.itens.map(i => i.nome) };
+        semFicha: extra.includes('Ainda não está no site'), apoio: extra.includes('assistencia/shenlong-icone') && extra.includes('Qualquer um'), busca: /Cápsula/.test(busca) && /roubo de vida/.test(busca), temImg, nomes: bloco.itens.map(i => i.nome) };
     })()`);
     assert.strictEqual(r.n, 10); assert.strictEqual(r.cartoes, 10);
     assert.ok(r.botoes >= 15, 'os guerreiros dos exemplos abrem a ficha (' + r.botoes + ')');
