@@ -1154,7 +1154,8 @@ html.vis-novo .kz-nvcb .kz-nv-lineup .ln{flex:0 1 96px;}
 .kz-nvcb-miss.ok{background:#2f9e4f;}
 .kz-nvcb-syn{display:flex;flex-direction:column;gap:12px;}
 .kz-nvcb-syn ul{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 24px;font-size:14.5px;line-height:1.5;color:#E2D2C2;}
-.kz-nvcb-syn li{display:flex;gap:8px;}
+.kz-nvcb-syn li{display:block;padding-left:20px;text-indent:-20px;}   /* texto corrido: a estrela fica na margem e o resto quebra linha normalmente (antes cada pedaço virava uma coluna no celular) */
+.kz-nvcb-syn li .g{display:inline-block;width:20px;text-indent:0;color:#5fe0c8;font-weight:900;}
 html.vis-novo .kz-nvcb .kz-slots{gap:22px;margin-top:8px;}
 html.vis-novo .kz-nvcb .kz-slot{position:relative;flex-direction:row;align-items:flex-start;gap:16px;min-height:160px;padding:18px 16px 16px 18px;overflow:visible;}
 html.vis-novo .kz-nvcb .kz-slot:hover{filter:none;box-shadow:inset 0 0 0 1.5px #FF6A13;}
@@ -1445,3 +1446,17 @@ html.kz-touch-drag,html.kz-touch-drag body{overscroll-behavior:contain;}
 .kz-card-hit{margin-top:6px;font-size:12px;line-height:1.35;color:#C9B8A6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
 .kz-card-hit b{color:#FF9A4D;font-weight:800;margin-right:3px;}
 .kz-card-hit mark{background:rgba(255,194,26,.28);color:#FFE9A8;padding:0 2px;border-radius:2px;}
+
+/* ---- celular: casas do Montador (retrato + nome em cima, Persegue/Causa embaixo, sem estourar a largura) ---- */
+@media (max-width:700px){
+  html.vis-novo .kz-nvcb .kz-slot{flex-wrap:wrap;align-items:flex-start;justify-content:flex-start;gap:12px 14px;min-height:0;padding:18px 14px 14px;}
+  html.vis-novo .kz-nvcb .kz-slot.filled{flex-wrap:wrap;}
+  html.vis-novo .kz-nvcb .kz-slot-art{width:76px;}
+  html.vis-novo .kz-nvcb .kz-slot-info{flex:1 1 130px;min-width:0;align-items:flex-start;gap:7px;padding-right:38px;}
+  html.vis-novo .kz-nvcb .kz-slot-name{font-size:21px;text-align:left;overflow-wrap:anywhere;}
+  html.vis-novo .kz-nvcb .kz-slot-roles{justify-content:flex-start;}
+  html.vis-novo .kz-nvcb .kz-slot-eff{flex:1 1 100%;width:100%;min-width:0;justify-content:flex-start;gap:14px;}
+  html.vis-novo .kz-nvcb .kz-slot-eff .col{align-items:flex-start;min-width:0;}
+  html.vis-novo .kz-nvcb .kz-slot-eff .pills{flex-wrap:wrap;}
+  html.vis-novo .kz-nvcb .kz-slot:not(.filled){min-height:96px;padding:18px 14px;}
+}
