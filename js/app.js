@@ -3421,12 +3421,12 @@ const SYNERGY_RULES = {
   'Broly SS4':         [{ grupo:'saiyajin', peso:0.5, max:4, txt:'+7% de crítico por Saiyajin aliado' }, { grupo:'maligno', peso:0.4, max:4, txt:'+7% de bloqueio por Maligno aliado' }],
   'Cooler Dourado':    [{ grupo:'maligno', peso:0.5, max:4, txt:'dá Fúria aos Malignos' }],
   'Super Syn Shenlong':[{ grupo:'maligno', peso:0.3, minimo:3, txt:'+20% de resistência a Supremo com 3 ou mais Malignos' }],
-  // Passiva única e passiva do Supremo: ao entrar, com mais de 2 aliados do grupo, ganha o bônus do grupo (o dos Saiyajins também vai para um Saiyajin aleatório)
+  // Passiva única e passiva do Supremo: ao entrar, com 2 ou mais aliados do grupo (confirmado por quem joga), ganha o bônus do grupo (o dos Saiyajins também vai para um Saiyajin aleatório)
   'Goku Instinto':     [
-    { grupo:'saiyajin', peso:0.4, minimo:3, txt:'com 3 ou mais Saiyajins: Reforço de Equipe para ele e um Saiyajin aleatório (+20% de recuperação de Fúria)' },
-    { grupo:'maligno',  peso:0.4, minimo:3, txt:'com 3 ou mais Malignos: +20% de Taxa de Crítico' },
-    { grupo:'orgulho',  peso:0.4, minimo:3, txt:'com 3 ou mais da Tropa do Orgulho: Perseverança (+30% de dano com PV baixo)' },
-    { grupo:'fusao',    peso:0.4, minimo:3, txt:'com 3 ou mais de Fusão: +20% de Chance de Habilidade e +5% de roubo de vida por habilidade' },
+    { grupo:'saiyajin', peso:0.4, minimo:2, txt:'com 2 ou mais Saiyajins: Reforço de Equipe para ele e um Saiyajin aleatório (+20% de recuperação de Fúria)' },
+    { grupo:'maligno',  peso:0.4, minimo:2, txt:'com 2 ou mais Malignos: +20% de Taxa de Crítico' },
+    { grupo:'orgulho',  peso:0.4, minimo:2, txt:'com 2 ou mais da Tropa do Orgulho: Perseverança (+30% de dano com PV baixo)' },
+    { grupo:'fusao',    peso:0.4, minimo:2, txt:'com 2 ou mais de Fusão: +20% de Chance de Habilidade e +5% de roubo de vida por habilidade' },
   ],
   'Goku Black (Rose)': [{ grupo:'maligno', peso:0.6, max:4, txt:'aumenta o Dano de Supremo dos Malignos' }],
   'Goku SS3 (Rose)':   [{ grupo:'maligno', peso:0.6, max:3, txt:'revive quando Malignos usam Supremo' }],
