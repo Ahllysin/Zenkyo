@@ -890,6 +890,26 @@ async function main(){
     assert.ok(fs.existsSync(path.join(__dirname, 'guias', 'img', 'acessorios-quem-usa.webp')), 'a imagem informativa deveria existir');
   });
 
+  await test('Ataque Combinado que "pode ser ativado duas vezes por rodada" (Goku Instinto) entra 2 vezes na mesma cadeia; os outros só 1', () => {
+    const r = evalIn(sandbox, `(() => {
+      const by = n => state.characters.find(c => c.name === n);
+      const gi = by('Goku Instinto'), vegetto = by('Vegetto SSGSS'), frost = by('Frost');
+      const bak = state.team;
+      state.team = [vegetto.id, gi.id, frost.id, null, null, null];
+      const ab = ['skill', 'supreme'].find(k => (vegetto[k].effects || []).includes('elevacao_baixa'));
+      const cadeia = simulateCombo(vegetto.id, ab);
+      const usos = cadeia.map(x => x.char.name + (x.abilityKey === 'combo' ? '#' + x.uso : ''));
+      const max = comboMaxFor(state.team);
+      const html = renderAtkSection(vegetto.id, ab);
+      state.team = bak;
+      return { usosGi: comboUsos(gi), outros: state.characters.filter(c => c.id !== gi.id && comboUsos(c) !== 1).length, usos, perChain: max.perChain, ui: /2ª ativação/.test(html) };
+    })()`);
+    assert.strictEqual(r.usosGi, 2); assert.strictEqual(r.outros, 0, 'só o Goku Instinto tem a frase hoje');
+    assert.deepStrictEqual(r.usos, ['Vegetto SSGSS', 'Goku Instinto#1', 'Frost#1', 'Goku Instinto#2'], 'Elevação Baixa → Instinto → Empurrão → Frost → Elevação Baixa → Instinto de novo');
+    assert.strictEqual(r.perChain, 4, 'o teto da equipe conta a segunda entrada (3 guerreiros + 1)');
+    assert.ok(r.ui, 'a cadeia mostra "2ª ativação"');
+  });
+
   await test('build em dia: ?v= dos arquivos, versão do offline, uma página por guerreiro e sitemap (rode node build.js)', () => {
     const { execFileSync } = require('child_process');
     try{ execFileSync(process.execPath, [require('path').join(__dirname, 'build.js'), '--check'], { stdio:'pipe' }); }

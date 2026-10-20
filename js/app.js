@@ -1057,13 +1057,19 @@ function comboContinuations(sourceCharId, abilityKey){
 
 // Cadeia completa de verdade: a cada efeito pendente, só UM aliado continua — o de menor
 // número de casa entre quem tem o gatilho certo (prioridade de casa, igual no jogo).
+// Quantas vezes o guerreiro pode entrar na MESMA cadeia: 1, a não ser que o texto do Ataque Combinado diga
+// "pode ser ativado duas vezes por rodada" (hoje só o Goku Instinto). Vem do texto, então vale para quem ganhar a frase depois.
+function comboUsos(c){
+  const m = /pode ser ativad[oa] (duas|tr[eê]s|quatro|2|3|4) vezes/i.exec((c && c.combo && c.combo.desc) || '');
+  return m ? ({ duas:2, '2':2, 'três':3, tres:3, '3':3, quatro:4, '4':4 })[m[1].toLowerCase()] || 1 : 1;
+}
 function simulateCombo(charId, abilityKey){
   const order = priorityOrder();
   const startChar = getChar(charId);
   if(!startChar) return [];
   const startAbility = startChar[abilityKey];
   const chain = [{ charId, abilityKey, ability: startAbility, char: startChar }];
-  const used = new Set();   // quem já usou o Ataque Combinado (cada um só uma vez) — o que iniciou a cadeia ainda não usou o dele
+  const used = new Map();   // quantas vezes cada um já usou o Ataque Combinado (1 por cadeia, ou mais se o texto permitir, ver comboUsos) — o que iniciou a cadeia ainda não usou o dele
   let queue = [...(startAbility.effects||[])];
 
   let guard = 0;
@@ -1073,16 +1079,16 @@ function simulateCombo(charId, abilityKey){
     let found = null;
     for(const idx of order){
       const tid = state.team[idx];
-      if(!tid || used.has(tid)) continue;
+      if(!tid) continue;
       const tc = getChar(tid);
-      if(!tc) continue;
+      if(!tc || (used.get(tid) || 0) >= comboUsos(tc)) continue;
       if(tc.combo.triggers && tc.combo.triggers.includes(eff)){
         found = tc; break;
       }
     }
     if(found){
-      used.add(found.id);
-      chain.push({ charId: found.id, abilityKey:'combo', ability: found.combo, char: found, triggeredBy: eff });
+      used.set(found.id, (used.get(found.id) || 0) + 1);
+      chain.push({ charId: found.id, abilityKey:'combo', ability: found.combo, char: found, triggeredBy: eff, uso: used.get(found.id) });
       if(found.combo.effects && found.combo.effects.length){
         queue.push(...found.combo.effects);
       }
@@ -5060,7 +5066,7 @@ function renderAtkSection(charId, abilityKey){
         <div class="kz-atk-chain-step">
           <div class="kz-atk-chain-art">${portraitInner(step.char)}</div>
           <div class="kz-atk-chain-info">
-            <span class="nm">${escapeHtml(step.char.name)}</span>
+            <span class="nm">${escapeHtml(step.char.name)}${step.uso > 1 ? ` <small class="uso">${step.uso}ª ativação</small>` : ''}</span>
             ${effLineHtml('Persegue', step.triggeredBy ? [step.triggeredBy] : null)}
             ${effLineHtml('Causa', causes)}
           </div>
@@ -5127,12 +5133,14 @@ function comboSummary(team){
   return { total, starts, best };
 }
 // Teto da equipe atual: só conta como início a Habilidade/Suprema que causa efeito de combo, e cada cadeia puxa no
-// máximo 1 Ataque Combinado por guerreiro em campo (quem iniciou também persegue uma vez).
+// máximo 1 Ataque Combinado por guerreiro em campo (quem iniciou também persegue uma vez; o texto pode permitir mais, ver comboUsos).
 function comboMaxFor(team){
   const filled = team.filter(Boolean);
   let starters = 0;
   filled.forEach(id=>{ const c = getChar(id); if(c) STARTER_KEYS.forEach(k=>{ if(c[k] && (c[k].effects||[]).length) starters++; }); });
-  return { max: starters * filled.length, starters, abilities: filled.length * STARTER_KEYS.length, perChain: filled.length };
+  // cada guerreiro entra 1 vez por cadeia (2 ou mais se o texto do Ataque Combinado permitir)
+  const perChain = filled.reduce((n, id) => n + comboUsos(getChar(id)), 0);
+  return { max: starters * perChain, starters, abilities: filled.length * STARTER_KEYS.length, perChain };
 }
 function comboCountHtml(teamArg){
   const team = teamArg || state.team;
@@ -5525,7 +5533,7 @@ function renderGuiasCombos(){
     <div class="kz-guide-grid">
       <article class="kz-guide-card">
         <div class="kz-guide-head"><span class="glyph">連</span><h2>A cadeia de combo</h2></div>
-        <p>Habilidade e Suprema iniciam o combo e causam um efeito. Um aliado entra com o Ataque Combinado quando o efeito ativo bate com o requisito dele, e causa um novo efeito que puxa o próximo golpe. Cada guerreiro entra no máximo uma vez por combo.</p>
+        <p>Habilidade e Suprema iniciam o combo e causam um efeito. Um aliado entra com o Ataque Combinado quando o efeito ativo bate com o requisito dele, e causa um novo efeito que puxa o próximo golpe. Cada guerreiro entra no máximo uma vez por combo, exceto quem tem no texto "pode ser ativado duas vezes por rodada" (Goku Instinto), que entra até duas.</p>
         <div class="kz-guide-effects">${effCards}</div>
       </article>
       <article class="kz-guide-card">
