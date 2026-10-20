@@ -80,7 +80,7 @@ html.vis-novo .kz-nv{gap:0;font-family:'Barlow',sans-serif;color:#FFF4E6;}
 
 /* hero */
 .kz-nv-hero{position:relative;overflow:hidden;margin:-30px -34px 0;min-height:700px;
-  clip-path:polygon(0 0,100% 0,100% 93%,95% 97.5%,89% 92.5%,82% 98.5%,75% 93.5%,66% 99%,57% 94%,48% 98.5%,39% 93.5%,30% 99%,21% 94%,12% 98.5%,5% 94%,0 97%);}
+  clip-path:polygon(0 0,100% 0,100% calc(100% - 42px),95% calc(100% - 15px),89% calc(100% - 45px),82% calc(100% - 9px),75% calc(100% - 39px),66% calc(100% - 6px),57% calc(100% - 36px),48% calc(100% - 9px),39% calc(100% - 39px),30% calc(100% - 6px),21% calc(100% - 36px),12% calc(100% - 9px),5% calc(100% - 36px),0 calc(100% - 18px));}
 .kz-nv-fire{position:absolute;inset:0;background:radial-gradient(ellipse 52% 78% at 76% 54%,#FFB01F 0%,#FF6A13 9%,#E8261B 22%,#8E1508 40%,#3A0A06 60%,#0A0606 80%);}
 .kz-nv-rays{position:absolute;left:76%;top:54%;width:2800px;height:2800px;margin:-1400px 0 0 -1400px;will-change:transform;
   background:repeating-conic-gradient(from 0deg,rgba(255,226,122,.18) 0deg 1deg,transparent 1deg 4.6deg,rgba(10,6,6,.32) 4.6deg 5.4deg,transparent 5.4deg 9deg);
@@ -363,7 +363,7 @@ html.vis-novo .avatar-fallback{border-radius:0;}
 
 /* ---------- FICHA ---------- */
 html.vis-novo .kz-detail-hero{position:relative;isolation:isolate;overflow:hidden;margin:-30px -34px 0;border:0;border-radius:0;box-shadow:none;background:none;min-height:0;
-  clip-path:polygon(0 0,100% 0,100% 95%,94% 99%,87% 94.5%,80% 99%,72% 95%,63% 99.5%,54% 95%,45% 99%,36% 94.5%,27% 99.5%,18% 95%,9% 99%,0 95.5%);}
+  clip-path:polygon(0 0,100% 0,100% calc(100% - 21px),94% calc(100% - 4px),87% calc(100% - 23px),80% calc(100% - 4px),72% calc(100% - 21px),63% calc(100% - 2px),54% calc(100% - 21px),45% calc(100% - 4px),36% calc(100% - 23px),27% calc(100% - 2px),18% calc(100% - 21px),9% calc(100% - 4px),0 calc(100% - 19px));}
 html.vis-novo .kz-detail-hero .kz-hero-art,html.vis-novo .kz-detail-hero .kz-hero-scrim{display:none;}
 html.vis-novo .kz-detail-hero .kz-nv-ph-bg .kz-nv-fire{background:radial-gradient(ellipse 40% 80% at 22% 58%,#FFB01F 0%,#FF6A13 10%,#E8261B 24%,#8E1508 42%,#3A0A06 62%,#0A0606 82%);}
 html.vis-novo .kz-detail-hero .kz-nv-ph-bg .kz-nv-rays{left:22%;top:58%;}
@@ -573,7 +573,7 @@ html.vis-novo :is(.btn,.kz-back-btn,.kz-btn,.kz-build-btn,.kz-edit-btn,.kz-fav-t
 
 /* ---------- Ficha do guerreiro (igual ao canvas "Ficha do guerreiro") ---------- */
 .kz-nvf-hero{position:relative;isolation:isolate;overflow:hidden;margin:-30px -34px 0;padding:26px 34px 120px;
-  clip-path:polygon(0 0,100% 0,100% 95%,94% 99%,87% 94.5%,80% 99%,72% 95%,63% 99.5%,54% 95%,45% 99%,36% 94.5%,27% 99.5%,18% 95%,9% 99%,0 95.5%);}
+  clip-path:polygon(0 0,100% 0,100% calc(100% - 26px),94% calc(100% - 5px),87% calc(100% - 29px),80% calc(100% - 5px),72% calc(100% - 26px),63% calc(100% - 3px),54% calc(100% - 26px),45% calc(100% - 5px),36% calc(100% - 29px),27% calc(100% - 3px),18% calc(100% - 26px),9% calc(100% - 5px),0 calc(100% - 23px));}
 .kz-nvf-hero .kz-nv-fire{background:radial-gradient(ellipse 40% 80% at 25% 55%,#FFB01F 0%,#FF6A13 10%,#E8261B 24%,#8E1508 42%,#3A0A06 62%,#0A0606 82%);}
 .kz-nvf-hero .kz-nv-rays{left:25%;top:55%;}
 .kz-nvf-hero .kz-nv-tone{left:auto;right:0;width:50%;-webkit-mask-image:linear-gradient(270deg,#000 20%,transparent);mask-image:linear-gradient(270deg,#000 20%,transparent);opacity:.5;}
