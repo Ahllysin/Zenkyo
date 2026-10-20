@@ -124,6 +124,13 @@ async function main(){
             (b.blocos || []).forEach(x => confere(sec, x));
           }
           if(b.t === 'img' && !(/^guias\/img\/[a-z0-9\/-]+\.webp$/.test(b.src || '') && fileExists(b.src))) fail(`${tag}, seção ${sec.titulo}: imagem ${b.src} inválida ou ausente`);
+          if(b.t === 'conjuntos'){
+            if(!(b.itens || []).length) fail(`${tag}, seção ${sec.titulo}: dicas de conjuntos vazias`);
+            (b.itens || []).forEach(i => {
+              if(!nonEmpty(i.nome) || !nonEmpty(i.quem) || !nonEmpty(i.efeito) || !(i.ex || []).length) fail(`${tag}, seção ${sec.titulo}: dica incompleta (${i.nome})`);
+              if(!fileExists(i.icone)) fail(`${tag}, seção ${sec.titulo}: ícone ${i.icone} não existe`);
+            });
+          }
           if(b.t === 'apoios'){
             if(!(b.itens || []).length) fail(`${tag}, seção ${sec.titulo}: catálogo de apoios vazio`);
             (b.itens || []).forEach(i => {
@@ -131,7 +138,7 @@ async function main(){
               ['', '-icone'].forEach(suf => { const f = `guias/img/assistencia/${i.slug}${suf}.webp`; if(!fileExists(f)) fail(`${tag}, seção ${sec.titulo}: ${f} não existe`); });
             });
           }
-          if(!['p', 'note', 'h', 'ul', 'ol', 'table', 'callout', 'icons', 'details', 'img', 'apoios'].includes(b.t)) fail(`${tag}, seção ${sec.titulo}: tipo de bloco desconhecido (${b.t})`);
+          if(!['p', 'note', 'h', 'ul', 'ol', 'table', 'callout', 'icons', 'details', 'img', 'apoios', 'conjuntos'].includes(b.t)) fail(`${tag}, seção ${sec.titulo}: tipo de bloco desconhecido (${b.t})`);
         };
         (g.secoes || []).forEach(sec => (sec.blocos || []).forEach(b => confere(sec, b)));
       });

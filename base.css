@@ -1323,3 +1323,24 @@ label.field-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;col
 .kz-ap-chip{display:inline-flex;align-items:center;gap:5px;vertical-align:middle;white-space:nowrap;font-weight:700;color:var(--text-strong);}
 .kz-ap-chip img{width:20px;height:20px;border-radius:5px;flex:none;}
 @media (max-width:700px){ .kz-ap-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;} .kz-ap-info{padding:8px 10px 10px;} .kz-ap-info p{font-size:12.5px;} }
+
+/* ---- Guia de Acessórios: para quem usar cada conjunto ---- */
+.kz-cj{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin:6px 0;}
+.kz-cj-card{display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:12px;background:rgba(20,20,34,.7);border:1px solid var(--line-soft);min-width:0;}
+.kz-cj-top{display:flex;align-items:center;gap:12px;}
+.kz-cj-top img{width:44px;height:44px;object-fit:contain;flex:none;filter:drop-shadow(0 0 5px rgba(255,106,19,.45));}
+.kz-cj-top div{display:flex;flex-direction:column;min-width:0;line-height:1.2;}
+.kz-cj-top .n{font-size:11px;font-weight:800;letter-spacing:.1em;color:#FF9A4D;}
+.kz-cj-top b{font-size:16px;color:var(--text-strong);}
+.kz-cj-top small{font-size:12.5px;color:var(--gold-light);margin-top:2px;}
+.kz-cj-card p{margin:0;font-size:13.5px;line-height:1.5;color:var(--text-soft);}
+.kz-cj .lb{display:block;font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#FF9A4D;margin-bottom:3px;}
+.kz-cj-ex{border-top:1px dashed var(--line-soft);padding-top:8px;}
+.kz-cj-ex .fila{display:flex;flex-wrap:wrap;gap:6px;}
+.kz-cj-chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 3px;border-radius:8px;background:rgba(255,106,19,.1);border:1px solid rgba(255,150,50,.28);color:var(--text-strong);font:inherit;cursor:default;}
+button.kz-cj-chip{cursor:pointer;}
+button.kz-cj-chip:hover{background:rgba(255,106,19,.22);border-color:#FF9A4D;}
+.kz-cj-chip img,.kz-cj-chip .ini{width:28px;height:28px;border-radius:6px;flex:none;object-fit:cover;}
+.kz-cj-chip .ini{display:grid;place-items:center;background:#24120C;font-weight:900;font-size:13px;color:#FFC21A;}
+.kz-cj-chip b{font-size:13px;font-weight:700;}
+.kz-cj-chip.txt{padding:4px 12px;}

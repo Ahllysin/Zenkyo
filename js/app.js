@@ -5571,7 +5571,7 @@ function guideCover(g){ return 'guias/img/' + encodeURIComponent(g.n) + '.webp';
 function guideLabel(g){ return g.rotulo ? String(g.rotulo) : 'Guia ' + g.n; }
 function guideImgSrc(s){ return /^guias\/img\/[a-z0-9\/-]+\.webp$/.test(String(s||'')) ? s : ''; }
 function guideBlocksText(bs){
-  return (bs||[]).map(b=> (b.t === 'ul' || b.t === 'ol') ? (b.items||[]).join(' ') : b.t === 'callout' ? [b.titulo||''].concat(b.x||[]).join(' ') : b.t === 'details' ? [b.titulo||'', b.sub||'', guideBlocksText(b.blocos)].join(' ') : (b.t === 'icons' || b.t === 'img') ? '' : b.t === 'apoios' ? (b.itens||[]).map(i=>[i.nome, i.frag + ' fragmentos', i.papel].join(' ')).join(' ') : b.t === 'table' ? [(b.head||[]).join(' ')].concat((b.rows||[]).map(r=>r.join(' '))).join(' ') : (b.x||'')).join(' ');
+  return (bs||[]).map(b=> (b.t === 'ul' || b.t === 'ol') ? (b.items||[]).join(' ') : b.t === 'callout' ? [b.titulo||''].concat(b.x||[]).join(' ') : b.t === 'details' ? [b.titulo||'', b.sub||'', guideBlocksText(b.blocos)].join(' ') : (b.t === 'icons' || b.t === 'img') ? '' : b.t === 'apoios' ? (b.itens||[]).map(i=>[i.nome, i.frag + ' fragmentos', i.papel].join(' ')).join(' ') : b.t === 'conjuntos' ? (b.itens||[]).map(i=>[i.nome, i.efeito, i.quem, (i.ex||[]).map(e=>e.nome||e.texto||'').join(' ')].join(' ')).join(' ') : b.t === 'table' ? [(b.head||[]).join(' ')].concat((b.rows||[]).map(r=>r.join(' '))).join(' ') : (b.x||'')).join(' ');
 }
 function guideSearchNorm(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
 function guideIndex(g){
@@ -5647,9 +5647,33 @@ function guideApoiosHtml(b){
       }).join('')}</div>
     </div>`).join('')}</div>`;
 }
+// Guia de Acessórios: para quem usar cada conjunto (dicas de quem joga). Os exemplos viram ícones; os que são guerreiros do site abrem a ficha.
+function guideConjuntosHtml(b){
+  const chip = e=>{
+    if(e.texto) return `<span class="kz-cj-chip txt"><b>${escapeHtml(e.texto)}</b></span>`;
+    const nome = escapeHtml(e.nome || '');
+    if(e.apoio){
+      const a = guideImgSrc('guias/img/assistencia/' + String(e.apoio).replace(/[^a-z0-9-]/g, '') + '-icone.webp');
+      return `<span class="kz-cj-chip" title="Apoio de Assistência">${a ? `<img src="${a}" alt="" width="28" height="28" loading="lazy" data-onerr="hide">` : ''}<b>${nome}</b></span>`;
+    }
+    const ch = state.characters.find(x=>x.name === e.nome);
+    if(!ch) return `<span class="kz-cj-chip" title="Ainda não está no site"><span class="ini">${escapeHtml(initials(e.nome || ''))}</span><b>${nome}</b></span>`;
+    const ico = iconeSrc(ch) || `portraits/mini/${slug(ch.name)}.webp`;
+    return `<button type="button" class="kz-cj-chip" data-guia-char="${escapeAttr(ch.id)}" title="Ver a ficha de ${escapeAttr(ch.name)}"><img src="${escapeAttr(ico)}" alt="" width="28" height="28" loading="lazy" data-onerr="hide"><b>${nome}</b></button>`;
+  };
+  return `<div class="kz-cj">${(b.itens||[]).map(i=>{
+    const ic = guideImgSrc(i.icone);
+    return `<article class="kz-cj-card">
+      <div class="kz-cj-top">${ic ? `<img src="${ic}" alt="" width="44" height="44" loading="lazy" data-onerr="hide">` : ''}<div><span class="n">${escapeHtml(i.n)}</span><b>${escapeHtml(i.nome)}</b><small>${escapeHtml(i.efeito)}</small></div></div>
+      <p><span class="lb">Ideal para</span>${escapeHtml(i.quem)}</p>
+      <div class="kz-cj-ex"><span class="lb">Exemplos</span><div class="fila">${(i.ex||[]).map(chip).join('')}</div></div>
+    </article>`;
+  }).join('')}</div>`;
+}
 function guideBlockHtml(b){
   if(!b) return '';
   if(b.t === 'apoios') return guideApoiosHtml(b);
+  if(b.t === 'conjuntos') return guideConjuntosHtml(b);
   if(b.t === 'p') return `<p>${guideTexto(escapeHtml(b.x))}</p>`;
   if(b.t === 'note') return `<p class="note">${guideTexto(escapeHtml(b.x))}</p>`;
   if(b.t === 'h') return `<h3>${escapeHtml(b.x)}</h3>`;
@@ -5809,6 +5833,7 @@ function updateGuideSpy(){
 function attachGuiasHandlers(){
   const view = document.getElementById('view');
   if(!view || state.tab !== 'guias') return;
+  view.querySelectorAll('[data-guia-char]').forEach(b=>b.addEventListener('click', ()=> openCharDetail(b.dataset.guiaChar)));
   view.querySelectorAll('[data-guias-view]').forEach(b=>b.addEventListener('click', ()=>{ state.guiasView = b.dataset.guiasView; state.guideId = null; setGuideHash(null); render(); }));
   view.querySelectorAll('[data-guide]').forEach(b=>b.addEventListener('click', ()=> openGuide(b.dataset.guide)));
   const back = document.getElementById('guideBackBtn');

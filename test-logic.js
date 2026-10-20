@@ -867,6 +867,28 @@ async function main(){
     assert.ok(r.trecho && r.html && r.semTrecho, 'o cartão mostra o trecho só quando achou pelo texto da habilidade');
   });
 
+  await test('Guia de Acessórios: dicas de uso por conjunto (cartões com exemplos clicáveis) e a imagem informativa', () => {
+    const fs = require('fs'), path = require('path');
+    const json = fs.readFileSync(path.join(__dirname, 'guias', 'guias.json'), 'utf8');
+    const r = evalIn(sandbox, `(() => {
+      const antes = guiasData;
+      guiasData = JSON.parse(${JSON.stringify(json)});
+      const g = guiasData.guias.find(x => x.id === 'acessorios');
+      const bloco = g.secoes.flatMap(s => s.blocos).find(b => b.t === 'conjuntos');
+      const html = guideBlockHtml(bloco);
+      const busca = guideBlocksText([bloco]);
+      const temImg = g.secoes.flatMap(s => s.blocos).some(b => b.t === 'img' && /acessorios-quem-usa/.test(b.src));
+      guiasData = antes;
+      return { n: bloco.itens.length, cartoes: (html.match(/class="kz-cj-card"/g) || []).length, botoes: (html.match(/data-guia-char=/g) || []).length,
+        semFicha: html.includes('Ainda não está no site'), apoio: html.includes('assistencia/shenlong-icone'), busca: /Cápsula/.test(busca) && /roubo de vida/.test(busca), temImg, nomes: bloco.itens.map(i => i.nome) };
+    })()`);
+    assert.strictEqual(r.n, 10); assert.strictEqual(r.cartoes, 10);
+    assert.ok(r.botoes >= 15, 'os guerreiros dos exemplos abrem a ficha (' + r.botoes + ')');
+    assert.ok(r.semFicha && r.apoio && r.busca && r.temImg);
+    assert.ok(r.nomes.includes('Zenoh') && r.nomes.includes('Escola da Tartaruga'));
+    assert.ok(fs.existsSync(path.join(__dirname, 'guias', 'img', 'acessorios-quem-usa.webp')), 'a imagem informativa deveria existir');
+  });
+
   await test('build em dia: ?v= dos arquivos, versão do offline, uma página por guerreiro e sitemap (rode node build.js)', () => {
     const { execFileSync } = require('child_process');
     try{ execFileSync(process.execPath, [require('path').join(__dirname, 'build.js'), '--check'], { stdio:'pipe' }); }
