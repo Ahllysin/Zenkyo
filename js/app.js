@@ -3387,6 +3387,7 @@ const SYNERGY_GROUPS = {
   saiyajin:   { label:'Saiyajins',         test:c=>c.element === 'Saiyajin' },
   fusao:      { label:'de Fusão',          test:c=>(c.tags||[]).includes('Guerreiro de Fusão') },
   fusao_ss4:  { label:'de Fusão e SS4',    test:c=>(c.tags||[]).includes('Guerreiro de Fusão') || (c.tags||[]).includes('SS4') },
+  orgulho:    { label:'da Tropa do Orgulho', test:c=>(c.tags||[]).includes('Tropa do Orgulho') },
   lendario:   { label:'Lendários',         test:c=>(c.tags||[]).includes('Guerreiro Lendário') },
   artista:    { label:'Artistas Marciais', test:c=>(c.tags||[]).includes('Artista Marcial') },
   guerreiras: { label:'Guerreiras',        test:c=>c.gender === 'Feminino' },
@@ -3420,7 +3421,13 @@ const SYNERGY_RULES = {
   'Broly SS4':         [{ grupo:'saiyajin', peso:0.5, max:4, txt:'+7% de crítico por Saiyajin aliado' }, { grupo:'maligno', peso:0.4, max:4, txt:'+7% de bloqueio por Maligno aliado' }],
   'Cooler Dourado':    [{ grupo:'maligno', peso:0.5, max:4, txt:'dá Fúria aos Malignos' }],
   'Super Syn Shenlong':[{ grupo:'maligno', peso:0.3, minimo:3, txt:'+20% de resistência a Supremo com 3 ou mais Malignos' }],
-  'Goku Instinto':     [{ grupo:'saiyajin', peso:0.4, minimo:3, txt:'bônus extra com 3 ou mais Saiyajins' }],
+  // Passiva única e passiva do Supremo: ao entrar, com mais de 2 aliados do grupo, ganha o bônus do grupo (o dos Saiyajins também vai para um Saiyajin aleatório)
+  'Goku Instinto':     [
+    { grupo:'saiyajin', peso:0.4, minimo:3, txt:'com 3 ou mais Saiyajins: Reforço de Equipe para ele e um Saiyajin aleatório (+20% de recuperação de Fúria)' },
+    { grupo:'maligno',  peso:0.4, minimo:3, txt:'com 3 ou mais Malignos: +20% de Taxa de Crítico' },
+    { grupo:'orgulho',  peso:0.4, minimo:3, txt:'com 3 ou mais da Tropa do Orgulho: Perseverança (+30% de dano com PV baixo)' },
+    { grupo:'fusao',    peso:0.4, minimo:3, txt:'com 3 ou mais de Fusão: +20% de Chance de Habilidade e +5% de roubo de vida por habilidade' },
+  ],
   'Goku Black (Rose)': [{ grupo:'maligno', peso:0.6, max:4, txt:'aumenta o Dano de Supremo dos Malignos' }],
   'Goku SS3 (Rose)':   [{ grupo:'maligno', peso:0.6, max:3, txt:'revive quando Malignos usam Supremo' }],
   'Janemba':           [{ grupo:'maligno', peso:0.2, max:3, txt:'fica mais forte quando um Maligno cai' }],

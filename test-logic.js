@@ -910,6 +910,26 @@ async function main(){
     assert.ok(r.ui, 'a cadeia mostra "2ª ativação"');
   });
 
+  await test('Sinergias do Goku Instinto: Saiyajin, Maligno, Tropa do Orgulho e Fusão (precisa de 3 ou mais do grupo)', () => {
+    const r = evalIn(sandbox, `(() => {
+      const bak = state.team;
+      const by = n => state.characters.find(c => c.name === n).id;
+      const gi = by('Goku Instinto');
+      const txt = team => { state.team = team; return synergyReport(team).ativos.filter(a => a.nome === 'Goku Instinto').map(a => a.txt); };
+      const orgulho = txt([gi, by('Jiren'), by('Toppo'), by('Dyspo'), null, null]);
+      const orgulho2 = txt([gi, by('Jiren'), by('Toppo'), null, null, null]);
+      const fusao = txt([gi, by('Gotenks'), by('Gogeta SS4'), by('Kefla'), null, null]);
+      const malignos = state.characters.filter(c => (c.tags || []).includes('Guerreiro Maligno')).slice(0, 3).map(c => c.id);
+      const maligno = txt([gi, ...malignos, null, null]);
+      state.team = bak;
+      return { orgulho, orgulho2, fusao, maligno, grupo: !!SYNERGY_GROUPS.orgulho };
+    })()`);
+    assert.ok(r.orgulho.some(t => /Tropa do Orgulho/.test(t)), 'com 3 da Tropa do Orgulho o bônus aparece');
+    assert.ok(!r.orgulho2.some(t => /Tropa do Orgulho/.test(t)), 'com só 2 não aparece');
+    assert.ok(r.fusao.some(t => /Fusão/.test(t)) && r.maligno.some(t => /Malignos/.test(t)));
+    assert.ok(r.grupo);
+  });
+
   await test('build em dia: ?v= dos arquivos, versão do offline, uma página por guerreiro e sitemap (rode node build.js)', () => {
     const { execFileSync } = require('child_process');
     try{ execFileSync(process.execPath, [require('path').join(__dirname, 'build.js'), '--check'], { stdio:'pipe' }); }
