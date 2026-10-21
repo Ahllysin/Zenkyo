@@ -931,6 +931,16 @@ async function main(){
     assert.ok(r.grupo);
   });
 
+  await test('versão do site: SITE_VERSAO existe, vai para os registros de erro e o rodapé avisa que é Alpha', () => {
+    const fs = require('fs'), path = require('path');
+    const v = evalIn(sandbox, 'SITE_VERSAO');
+    assert.ok(/^\d+\.\d+( [A-Za-z]+)?$/.test(v), 'formato da versão: ' + v);
+    const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+    assert.ok(/class="kz-versao"/.test(html) && /data-versao/.test(html) && /fase de testes/.test(html), 'o rodapé tem o aviso de versão em testes');
+    const app = fs.readFileSync(path.join(__dirname, 'js', 'app.js'), 'utf8');
+    assert.ok(/versao: SITE_VERSAO/.test(app), 'o registro de erros leva a versão');
+  });
+
   await test('build em dia: ?v= dos arquivos, versão do offline, uma página por guerreiro e sitemap (rode node build.js)', () => {
     const { execFileSync } = require('child_process');
     try{ execFileSync(process.execPath, [require('path').join(__dirname, 'build.js'), '--check'], { stdio:'pipe' }); }

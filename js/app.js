@@ -1,3 +1,5 @@
+// Versão do site (aparece no rodapé e nos registros de erro). Só muda quando o dono publicar uma versão nova.
+const SITE_VERSAO = '0.1 Alpha';
 
 /* ---------- Log de crash: erros do site vão para a tabela site_errors do Supabase (só o dono lê, na aba Perfil) ----------
    Fica no começo do script para pegar também erros durante a carga. No máximo 5 registros por visita, sem repetir. */
@@ -16,7 +18,7 @@ function reportCrash(msg, stack, extra){
       stack: stack ? String(stack).slice(0, 2000) : null,
       pagina: typeof location !== 'undefined' ? String((location.pathname || '') + (location.hash || '')).slice(0, 200) : null,
       navegador: typeof navigator !== 'undefined' ? String(navigator.userAgent || '').slice(0, 300) : null,
-      versao: typeof document !== 'undefined' ? String(document.lastModified || '').slice(0, 60) : null,
+      versao: SITE_VERSAO + (typeof document !== 'undefined' ? ' · ' + String(document.lastModified || '').slice(0, 40) : ''),
       extra: extra || null,
     };
     if(window.__sb && window.__sb.client) enviarCrash(linha); else crashFila.push(linha);
@@ -7744,3 +7746,6 @@ async function abrirModoOffline(){
 }
 registrarOffline();
 { const ob = document.getElementById('offlineBtn'); if(ob) ob.addEventListener('click', abrirModoOffline); }
+
+// Versão no rodapé (uma só fonte: SITE_VERSAO)
+{ const vs = typeof document !== 'undefined' && document.querySelectorAll ? document.querySelectorAll('[data-versao]') : []; vs.forEach && vs.forEach(el => { el.textContent = SITE_VERSAO; }); }
