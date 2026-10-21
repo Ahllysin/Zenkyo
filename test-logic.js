@@ -878,16 +878,17 @@ async function main(){
       const html = guideBlockHtml(bloco);
       const busca = guideBlocksText([bloco]);
       const temImg = g.secoes.flatMap(s => s.blocos).some(b => b.t === 'img' && /acessorios-quem-usa/.test(b.src));
+      const notas = g.secoes.flatMap(s => s.blocos).filter(b => b.t === 'note' && /^Dicas de jogadores/.test(b.x)).length;
       guiasData = antes;
       const extra = guideBlockHtml({ t:'conjuntos', itens:[{ n:'99', nome:'Teste', efeito:'x', quem:'y', icone:'guias/img/ac/01-1.webp', ex:[{ nome:'Fulano Inexistente', semFicha:true }, { nome:'Shenlong', apoio:'shenlong' }, { texto:'Qualquer um' }] }] });
       return { n: bloco.itens.length, cartoes: (html.match(/class="kz-cj-card"/g) || []).length, botoes: (html.match(/data-guia-char=/g) || []).length,
-        semFicha: extra.includes('Ainda não está no site'), apoio: extra.includes('assistencia/shenlong-icone') && extra.includes('Qualquer um'), busca: /Cápsula/.test(busca) && /roubo de vida/.test(busca), temImg, nomes: bloco.itens.map(i => i.nome) };
+        semFicha: extra.includes('Ainda não está no site'), apoio: extra.includes('assistencia/shenlong-icone') && extra.includes('Qualquer um'), busca: /Cápsula/.test(busca) && /roubo de vida/.test(busca), temImg, notas, nomes: bloco.itens.map(i => i.nome) };
     })()`);
     assert.strictEqual(r.n, 10); assert.strictEqual(r.cartoes, 10);
     assert.ok(r.botoes >= 15, 'os guerreiros dos exemplos abrem a ficha (' + r.botoes + ')');
-    assert.ok(r.semFicha && r.apoio && r.busca && r.temImg);
+    assert.ok(r.semFicha && r.apoio && r.busca);
+    assert.ok(!r.temImg && r.notas === 1, 'a seção não repete a imagem (ela é só um arquivo para compartilhar) e a nota aparece uma vez, não várias');
     assert.ok(r.nomes.includes('Zenoh') && r.nomes.includes('Escola da Tartaruga'));
-    assert.ok(fs.existsSync(path.join(__dirname, 'guias', 'img', 'acessorios-quem-usa.webp')), 'a imagem informativa deveria existir');
   });
 
   await test('Ataque Combinado que "pode ser ativado duas vezes por rodada" (Goku Instinto) entra 2 vezes na mesma cadeia; os outros só 1', () => {
