@@ -1,5 +1,5 @@
 // Versão do site (aparece no rodapé e nos registros de erro). Só muda quando o dono publicar uma versão nova.
-const SITE_VERSAO = '0.1 Alpha';
+const SITE_VERSAO = '0.1.1 Alpha';
 
 /* ---------- Log de crash: erros do site vão para a tabela site_errors do Supabase (só o dono lê, na aba Perfil) ----------
    Fica no começo do script para pegar também erros durante a carga. No máximo 5 registros por visita, sem repetir. */
