@@ -474,6 +474,8 @@ function routeHashFor(){
 let rotaPronta = false;
 function setRouteHash(){
   if(!loaded || typeof history === 'undefined' || typeof location === 'undefined') return;
+  // Volta do login (Discord): o hash traz o token (#access_token=…). Não mexer enquanto o Supabase não o ler e limpar.
+  if(/access_token=|refresh_token=|error_description=|provider_token=/.test(location.hash || '')) return;
   const h = routeHashFor();
   if(h !== (location.hash || '')){
     try{
@@ -6654,7 +6656,7 @@ async function syncDonorRemote(entryOrId, action){
 
 async function signInWithDiscord(){
   if(!isSupabaseConfigured()){ showToast('Supabase ainda não configurado neste site.'); return; }
-  await window.__sb.client.auth.signInWithOAuth({ provider:'discord', options:{ redirectTo: window.location.href } });
+  await window.__sb.client.auth.signInWithOAuth({ provider:'discord', options:{ redirectTo: window.location.origin + window.location.pathname } });
 }
 // Apaga do servidor tudo que pertence a este login: posts e curtidas da Comunidade, dados sincronizados e perfil.
 // Os dados guardados neste aparelho continuam. A conta de login do Discord só some a pedido (ver política de privacidade).
