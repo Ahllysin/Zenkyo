@@ -738,7 +738,12 @@ async function main(){
         { status:'criado', criado:min(5) }, { status:'criado', criado:min(30) }, { status:'pending', criado:min(600) }, { status:'in_process', criado:min(60 * 24 * 8) },
         { status:'aprovado', criado:min(30), aprovado_em:min(20) }, { status:'rejected', criado:min(60) },
       ];
-      return { n: admAbertos(lista, agora), html: admAvisoAbertosHtml(lista).includes('admReconBtn'), vazio: admAvisoAbertosHtml([{ status:'aprovado', criado:min(30), aprovado_em:min(20) }]) === '' };
+      // admAvisoAbertosHtml lê o relógio real; fixa o "agora" do teste para ele não depender do dia em que roda
+      const realNow = Date.now;
+      Date.now = () => agora;
+      try{
+        return { n: admAbertos(lista, agora), html: admAvisoAbertosHtml(lista).includes('admReconBtn'), vazio: admAvisoAbertosHtml([{ status:'aprovado', criado:min(30), aprovado_em:min(20) }]) === '' };
+      } finally { Date.now = realNow; }
     })()`);
     assert.strictEqual(r.n, 2, 'só o criado de 30 min e o pending de 10 h contam');
     assert.ok(r.html && r.vazio);

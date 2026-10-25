@@ -1,0 +1,2 @@
+# Bibliotecas copiadas de terceiros: nunca converter fim de linha (o teste confere o SHA-256 do arquivo original).
+vendor/* -text
