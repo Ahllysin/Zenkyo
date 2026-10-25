@@ -820,7 +820,7 @@ function slug(name){
 }
 function avatarInner(c){
   // Full-body sprite (transparent bg) — used only on the team-builder battlefield slots.
-  return `<img src="sprites/${slug(c.name)}.png" alt="" data-onerr="fallback"><span class="avatar-fallback" style="display:none;">${initials(c.name)}</span>`;
+  return `<img src="sprites/${slug(c.name)}.png" alt="" loading="lazy" decoding="async" data-onerr="fallback"><span class="avatar-fallback" style="display:none;">${initials(c.name)}</span>`;
 }
 function portraitInner(c){
   // Bust/face portrait — used everywhere else (roster list, character cards, picker modal).
@@ -1253,7 +1253,7 @@ function nvLineupHtml(team, small, edit){
   return `<div class="kz-nv-lineup${small ? ' sm' : ''}${edit ? ' edit' : ''}"${alvo}>${[0,1,2,3,4,5].map(i => {
     const c = team && team[i] && getChar(team[i]);
     const ed = edit ? ` data-slot="${i}"${state.slotSel === i ? ' data-sel="1"' : ''}` : '';
-    if(c) return `<span class="ln${edit ? ' filled' : ''}"${ed}${edit ? ' draggable="true"' : ''}${edit ? ` title="${escapeAttr('Casa ' + (i + 1) + ' — ' + c.name + ' (arraste para mudar de casa)')}"` : ''}><img src="${faixaSrc(c)}" alt="" draggable="false" data-onerr="cut" data-card="${portraitSrc(c)}"><b>${i+1}</b>${edit ? `<button type="button" class="ln-x" data-remove-slot="${i}" aria-label="Tirar ${escapeAttr(c.name)} da formação" title="Tirar da formação">×</button>` : ''}</span>`;
+    if(c) return `<span class="ln${edit ? ' filled' : ''}"${ed}${edit ? ' draggable="true"' : ''}${edit ? ` title="${escapeAttr('Casa ' + (i + 1) + ' — ' + c.name + ' (arraste para mudar de casa)')}"` : ''}><img src="${faixaSrc(c)}" alt="" loading="lazy" decoding="async" draggable="false" data-onerr="cut" data-card="${portraitSrc(c)}"><b>${i+1}</b>${edit ? `<button type="button" class="ln-x" data-remove-slot="${i}" aria-label="Tirar ${escapeAttr(c.name)} da formação" title="Tirar da formação">×</button>` : ''}</span>`;
     return `<span class="ln empty"${ed}${edit ? ` role="button" tabindex="0" aria-label="${'Escolher guerreiro para a casa ' + (i + 1)}"` : ''}><i>+</i><b>${i+1}</b></span>`;
   }).join('')}</div>`;
 }
