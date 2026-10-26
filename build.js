@@ -9,9 +9,13 @@
 //   2) Gera a lista e a VERSÃO do modo offline em sw.js (entre BUILD:START e BUILD:END).
 //   3) Gera uma página estática por guerreiro em p/<nome>.html (para o Google e para links com prévia) e o sitemap.xml.
 //   4) Regera a CSP (update-csp.js).
+//   5) Gera en/index.html (versão em inglês) a partir do index.html: <html lang="en">, <base href="../"> (os caminhos
+//      relativos continuam valendo a partir da raiz), título/descrição/links de idioma e js/lang/en.js. Os textos vêm de
+//      js/lang/pt.js e js/lang/en.js — o código (app.js) é um só para os dois idiomas.
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const vm = require('vm');
 const { execFileSync } = require('child_process');
 
 const ROOT = __dirname;
@@ -34,7 +38,7 @@ function gravar(f, novo){
 const hashTexto = f => hash(Buffer.from(norm(read(f)), 'utf8'));
 
 // ---------- 1) ?v= em index.html ----------
-const VERSIONADOS = ['base.css', 'visual-novo.css', 'js/dados.js', 'js/app.js'];
+const VERSIONADOS = ['base.css', 'visual-novo.css', 'js/i18n.js', 'js/lang/pt.js', 'js/dados.js', 'js/app.js'];
 let html = read('index.html');
 VERSIONADOS.forEach(f => {
   const esc = f.replace(/[.*+?^${}()|[\]\\\/]/g, '\\$&');
@@ -57,6 +61,37 @@ let sw = read('sw.js');
 const bloco = "// BUILD:START\nconst VERSION = '" + versao + "';\nconst PRECACHE = " + JSON.stringify(precache.filter(p => p === './' || fs.existsSync(path.join(ROOT, p.split('?')[0]))), null, 1).replace(/\n\s*/g, ' ') + ";\n// BUILD:END";
 sw = norm(sw).replace(/\/\/ BUILD:START[\s\S]*?\/\/ BUILD:END/, bloco);
 gravar('sw.js', sw);
+
+// ---------- 3a) versão em inglês: en/index.html ----------
+// Lê um js/lang/<idioma>.js sem abrir navegador: o arquivo só chama kzAddLang('xx', { chave: texto }).
+function dicionario(f){
+  const dic = {};
+  vm.runInNewContext(read(f), { kzAddLang: (_idioma, textos) => Object.assign(dic, textos) });
+  return dic;
+}
+function gerarIngles(htmlPt){
+  const pt = dicionario('js/lang/pt.js');
+  const en = Object.assign({}, pt, dicionario('js/lang/en.js'));   // o que faltar em inglês fica em português
+  const attr = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+  let h = htmlPt;
+  const trocar = (de, para) => {
+    if(!h.includes(de)) throw new Error('index.html mudou e a versão em inglês não achou: ' + de.slice(0, 70));
+    h = h.split(de).join(para);
+  };
+  trocar('<html lang="pt-BR">', '<html lang="en">');
+  trocar('<meta charset="UTF-8">', '<meta charset="UTF-8">\n<base href="../">');
+  ['meta.titulo', 'meta.descricao', 'meta.imagemAlt'].forEach(k => trocar(attr(pt[k]), attr(en[k])));
+  trocar('<meta property="og:locale" content="pt_BR">', '<meta property="og:locale" content="en_US">');
+  trocar('<meta property="og:url" content="' + SITE + '/">', '<meta property="og:url" content="' + SITE + '/en/">');
+  trocar('<link rel="canonical" href="' + SITE + '/">', '<link rel="canonical" href="' + SITE + '/en/">');
+  const seletor = /<a class="kz-lang-switch"[^>]*>[^<]*<\/a>/;
+  if(!seletor.test(h)) throw new Error('index.html não tem o seletor de idioma (a#langSwitch)');
+  h = h.replace(seletor, () => `<a class="kz-lang-switch" id="langSwitch" href="./" hreflang="${attr(en['idioma.outroCodigo'])}" lang="${attr(en['idioma.outroCodigo'])}" title="${attr(en['idioma.trocar'])}" aria-label="${attr(en['idioma.trocar'])}">${en['idioma.outroSigla']}</a>`);
+  const ptJs = h.match(/<script src="js\/lang\/pt\.js(?:\?v=[A-Za-z0-9]+)?"><\/script>/);
+  if(!ptJs) throw new Error('index.html não carrega js/lang/pt.js');
+  h = h.replace(ptJs[0], () => ptJs[0] + '\n<script src="js/lang/en.js?v=' + hashTexto('js/lang/en.js') + '"></script>');
+  return h;
+}
 
 // ---------- 3) páginas por guerreiro + sitemap ----------
 async function paginas(){
@@ -121,6 +156,7 @@ ${hab}
 paginas().then(n => {
   if(!CHECK) execFileSync(process.execPath, [path.join(ROOT, 'update-csp.js')], { stdio: 'inherit' });
   else try{ execFileSync(process.execPath, [path.join(ROOT, 'update-csp.js'), '--check'], { stdio: 'pipe' }); }catch(e){ problemas.push('CSP desatualizada (rode node build.js)'); }
+  gravar('en/index.html', gerarIngles(read('index.html')));   // depois da CSP, que também mexe no index.html
   if(CHECK){
     if(problemas.length){ console.error('build desatualizado:\n - ' + problemas.join('\n - ')); process.exit(1); }
     console.log('build em dia.');

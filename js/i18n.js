@@ -1,0 +1,33 @@
+// Zenkyo — idioma e textos da interface. Carregado ANTES de dados.js e app.js.
+// O idioma vem do <html lang> da página: "/" é português (pt-BR) e "/en/" é inglês (gerado por node build.js).
+// Os textos ficam em js/lang/pt.js (sempre carregado) e js/lang/en.js (só em /en/). kzt('chave', { nome:'x' }) devolve o
+// texto no idioma da página e troca {nome} pelo valor; se a chave ainda não existir em inglês, cai no português
+// (nunca aparece uma chave crua). Chaves que faltam nos dois viram o próprio nome da chave, para aparecer nos testes.
+(function(g){
+  let docLang = '';
+  try{ docLang = String(g.document.documentElement.getAttribute('lang') || '').toLowerCase(); }catch(e){}
+  const lang = docLang.indexOf('en') === 0 ? 'en' : 'pt';
+  const dic = { pt:{}, en:{} };
+
+  g.KZ_LANG = lang;
+  g.kzAddLang = (idioma, textos) => { Object.assign(dic[idioma] || (dic[idioma] = {}), textos); };
+  g.kzt = (chave, vars) => {
+    let s = dic[lang][chave];
+    if(s == null) s = dic.pt[chave];
+    if(s == null) return chave;
+    return vars ? s.replace(/\{(\w+)\}/g, (m, k) => (vars[k] == null ? m : String(vars[k]))) : s;
+  };
+  g.kzLangTextos = dic;   // só para os testes conferirem as chaves
+
+  // O botão PT/EN do cabeçalho leva para a mesma tela no outro idioma (mantém o #/rota).
+  const sincronizaSeletor = () => {
+    try{
+      const a = g.document.getElementById('langSwitch');
+      if(a && a.setAttribute) a.setAttribute('href', (lang === 'pt' ? 'en/' : './') + (g.location.hash || ''));
+    }catch(e){}
+  };
+  try{
+    sincronizaSeletor();
+    g.addEventListener('hashchange', sincronizaSeletor);
+  }catch(e){}
+})(typeof window !== 'undefined' ? window : globalThis);

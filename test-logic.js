@@ -2312,6 +2312,59 @@ async function main(){
     assert.deepStrictEqual(r.limpaveis, { depois: 2, antes: 0 }, 'só pedidos não pagos com mais de 1 dia entram na limpeza');
   });
 
+  console.log('\n[Idioma: português / inglês]');
+
+  // Carrega i18n.js + os dicionários numa página falsa com o <html lang> pedido (como o navegador faria).
+  const carregaIdioma = (lang, arquivos) => {
+    const fs = require('fs'), path = require('path'), vm = require('vm');
+    const ctx = { document: { documentElement: { getAttribute: () => lang }, getElementById: () => null }, location: { hash: '' }, addEventListener(){} };
+    ctx.window = ctx;
+    vm.createContext(ctx);
+    ['js/i18n.js', ...arquivos].forEach(f => vm.runInContext(fs.readFileSync(path.join(__dirname, f), 'utf8'), ctx, { filename: f }));
+    return ctx;
+  };
+
+  await test('Idioma: o site principal fica em português; kzt troca {variáveis} e devolve a chave se ela não existir', () => {
+    assert.strictEqual(evalIn(sandbox, 'KZ_LANG'), 'pt');
+    assert.strictEqual(evalIn(sandbox, "kzt('meta.titulo')"), 'Zenkyo — guerreiros, combos e tier list');
+    assert.strictEqual(evalIn(sandbox, "kzAddLang('pt', { 'teste.vars': 'Olá, {nome}! {nao}' }), kzt('teste.vars', { nome: 'Ana' })"), 'Olá, Ana! {nao}');
+    assert.strictEqual(evalIn(sandbox, "kzt('chave.que.nao.existe')"), 'chave.que.nao.existe');
+  });
+
+  await test('Idioma: em /en/ o texto vem do inglês e o que ainda não foi traduzido cai no português', () => {
+    const en = carregaIdioma('en', ['js/lang/pt.js', 'js/lang/en.js']);
+    assert.strictEqual(en.KZ_LANG, 'en');
+    assert.strictEqual(en.kzt('meta.titulo'), 'Zenkyo — warriors, combos and tier list');
+    en.kzAddLang('pt', { 'teste.so_pt': 'Só em português' });
+    assert.strictEqual(en.kzt('teste.so_pt'), 'Só em português', 'sem tradução, mostra o português (nunca a chave crua)');
+    const pt = carregaIdioma('pt-BR', ['js/lang/pt.js', 'js/lang/en.js']);
+    assert.strictEqual(pt.KZ_LANG, 'pt');
+    assert.strictEqual(pt.kzt('meta.titulo'), 'Zenkyo — guerreiros, combos e tier list', 'página em português ignora o dicionário inglês');
+  });
+
+  await test('Idioma: toda chave do inglês existe no português (sem chave órfã ou com erro de digitação)', () => {
+    const ctx = carregaIdioma('en', ['js/lang/pt.js', 'js/lang/en.js']);
+    const pt = Object.keys(ctx.kzLangTextos.pt), en = Object.keys(ctx.kzLangTextos.en);
+    const orfas = en.filter(k => !pt.includes(k));
+    assert.deepStrictEqual(orfas, [], 'chaves só no inglês: ' + orfas.join(', '));
+    assert.ok(pt.length > 0 && en.length > 0);
+  });
+
+  await test('Idioma: en/index.html (gerado) tem lang="en", base na raiz, canonical próprio, en.js e o seletor voltando para o português', () => {
+    const fs = require('fs'), path = require('path');
+    const pt = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+    const en = fs.readFileSync(path.join(__dirname, 'en', 'index.html'), 'utf8');
+    assert.ok(/<html lang="en">/.test(en) && /<html lang="pt-BR">/.test(pt));
+    assert.ok(en.includes('<base href="../">') && !pt.includes('<base'), 'só a página em inglês precisa do <base>, porque mora em /en/');
+    assert.ok(en.includes('<link rel="canonical" href="https://zenkyo.com.br/en/">') && pt.includes('<link rel="canonical" href="https://zenkyo.com.br/">'));
+    assert.ok(/hreflang="pt-BR" href="https:\/\/zenkyo\.com\.br\/"/.test(pt) && /hreflang="en" href="https:\/\/zenkyo\.com\.br\/en\/"/.test(pt), 'as duas páginas se apontam com hreflang');
+    assert.ok(/<script src="js\/lang\/en\.js\?v=[0-9a-f]+"><\/script>/.test(en) && !pt.includes('lang/en.js'), 'o dicionário inglês só carrega em /en/');
+    assert.ok(/id="langSwitch" href="en\/"/.test(pt) && /id="langSwitch" href=".\/"/.test(en), 'o seletor leva para o outro idioma');
+    const ordem = h => ['js/i18n.js', 'js/lang/pt.js', 'js/dados.js', 'js/app.js'].map(f => h.indexOf('<script src="' + f));
+    [pt, en].forEach(h => { const o = ordem(h); assert.ok(o.every(i => i > 0) && o.every((i, n) => n === 0 || i > o[n - 1]), 'i18n e dicionário carregam antes de dados.js e app.js'); });
+    assert.strictEqual(pt.match(/<meta http-equiv="Content-Security-Policy" content="([^"]*)">/)[1], en.match(/<meta http-equiv="Content-Security-Policy" content="([^"]*)">/)[1], 'mesma CSP nas duas páginas');
+  });
+
   console.log(`\n${passed} passaram, ${failed} falharam.`);
   if(failed > 0) process.exit(1);
 }

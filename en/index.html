@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<base href="../">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SBSYxeS6xWExluapZd82fEpdgIVMPBIb0DZg6NIBnZo=' 'sha256-rTtUF03kCyjLWChCnMqHRv396f448ub7zBfphVFh+3k=' 'sha256-xOxCGXhi2Wi1KxU/2jpDXfoYJz2olYXuUBL7owFU018='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://cdn.discordapp.com https://media.discordapp.net; connect-src 'self' https://luyuprliobxtxnppdohw.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://luyuprliobxtxnppdohw.supabase.co" crossorigin>
+<title>Zenkyo — warriors, combos and tier list</title>
+<meta name="description" content="Warriors, skills, combos, tier list, collection and guides for Dragon Ball. Unofficial fan site.">
+<meta name="theme-color" content="#0b0912">
+<link rel="apple-touch-icon" href="assets/icone-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Zenkyo">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Zenkyo — warriors, combos and tier list">
+<meta property="og:description" content="Warriors, skills, combos, tier list, collection and guides for Dragon Ball. Unofficial fan site.">
+<meta property="og:url" content="https://zenkyo.com.br/en/">
+<meta property="og:image" content="https://zenkyo.com.br/assets/previa-link.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Zenkyo: warriors, combos and tier list">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://zenkyo.com.br/en/">
+<link rel="alternate" hreflang="pt-BR" href="https://zenkyo.com.br/">
+<link rel="alternate" hreflang="en" href="https://zenkyo.com.br/en/">
+<link rel="alternate" hreflang="x-default" href="https://zenkyo.com.br/">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g' cx='35%25' cy='30%25'%3E%3Cstop offset='0%25' stop-color='%23ff6a4a'/%3E%3Cstop offset='70%25' stop-color='%23c2261a'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='29' fill='url(%23g)' stroke='%23ffc54a' stroke-width='3'/%3E%3Ctext x='32' y='43' font-size='30' text-anchor='middle' fill='%23fff3e0' font-family='serif' font-weight='800'%3E%E8%A1%93%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="fonts/fonts.css">
+<script id="kzVisual">/* Visual novo (energia) ligado para todos. ?visual=antigo volta ao anterior neste navegador (para comparar ou se algo quebrar); ?visual=novo desfaz. */try{var kzVis=new URLSearchParams(location.search).get('visual');if(kzVis==='antigo')localStorage.setItem('kiai_visual','antigo');else if(kzVis==='novo')localStorage.removeItem('kiai_visual');if(localStorage.getItem('kiai_visual')!=='antigo')document.documentElement.classList.add('vis-novo');}catch(e){document.documentElement.classList.add('vis-novo');}/* Efeitos leves: nv-lite = tela de celular (até 700px) ou aparelho fraco; nv-eco = aparelho fraco (pouca memória/CPU) ou economia de dados. ?efeitos=leve força, ?efeitos=total desfaz (fica salvo neste navegador). */try{var kzH=document.documentElement,kzN=navigator,kzC=kzN.connection||{},kzE=new URLSearchParams(location.search).get('efeitos');if(kzE==='leve'||kzE==='total')localStorage.setItem('kiai_efeitos',kzE);var kzF=localStorage.getItem('kiai_efeitos');var kzFraco=kzF==='leve'||(kzF!=='total'&&(kzC.saveData===true||(kzN.deviceMemory&&kzN.deviceMemory<=2)||(kzN.hardwareConcurrency&&kzN.hardwareConcurrency<=2)));var kzMq=window.matchMedia('(max-width:700px)');var kzSet=function(){kzH.classList.toggle('nv-eco',!!kzFraco);kzH.classList.toggle('nv-lite',kzF==='leve'||(kzF!=='total'&&(kzMq.matches||!!kzFraco)));};kzSet();if(kzMq.addEventListener)kzMq.addEventListener('change',kzSet);}catch(e){}</script>
+<link rel="stylesheet" href="base.css?v=8944e57c">
+<link rel="stylesheet" href="visual-novo.css?v=d7b5f921">
+</head>
+<body>
+<div class="kz-app" id="kzApp">
+  <header class="kz-header">
+    <div class="kz-header-sun"></div>
+    <div class="kz-header-hills"></div>
+    <div class="kz-header-fade"></div>
+    <div class="kz-header-inner">
+      <button class="kz-menu-btn" id="menuToggleBtn" title="Recolher/expandir menu" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="kz-brand" id="brandHome" title="Ir para Personagens">
+        <div class="kz-brand-seal">術</div>
+        <div class="kz-brand-name" data-text="Zenkyo">Zenkyo</div>
+      </div>
+      <button class="kz-header-donate-btn" id="headerDonateBtn" title="Doar">
+        <span aria-hidden="true">援</span><span class="kz-lbl-full">Doar</span>
+      </button>
+      <a class="kz-lang-switch" id="langSwitch" href="./" hreflang="pt-BR" lang="pt-BR" title="View the site in Portuguese (Português)" aria-label="View the site in Portuguese (Português)">PT</a>
+      <div id="accountArea"></div>
+    </div>
+  </header>
+
+  <div class="kz-body">
+    <aside class="kz-sidebar">
+      <div class="kz-sidebar-inner">
+        <button class="kz-nav-btn" data-tab="chars" title="Personagens"><span class="kz-nav-glyph">戦</span><span class="kz-nav-label">Personagens</span></button>
+        <button class="kz-nav-btn" data-tab="collection" title="Coleção"><span class="kz-nav-glyph">集</span><span class="kz-nav-label">Coleção</span></button>
+        <button class="kz-nav-btn" data-tab="combos" title="Combos"><span class="kz-nav-glyph">連</span><span class="kz-nav-label">Combos</span></button>
+        <button class="kz-nav-btn" data-tab="guias" title="Guias"><span class="kz-nav-glyph">書</span><span class="kz-nav-label">Guias</span></button>
+        <button class="kz-nav-btn" data-tab="tierlist" title="Tier List"><span class="kz-nav-glyph">番</span><span class="kz-nav-label">Tier List</span></button>
+        <button class="kz-nav-btn" data-tab="comunidade" title="Comunidade"><span class="kz-nav-glyph">社</span><span class="kz-nav-label">Comunidade</span></button>
+        <button class="kz-nav-btn" data-tab="favs" title="Favoritos"><span class="kz-nav-glyph">★</span><span class="kz-nav-label">Favoritos</span></button>
+        <button class="kz-nav-btn" data-tab="perfil" title="Perfil"><span class="kz-nav-glyph">印</span><span class="kz-nav-label">Perfil</span></button>
+        <button class="kz-nav-btn" data-tab="doar" title="Doar"><span class="kz-nav-glyph">援</span><span class="kz-nav-label">Doar</span></button>
+        <button class="kz-nav-btn" data-tab="admin" id="navAdminBtn" title="Admin (só o dono)" style="display:none"><span class="kz-nav-glyph">王</span><span class="kz-nav-label">Admin</span></button>
+        <a class="kz-privacy-link" href="privacidade.html" target="_blank" rel="noopener noreferrer">Privacidade e dados</a>
+        <a class="kz-privacy-link" href="termos.html" target="_blank" rel="noopener noreferrer">Termos de doação</a>
+        <div class="kz-sidebar-spacer"></div>
+        <div class="kz-sidebar-watermark" aria-hidden="true">龍</div>
+        <div class="kz-sidebar-balls" aria-hidden="true">
+          <img class="b4" src="assets/balls/esfera-4.webp" alt="">
+          <img class="b7" src="assets/balls/esfera-7.webp" alt="">
+        </div>
+      </div>
+    </aside>
+    <div class="kz-nav-backdrop" id="navBackdrop"></div>
+    <main class="kz-main">
+      <div class="kz-main-watermark" aria-hidden="true">術</div>
+      <div id="view"></div>
+      <footer class="kz-footer">
+        <p>Zenkyo é um site de fã, feito pela comunidade, <b>sem vínculo</b> com Bandai Namco, Toei Animation, Shueisha ou com os criadores do jogo.
+        Dragon Ball, os personagens e as imagens pertencem aos seus donos.</p>
+        <p class="kz-versao"><b>Zenkyo · versão <span data-versao>0.1.1 Alpha</span></b> — o site está em fase de testes: pode ter erros e mudar bastante. Achou algo estranho? <a href="https://github.com/Ahllysin/Zenkyo/issues" target="_blank" rel="noopener noreferrer">Conte aqui</a>.</p>
+        <p><a href="privacidade.html" target="_blank" rel="noopener noreferrer">Privacidade e dados</a> · <a href="termos.html" target="_blank" rel="noopener noreferrer">Termos de doação</a> · <button type="button" class="kz-linkbtn" id="offlineBtn">Modo offline</button> · <a href="https://github.com/Ahllysin/Zenkyo/issues" target="_blank" rel="noopener noreferrer">Contato / pedir remoção de conteúdo</a></p>
+      </footer>
+    </main>
+  </div>
+
+  <img class="kz-float-ball" src="assets/balls/esfera-3.webp" alt="" aria-hidden="true">
+  <nav class="kz-nv-tabbar" aria-label="Atalhos">
+    <button type="button" class="kz-nv-tb" data-tbtab="chars"><span class="kj" aria-hidden="true">戦</span>Guerreiros</button>
+    <button type="button" class="kz-nv-tb" data-tbtab="combos"><span class="kj" aria-hidden="true">連</span>Combos</button>
+    <button type="button" class="kz-nv-tb" data-tbtab="tierlist"><span class="kj" aria-hidden="true">番</span>Tier List</button>
+    <button type="button" class="kz-nv-tb" data-tbtab="guias"><span class="kj" aria-hidden="true">書</span>Guias</button>
+    <button type="button" class="kz-nv-tb" id="tabbarMoreBtn" aria-label="Mais abas"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>Mais</button>
+  </nav>
+</div>
+<div id="modalRoot"></div>
+
+<!--
+  ======================= SUPABASE + DISCORD (login único do site inteiro) =======================
+  Um só login (Discord) cobre duas coisas: (1) a Aliança Z — ranking público de apoiadores
+  (aba Doar) — e (2) sincronizar os dados pessoais de quem entrar (personagens, equipe,
+  Coleção, tier list, favoritos) entre aparelhos. Sem isso preenchido, tudo fica só neste
+  navegador, como já era — o botão "Entrar com Discord" some sozinho.
+    1. Crie um projeto grátis em https://supabase.com -> "New project" (anote a senha do
+       banco, mas não vai precisar usar ela de novo aqui).
+    2. Menu lateral: Authentication > Sign In / Providers > ative "Discord". O Supabase
+       mostra uma "Redirect URL" (algo como https://SEU-PROJETO.supabase.co/auth/v1/callback) —
+       guarde ela.
+    3. Crie um app em https://discord.com/developers/applications -> "New Application".
+       Na aba OAuth2 > General: copie "Client ID" e "Client Secret". Em OAuth2 > Redirects,
+       adicione a Redirect URL do passo 2. Cole Client ID/Secret de volta no Supabase e salve.
+    4. Menu lateral do Supabase: SQL Editor > New query > cole e rode (cria as duas tabelas —
+       "donations" é pública pra leitura, pra todo visitante ver a Aliança Z; "user_data" é
+       privada, cada usuário só vê/mexe nos próprios dados):
+         create table public.donations (
+           id uuid primary key default gen_random_uuid(),
+           number integer not null,
+           name text not null,
+           amount numeric not null default 0,
+           quote text, discord text, link text,
+           honras text[] not null default '{}',
+           active boolean not null default true,
+           created_at timestamptz not null default now()
+         );
+         alter table public.donations enable row level security;
+         create policy "leitura publica" on public.donations for select using (true);
+
+         create table public.user_data (
+           user_id uuid not null references auth.users(id) on delete cascade,
+           key text not null,
+           value text not null,
+           updated_at timestamptz not null default now(),
+           primary key (user_id, key)
+         );
+         alter table public.user_data enable row level security;
+         create policy "cada um so mexe no proprio" on public.user_data
+           for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+    5. Menu lateral: Project Settings > API > copie "Project URL" e a chave "anon public".
+       Cole nos dois campos do SUPABASE_CONFIG abaixo (mantendo as aspas).
+    6. Recarregue o site e clique "Entrar com Discord" (topo da página) com a SUA conta.
+    7. No painel do Supabase: Authentication > Users, ache seu usuário na lista e copie o
+       "User UID" dele.
+    8. Volte no SQL Editor e rode (trocando SEU-UID-AQUI pelo UID copiado, mantendo as aspas
+       simples em volta e o ::uuid depois) — só isso deixa você editar a Aliança Z; sem essa
+       policy, ninguém (nem você) consegue escrever em "donations", só ler:
+         create policy "so admin escreve donations" on public.donations
+           for all using (auth.uid() = 'SEU-UID-AQUI'::uuid)
+           with check (auth.uid() = 'SEU-UID-AQUI'::uuid);
+    9. Cole esse mesmo UID no ADMIN_DISCORD_ID abaixo, no lugar de "COLE_AQUI".
+    10. (Aba Perfil) Volte no SQL Editor e rode isso — cria a tabela de perfil público
+        (cada pessoa só edita o próprio: nick, servidor, bio, redes) e adiciona a coluna
+        que liga um apoiador da Aliança Z a um perfil:
+          create table public.profiles (
+            id uuid primary key references auth.users(id) on delete cascade,
+            nickname text, servidor text, bio text,
+            instagram text, twitch text, youtube text,
+            avatar_char_id text,
+            show_socials boolean not null default false,
+            is_public boolean not null default false,
+            updated_at timestamptz not null default now()
+          );
+          alter table public.profiles enable row level security;
+          create policy "leitura publica dos perfis publicos" on public.profiles
+            for select using (is_public = true or auth.uid() = id);
+          create policy "cada um so mexe no proprio perfil" on public.profiles
+            for all using (auth.uid() = id) with check (auth.uid() = id);
+
+          alter table public.donations add column user_id uuid references auth.users(id);
+        11. (Patentes novas) Rode também, pra guardar a forma (Ultra Instinto/Ultra Ego/Beast) e a
+            cor (Anjo) que a própria pessoa escolhe no Perfil — sem isso o resto do perfil salva
+            normal, só essas duas escolhas não ficam guardadas:
+              alter table public.profiles add column patente_forma text, add column patente_cor text;
+        12. (Aba Comunidade) Rode também — cria as tabelas de posts, curtidas e denúncias. Qualquer
+            um lê; só logado posta/curte/denuncia; cada um apaga os próprios posts e o admin (o mesmo
+            UID do passo 8) apaga qualquer um e é o único que enxerga as denúncias:
+              create table public.community_posts (
+                id uuid primary key default gen_random_uuid(),
+                user_id uuid not null references auth.users(id) on delete cascade,
+                kind text not null check (kind in ('team','tierlist')),
+                title text not null check (char_length(title) between 3 and 60),
+                description text check (description is null or char_length(description) <= 300),
+                data jsonb not null check (octet_length(data::text) <= 20000),
+                author_name text check (author_name is null or char_length(author_name) <= 40),
+                created_at timestamptz not null default now()
+              );
+              create table public.community_likes (
+                post_id uuid not null references public.community_posts(id) on delete cascade,
+                user_id uuid not null references auth.users(id) on delete cascade,
+                primary key (post_id, user_id)
+              );
+              create table public.community_reports (
+                post_id uuid not null references public.community_posts(id) on delete cascade,
+                user_id uuid not null references auth.users(id) on delete cascade,
+                created_at timestamptz not null default now(),
+                primary key (post_id, user_id)
+              );
+              alter table public.community_posts enable row level security;
+              alter table public.community_likes enable row level security;
+              alter table public.community_reports enable row level security;
+              create policy "todos leem os posts" on public.community_posts for select using (true);
+              /* limite: 30 posts no total; times publicados ao mesmo tempo: 2 (ou 5 pra quem apoiou com R$ 10+ vinculado ao login) */
+              create policy "logado posta (limites)" on public.community_posts for insert
+                with check (
+                  auth.uid() = user_id
+                  and (select count(*) from public.community_posts p where p.user_id = auth.uid()) < 30
+                  and (kind <> 'team' or (select count(*) from public.community_posts p where p.user_id = auth.uid() and p.kind = 'team')
+                       < case when coalesce((select sum(d.amount) from public.donations d where d.user_id = auth.uid() and d.active), 0) >= 10 then 5 else 2 end)
+                );
+              create policy "apaga o proprio ou admin" on public.community_posts for delete
+                using (auth.uid() = user_id or auth.uid() = 'SEU-UID-AQUI'::uuid);
+              create policy "todos leem as curtidas" on public.community_likes for select using (true);
+              create policy "curte como si mesmo" on public.community_likes for insert with check (auth.uid() = user_id);
+              create policy "descurte a propria" on public.community_likes for delete using (auth.uid() = user_id);
+              create policy "denuncia como si mesmo" on public.community_reports for insert with check (auth.uid() = user_id);
+              create policy "so admin ve denuncias" on public.community_reports for select using (auth.uid() = 'SEU-UID-AQUI'::uuid);
+        13. (Segurança) Rode também — a leitura pública passa a sair de vistas que só mostram o que a pessoa
+            autorizou (nada de redes escondidas nem valor exato de doação), com limites de tamanho nos campos e o
+            nome do autor dos posts definido pelo servidor (ninguém posta com o nome de outro pelo DevTools):
+              create or replace view public.profiles_public as
+                select id, nickname, servidor, bio,
+                       case when show_socials then instagram end as instagram,
+                       case when show_socials then twitch end as twitch,
+                       case when show_socials then youtube end as youtube,
+                       avatar_char_id, patente_forma, patente_cor, show_socials, is_public
+                from public.profiles where is_public = true;
+              grant select on public.profiles_public to anon, authenticated;
+              drop policy if exists "leitura publica dos perfis publicos" on public.profiles;
+
+              create or replace view public.donations_public as
+                select id, number, name,
+                       case when amount >= 1000 then 1000 when amount >= 600 then 600 when amount >= 350 then 350
+                            when amount >= 200 then 200 when amount >= 100 then 100 when amount >= 50 then 50
+                            when amount >= 20 then 20 when amount >= 10 then 10 else 0 end as amount,
+                       quote, discord, link, honras, active, user_id
+                from public.donations;
+              grant select on public.donations_public to anon, authenticated;
+              drop policy if exists "leitura publica" on public.donations;
+              create policy "le o proprio ou admin" on public.donations for select
+                using (auth.uid() = user_id or auth.uid() = 'SEU-UID-AQUI'::uuid);
+
+              alter table public.profiles add constraint profiles_limites check (
+                char_length(coalesce(nickname,'')) <= 40 and char_length(coalesce(servidor,'')) <= 20
+                and char_length(coalesce(bio,'')) <= 220 and char_length(coalesce(instagram,'')) <= 60
+                and char_length(coalesce(twitch,'')) <= 80 and char_length(coalesce(youtube,'')) <= 120
+                and char_length(coalesce(avatar_char_id,'')) <= 64 and char_length(coalesce(patente_forma,'')) <= 20
+                and (patente_cor is null or patente_cor ~ '^#[0-9a-fA-F]{6}$')) not valid;
+              alter table public.user_data add constraint user_data_limites
+                check (char_length(key) <= 64 and octet_length(value) <= 200000) not valid;
+
+              create or replace function public.community_set_author() returns trigger
+              language plpgsql security definer set search_path = public, auth as $fn$
+              declare nick text; disc text;
+              begin
+                select nullif(trim(nickname), '') into nick from public.profiles where id = auth.uid() and is_public = true;
+                select coalesce(identity_data->>'full_name', identity_data->>'name') into disc
+                  from auth.identities where user_id = auth.uid() and provider = 'discord' limit 1;
+                new.author_name := left(coalesce(nick, disc, 'Jogador'), 40);
+                return new;
+              end $fn$;
+              drop trigger if exists community_posts_author on public.community_posts;
+              create trigger community_posts_author before insert on public.community_posts
+                for each row execute function public.community_set_author();
+        No painel admin da Aliança Z, o campo "Vincular perfil (User UID)" aceita o
+        "User UID" de quem apoiou (Authentication > Users) — se a pessoa marcar o próprio
+        perfil como público (aba Perfil), o mural passa a mostrar os dados dela em vez do
+        que foi digitado à mão.
+-->
+<script src="vendor/supabase.js"></script>
+<script type="module">
+  const SUPABASE_CONFIG = {
+    url: "https://luyuprliobxtxnppdohw.supabase.co",
+    anonKey: "sb_publishable_XYrRZJxGCrnUJhXRldVtUg_VGMLYh9q",
+  };
+  window.ADMIN_DISCORD_ID = "a06d68b7-b5c9-4be3-a102-8a826bbe8cee"; // UID do Supabase de quem pode editar a Aliança Z
+
+  // A biblioteca vem de vendor/supabase.js (cópia fixa, versão 2.117.3), carregada no <script src> logo acima — nada de CDN.
+  if(SUPABASE_CONFIG.url !== "COLE_AQUI" && window.supabase && window.supabase.createClient){
+    try{
+      window.__sb = { client: window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey) };
+      window.dispatchEvent(new CustomEvent('supabase-ready'));
+    }catch(err){
+      console.error('Supabase falhou ao iniciar', err);
+      window.dispatchEvent(new CustomEvent('supabase-unavailable'));
+    }
+  } else {
+    window.dispatchEvent(new CustomEvent('supabase-unavailable'));
+  }
+</script>
+
+<script src="js/i18n.js?v=3bded6e2"></script>
+<script src="js/lang/pt.js?v=67215aaf"></script>
+<script src="js/lang/en.js?v=6ee9eff8"></script>
+<script src="js/dados.js?v=25dc1b32"></script>
+<script src="js/app.js?v=5c91e82d"></script>
+</body>
+</html>
