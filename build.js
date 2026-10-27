@@ -137,7 +137,9 @@ async function paginas(){
     raca:c.element, genero:c.gender, tags:c.tags || [], skill:c.skill, supreme:c.supreme, combo:c.combo }))`);
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch]));
   const hoje = new Date().toISOString().slice(0, 10);
-  const urls = [{ loc: SITE + '/', pri: '1.0' }, { loc: SITE + '/privacidade.html', pri: '0.3' }, { loc: SITE + '/termos.html', pri: '0.3' }];
+  // cada página tem a versão em português e a em inglês; "alt" liga as duas com hreflang (o Google mostra a certa para cada pessoa)
+  const par = (pt, en, pri) => { const alt = [['pt-BR', SITE + pt], ['en', SITE + en]]; return [{ loc: SITE + pt, pri, alt }, { loc: SITE + en, pri, alt }]; };
+  const urls = [...par('/', '/en/', '1.0'), ...par('/privacidade.html', '/en/privacy.html', '0.3'), ...par('/termos.html', '/en/terms.html', '0.3')];
   const esperadas = new Set();
   chars.forEach(c => {
     const desc = [c.raridade, c.tipo && 'tipo ' + c.tipo, c.afinidade && 'afinidade ' + c.afinidade].filter(Boolean).join(' · ');
@@ -184,8 +186,8 @@ ${hab}
   if(fs.existsSync(pdir)) fs.readdirSync(pdir).filter(f => f.endsWith('.html') && !esperadas.has('p/' + f)).forEach(f => {
     if(CHECK) problemas.push('p/' + f + ' sobrou (guerreiro não existe mais)'); else fs.unlinkSync(path.join(pdir, f));
   });
-  gravar('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
-    urls.map(u => `  <url><loc>${u.loc}</loc><lastmod>${hoje}</lastmod><priority>${u.pri}</priority></url>`).join('\n') + '\n</urlset>\n');
+  gravar('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n' +
+    urls.map(u => `  <url><loc>${u.loc}</loc>${(u.alt || []).map(([l, h]) => `<xhtml:link rel="alternate" hreflang="${l}" href="${h}"/>`).join('')}<lastmod>${hoje}</lastmod><priority>${u.pri}</priority></url>`).join('\n') + '\n</urlset>\n');
   return chars.length;
 }
 
