@@ -97,8 +97,8 @@ if(!window.storage){
 
 /* ======================= DATA / CONSTANTS ======================= */
 const EFFECTS = ['derrubada','empurrao','elevacao_alta','elevacao_baixa'];
-const EFFECT_LABELS = {derrubada:'Derrubada', empurrao:'Empurrão', elevacao_alta:'Elevação Alta', elevacao_baixa:'Elevação Baixa'};
-const EFFECT_ABBR = {derrubada:'DB', empurrao:'EP', elevacao_alta:'EA', elevacao_baixa:'EB'};
+const EFFECT_LABELS = {derrubada:kzt('ef.derrubada'), empurrao:kzt('ef.empurrao'), elevacao_alta:kzt('ef.elevacao_alta'), elevacao_baixa:kzt('ef.elevacao_baixa')};
+const EFFECT_ABBR = {derrubada:kzt('ef.abbr.derrubada'), empurrao:kzt('ef.abbr.empurrao'), elevacao_alta:kzt('ef.abbr.elevacao_alta'), elevacao_baixa:kzt('ef.abbr.elevacao_baixa')};
 const ELEMENTS = ['Saiyajin','Humano','Androide','Nenhum'];
 const GENDERS = ['Masculino','Feminino'];
 const TYPES = ['Ataque','Defesa','Habilidade'];
@@ -143,29 +143,14 @@ const LEGACY_TIER_COLORS = {t_a:['#b3402f','#c9a24b'], t_b:['#c9a24b','#4f8a68']
 //   ★3 azul     — Habilidade MAX.
 //   ★4 azul     — Passiva (padrão) — ainda não capturada do jogo
 //   ★5 azul     — Suprema SMAX.
-const STAR_SCHEDULE = [
-  { reqLevel:1,  starLabel:'★1 Dourada' },
-  { reqLevel:2,  starLabel:'★2 Dourada' },
-  { reqLevel:3,  starLabel:'★3 Dourada' },
-  { reqLevel:4,  starLabel:'★4 Dourada' },
-  { reqLevel:5,  starLabel:'★5 Dourada' },
-  { reqLevel:6,  starLabel:'★1 Azul' },
-  { reqLevel:7,  starLabel:'★2 Azul' },
-  { reqLevel:8,  starLabel:'★3 Azul' },
-  { reqLevel:9,  starLabel:'★4 Azul' },
-  { reqLevel:10, starLabel:'★5 Azul' },
-  { reqLevel:11, starLabel:'★1 LR' },
-  { reqLevel:12, starLabel:'★2 LR' },
-  { reqLevel:13, starLabel:'★3 LR' },
-  { reqLevel:14, starLabel:'★4 LR' },
-  { reqLevel:15, starLabel:'★5 LR' },
-];
+// Nome de cada fase e rótulo de cada nível (★1 Dourada ... ★5 Azul, ★1 LR ...); em inglês: ★1 Gold, ★1 Blue...
+const STAR_PHASE_NAME = { gold:kzt('estrelas.dourada'), blue:kzt('estrelas.azul'), lr:'LR' };
+const STAR_SCHEDULE = Array.from({ length:15 }, (_, i) => ({ reqLevel:i + 1, starLabel:'★' + starFilled(i + 1) + ' ' + STAR_PHASE_NAME[starPhase(i + 1)] }));
 // Fases das estrelas: Dourada 1-5, Azul 6-10 (UR) e LR 11-15 (estrelas coloridas; só os SSR chegam lá).
 function starPhase(lv){ return lv > 10 ? 'lr' : lv > 5 ? 'blue' : 'gold'; }
 function starFilled(lv){ return lv > 10 ? lv - 10 : lv > 5 ? lv - 5 : lv; }
-const STAR_PHASE_NAME = { gold:'Dourada', blue:'Azul', lr:'LR' };
 function maxStarLevel(c){ return (c && rarityLabel(c.rarity) === 'SSR') ? 15 : 10; }
-function starLabelFor(reqLevel){ return (STAR_SCHEDULE.find(s=>s.reqLevel===reqLevel)||{}).starLabel || ('Nível '+reqLevel); }
+function starLabelFor(reqLevel){ return (STAR_SCHEDULE.find(s=>s.reqLevel===reqLevel)||{}).starLabel || kzt('estrelas.nivel', { n: reqLevel }); }
 
 // Passivas "gerais" universais — mesmo nome/texto pra TODOS os personagens (não vêm do
 // personagens-habilidades-completas.json, são fixas). Confirmadas pelo usuário direto do
@@ -221,7 +206,7 @@ function getAbilityUnlocks(charName, level){
   ];
   // Super Despertar (LR, estrelas coloridas 11-15): só os SSR chegam, e só alguns têm habilidades novas (19 de 51).
   if(Array.isArray(p.lr) && p.lr.length){
-    groups.push({ title:'Super Despertar (LR)', tiers: p.lr.map((d, i) => mkTier(11 + i, d.semTexto ? { nome:d.nome, desc:'Texto ainda não disponível em português (o jogo não traz).', tipo:d.tipo, icone:d.icone } : d, 'Despertar')) });
+    groups.push({ title:'Super Despertar (LR)', tiers: p.lr.map((d, i) => mkTier(11 + i, d.semTexto ? { nome:d.nome, desc:kzt('hab.lrSemTexto'), tipo:d.tipo, icone:d.icone } : d, 'Despertar')) });
   }
 
   const passivaUnlocked = !!(p.passiva && level >= 2);
@@ -5518,9 +5503,9 @@ function attachCombosHandlers(){
 
 /* ======================= GUIAS ======================= */
 const GUIDE_PROGRESS = [
-  [1,'Habilidade, Suprema e Ataque Combinado'],[2,'Passiva (Padrão)'],[3,'Passiva Única'],[4,'Passiva de ★4'],
-  [5,'Suprema MÁX.'],[6,'Passiva Única desperta'],[7,'Passiva universal'],[8,'Habilidade MAX.'],
-  [9,'Passiva universal'],[10,'Suprema SMAX.'],
+  [1,kzt('gp.1')],[2,kzt('hab.passivaPadrao')],[3,kzt('hab.passivaUnicaTitulo')],[4,kzt('gp.4')],
+  [5,kzt('gp.5')],[6,kzt('gp.6')],[7,kzt('gp.7')],[8,kzt('gp.8')],
+  [9,kzt('gp.7')],[10,kzt('gp.10')],
 ];
 function renderGuiasCombos(){
   const C = state.characters;
@@ -5530,7 +5515,7 @@ function renderGuiasCombos(){
     return `
     <div class="kz-guide-eff">
       <span class="kz-eff-dot" style="background:${s.bg};color:${s.fg};">${EFFECT_ABBR[k]}</span>
-      <span class="txt"><span class="n">${EFFECT_LABELS[k]}</span><span class="c">${n} ${n===1?'combinado reage':'combinados reagem'} a este efeito</span></span>
+      <span class="txt"><span class="n">${EFFECT_LABELS[k]}</span><span class="c">${kzt(n===1 ? 'guia.reage1' : 'guia.reageN', { n })}</span></span>
     </div>`;
   }).join('');
   const scan = priorityOrder().map(i=>i+1).join(' → ');
@@ -5540,35 +5525,35 @@ function renderGuiasCombos(){
       <div class="kz-pill-row" style="gap:10px;">${vals.map(v=>{
         const r = PILL_RGB[v] || ['201,162,75','#e0c070'];
         const n = C.filter(c=>c[field]===v).length;
-        return `<span class="kz-pill" style="background:rgba(${r[0]},.22);color:${r[1]};border-color:rgba(${r[0]},.7);">${v}<span class="count">${n}</span></span>`;
+        return `<span class="kz-pill" style="background:rgba(${r[0]},.22);color:${r[1]};border-color:rgba(${r[0]},.7);">${kzTermo(v)}<span class="count">${n}</span></span>`;
       }).join('')}</div>
     </div>`;
   return `
     <div class="kz-guide-grid">
       <article class="kz-guide-card">
-        <div class="kz-guide-head"><span class="glyph">連</span><h2>A cadeia de combo</h2></div>
-        <p>Habilidade e Suprema iniciam o combo e causam um efeito. Um aliado entra com o Ataque Combinado quando o efeito ativo bate com o requisito dele, e causa um novo efeito que puxa o próximo golpe. Cada guerreiro entra no máximo uma vez por combo, exceto quem tem no texto "pode ser ativado duas vezes por rodada" (Goku Instinto), que entra até duas.</p>
+        <div class="kz-guide-head"><span class="glyph">連</span><h2>${kzt('guia.cadeiaTitulo')}</h2></div>
+        <p>${kzt('guia.cadeiaTexto')}</p>
         <div class="kz-guide-effects">${effCards}</div>
       </article>
       <article class="kz-guide-card">
-        <div class="kz-guide-head"><span class="glyph">陣</span><h2>Formação</h2></div>
-        <p>A equipe tem 6 casas. Ao surgir um efeito, o montador procura, entre os guerreiros ainda não usados, o primeiro com o gatilho certo, sempre na mesma ordem — da Casa 1 até a Casa 6.</p>
+        <div class="kz-guide-head"><span class="glyph">陣</span><h2>${kzt('guia.formacaoTitulo')}</h2></div>
+        <p>${kzt('guia.formacaoTexto')}</p>
         <div class="kz-guide-formation">
           <div class="kz-guide-slots">${SLOT_VISUAL_ORDER.map(i=>`<span class="cell">${i+1}</span>`).join('')}</div>
         </div>
-        <div class="kz-guide-note">Ordem de varredura: ${scan}.</div>
+        <div class="kz-guide-note">${kzt('guia.varredura', { ordem: scan })}</div>
       </article>
       <article class="kz-guide-card">
-        <div class="kz-guide-head"><span class="glyph">星</span><h2>Progressão por estrelas</h2></div>
-        <p>As estrelas enchem em dourado até ★5; depois o guerreiro desperta e a mesma fileira enche em azul.</p>
+        <div class="kz-guide-head"><span class="glyph">星</span><h2>${kzt('guia.estrelasTitulo')}</h2></div>
+        <p>${kzt('guia.estrelasTexto')}</p>
         <div class="kz-guide-prog">
           ${GUIDE_PROGRESS.map(([r,t])=>`<div class="kz-guide-prog-row">${textStarsHtml(r)}<span class="t">${t}</span></div>`).join('')}
         </div>
       </article>
       <article class="kz-guide-card">
-        <div class="kz-guide-head"><span class="glyph">気</span><h2>Tipos e afinidades</h2></div>
-        ${stat('Tipos', TYPES, 'type')}
-        ${stat('Afinidades', AFFINITIES, 'affinity')}
+        <div class="kz-guide-head"><span class="glyph">気</span><h2>${kzt('guia.tiposTitulo')}</h2></div>
+        ${stat(kzt('guia.tipos'), TYPES, 'type')}
+        ${stat(kzt('guia.afinidades'), AFFINITIES, 'affinity')}
       </article>
     </div>`;
 }
@@ -5590,7 +5575,7 @@ async function loadGuias(){
   if(state.tab === 'guias') render();
 }
 function guideCover(g){ return 'guias/img/' + encodeURIComponent(g.n) + '.webp'; }
-function guideLabel(g){ return g.rotulo ? String(g.rotulo) : 'Guia ' + g.n; }
+function guideLabel(g){ return g.rotulo ? String(g.rotulo) : kzt('guia.rotulo', { n: g.n }); }
 function guideImgSrc(s){ return /^guias\/img\/[a-z0-9\/-]+\.webp$/.test(String(s||'')) ? s : ''; }
 function guideBlocksText(bs){
   return (bs||[]).map(b=> (b.t === 'ul' || b.t === 'ol') ? (b.items||[]).join(' ') : b.t === 'callout' ? [b.titulo||''].concat(b.x||[]).join(' ') : b.t === 'details' ? [b.titulo||'', b.sub||'', guideBlocksText(b.blocos)].join(' ') : (b.t === 'icons' || b.t === 'img') ? '' : b.t === 'apoios' ? (b.itens||[]).map(i=>[i.nome, i.frag + ' fragmentos', i.papel].join(' ')).join(' ') : b.t === 'conjuntos' ? (b.itens||[]).map(i=>[i.nome, i.efeito, i.quem, (i.ex||[]).map(e=>e.nome||e.texto||'').join(' ')].join(' ')).join(' ') : b.t === 'table' ? [(b.head||[]).join(' ')].concat((b.rows||[]).map(r=>r.join(' '))).join(' ') : (b.x||'')).join(' ');
@@ -5618,7 +5603,7 @@ function guideSearch(q){
 }
 function guideCardsHtml(q){
   const res = guideSearch(q);
-  if(!res.length) return `<div class="kz-empty">Nenhum guia fala sobre isso. Tente outra palavra.</div>`;
+  if(!res.length) return `<div class="kz-empty">${kzt('guia.nenhum')}</div>`;
   return res.map(({g, secs})=>`
     <button type="button" class="kz-gl-card" data-guide="${escapeAttr(g.id)}">
       <img class="kz-gl-cover" src="${guideCover(g)}" alt="" loading="lazy" data-onerr="hide">
@@ -5627,7 +5612,7 @@ function guideCardsHtml(q){
         <h3>${escapeHtml(g.titulo)}</h3>
         <p>${escapeHtml(g.resumo)}</p>
         ${secs.length ? `<span class="kz-gl-hits">${secs.slice(0,4).map(i=>`<span class="kz-gl-hit">${escapeHtml(g.secoes[i].titulo)}</span>`).join('')}${secs.length>4?`<span class="kz-gl-hit">+${secs.length-4}</span>`:''}</span>` : ''}
-        <span class="kz-gl-lock">Desbloqueio · Nv. ${+g.nivel || 0}</span>
+        <span class="kz-gl-lock">${kzt('guia.desbloqueio', { n: +g.nivel || 0 })}</span>
       </span>
     </button>`).join('');
 }
@@ -5658,11 +5643,11 @@ function guideApoiosHtml(b){
   (b.itens||[]).forEach(i=>{ const k = +i.frag || 0; if(!por.has(k)) por.set(k, []); por.get(k).push(i); });
   return `<div class="kz-ap">${[...por.keys()].sort((x, y)=> x - y).map(k=>`
     <div class="kz-ap-grupo">
-      <div class="kz-ap-tier"><b>${k}</b> fragmentos para compor<small>${por.get(k).length} apoios</small></div>
+      <div class="kz-ap-tier">${kzt('guia.fragmentos', { k: '<b>' + k + '</b>' })}<small>${kzt('guia.nApoios', { n: por.get(k).length })}</small></div>
       <div class="kz-ap-grid">${por.get(k).map(i=>{
         const cart = guideApoioCartao(i), ic = guideApoioIcone(i);
         return `<article class="kz-ap-card">
-          ${cart ? `<img class="kz-ap-art" src="${cart}" alt="Cartão de ${escapeAttr(i.nome)}" width="200" height="258" loading="lazy" data-onerr="hide">` : ''}
+          ${cart ? `<img class="kz-ap-art" src="${cart}" alt="${escapeAttr(kzt('guia.cartaoDe', { nome: i.nome }))}" width="200" height="258" loading="lazy" data-onerr="hide">` : ''}
           <div class="kz-ap-info"><div class="kz-ap-nm">${ic ? `<img src="${ic}" alt="" width="28" height="28" loading="lazy" data-onerr="hide">` : ''}<b>${escapeHtml(i.nome)}</b></div>
           <p>${escapeHtml(i.papel)}</p></div>
         </article>`;
@@ -5676,19 +5661,19 @@ function guideConjuntosHtml(b){
     const nome = escapeHtml(e.nome || '');
     if(e.apoio){
       const a = guideImgSrc('guias/img/assistencia/' + String(e.apoio).replace(/[^a-z0-9-]/g, '') + '-icone.webp');
-      return `<span class="kz-cj-chip" title="Apoio de Assistência">${a ? `<img src="${a}" alt="" width="28" height="28" loading="lazy" data-onerr="hide">` : ''}<b>${nome}</b></span>`;
+      return `<span class="kz-cj-chip" title="${kzt('guia.apoioAssistencia')}">${a ? `<img src="${a}" alt="" width="28" height="28" loading="lazy" data-onerr="hide">` : ''}<b>${nome}</b></span>`;
     }
     const ch = state.characters.find(x=>x.name === e.nome);
-    if(!ch) return `<span class="kz-cj-chip" title="Ainda não está no site"><span class="ini">${escapeHtml(initials(e.nome || ''))}</span><b>${nome}</b></span>`;
+    if(!ch) return `<span class="kz-cj-chip" title="${kzt('guia.aindaNaoNoSite')}"><span class="ini">${escapeHtml(initials(e.nome || ''))}</span><b>${nome}</b></span>`;
     const ico = iconeSrc(ch) || `portraits/mini/${slug(ch.name)}.webp`;
-    return `<button type="button" class="kz-cj-chip" data-guia-char="${escapeAttr(ch.id)}" title="Ver a ficha de ${escapeAttr(ch.name)}"><img src="${escapeAttr(ico)}" alt="" width="28" height="28" loading="lazy" data-onerr="hide"><b>${nome}</b></button>`;
+    return `<button type="button" class="kz-cj-chip" data-guia-char="${escapeAttr(ch.id)}" title="${escapeAttr(kzt('chars.verFicha', { nome: ch.name }))}"><img src="${escapeAttr(ico)}" alt="" width="28" height="28" loading="lazy" data-onerr="hide"><b>${nome}</b></button>`;
   };
   return `<div class="kz-cj">${(b.itens||[]).map(i=>{
     const ic = guideImgSrc(i.icone);
     return `<article class="kz-cj-card">
       <div class="kz-cj-top">${ic ? `<img src="${ic}" alt="" width="44" height="44" loading="lazy" data-onerr="hide">` : ''}<div><span class="n">${escapeHtml(i.n)}</span><b>${escapeHtml(i.nome)}</b><small>${escapeHtml(i.efeito)}</small></div></div>
-      <p><span class="lb">Ideal para</span>${escapeHtml(i.quem)}</p>
-      <div class="kz-cj-ex"><span class="lb">Exemplos</span><div class="fila">${(i.ex||[]).map(chip).join('')}</div></div>
+      <p><span class="lb">${kzt('guia.idealPara')}</span>${escapeHtml(i.quem)}</p>
+      <div class="kz-cj-ex"><span class="lb">${kzt('guia.exemplos')}</span><div class="fila">${(i.ex||[]).map(chip).join('')}</div></div>
     </article>`;
   }).join('')}</div>`;
 }
@@ -5721,24 +5706,24 @@ function renderGuideReader(g){
   const sec = (g.secoes||[]);
   return `
   <div class="kz-gr">
-    <div><button class="kz-back-btn" id="guideBackBtn"><span class="arr">←</span><span>Voltar aos Guias</span></button></div>
+    <div><button class="kz-back-btn" id="guideBackBtn"><span class="arr">←</span><span>${kzt('guia.voltar')}</span></button></div>
     <div class="kz-gr-head">
       <img src="${guideCover(g)}" alt="" data-onerr="hide">
       <div class="txt">
         <span class="kz-gl-num">${escapeHtml(guideLabel(g))}</span>
         <h1>${escapeHtml(g.titulo)}</h1>
         <span class="sub">${escapeHtml(g.subtitulo)}</span>
-        <span class="kz-gl-lock" style="margin-top:4px;">Desbloqueio · Nv. ${+g.nivel || 0}</span>
+        <span class="kz-gl-lock" style="margin-top:4px;">${kzt('guia.desbloqueio', { n: +g.nivel || 0 })}</span>
         ${(g.stats||[]).length ? `<div class="kz-gr-stats">${g.stats.map(s=>`<div class="st"><b>${escapeHtml(s[0])}</b><span>${escapeHtml(s[1])}</span></div>`).join('')}</div>` : ''}
-        ${(g.verTambem||[]).map(id=>{ const o = guideBySlug(id); return o ? `<button type="button" class="kz-gr-also" data-guide="${escapeAttr(o.id)}">Veja também: <b>${escapeHtml(o.titulo)}</b> →</button>` : ''; }).join('')}
+        ${(g.verTambem||[]).map(id=>{ const o = guideBySlug(id); return o ? `<button type="button" class="kz-gr-also" data-guide="${escapeAttr(o.id)}">${kzt('guia.vejaTambem', { titulo: '<b>' + escapeHtml(o.titulo) + '</b>' })}</button>` : ''; }).join('')}
       </div>
     </div>
     <div class="kz-gr-layout">
-      <nav class="kz-gr-toc" aria-label="Nesta página">
-        <span class="lbl">Nesta página</span>
-        <button type="button" class="kz-gr-top" data-gtop><span class="n">↑</span><span>Topo</span></button>
+      <nav class="kz-gr-toc" aria-label="${kzt('guia.nestaPagina')}">
+        <span class="lbl">${kzt('guia.nestaPagina')}</span>
+        <button type="button" class="kz-gr-top" data-gtop><span class="n">↑</span><span>${kzt('guia.topo')}</span></button>
         ${sec.map((s,k)=>`<button type="button" data-gsec="${k}"><span class="n${s.num ? '' : ' dot'}">${s.num ? escapeHtml(s.num) : '•'}</span><span>${escapeHtml(s.titulo)}</span></button>`).join('')}
-        ${(g.observacoes||[]).length ? `<button type="button" data-gsec="obs"><span class="n">!</span><span>Observações</span></button>` : ''}
+        ${(g.observacoes||[]).length ? `<button type="button" data-gsec="obs"><span class="n">!</span><span>${kzt('guia.observacoes')}</span></button>` : ''}
       </nav>
       <div class="kz-gr-main">
         <p>${escapeHtml(g.resumo)}</p>
@@ -5748,11 +5733,11 @@ function renderGuideReader(g){
           <h2>${s.num ? `<span class="n">${escapeHtml(s.num)}</span>` : ''}<span>${escapeHtml(s.titulo)}</span></h2>
           ${(s.blocos||[]).map(guideBlockHtml).join('')}
         </section>`).join('')}
-        ${(g.observacoes||[]).length ? `<section class="kz-gr-obs" id="gsec-obs"><h2>Observações</h2>${g.observacoes.map(guideBlockHtml).join('')}</section>` : ''}
+        ${(g.observacoes||[]).length ? `<section class="kz-gr-obs" id="gsec-obs"><h2>${kzt('guia.observacoes')}</h2>${g.observacoes.map(guideBlockHtml).join('')}</section>` : ''}
         ${g.edicao ? `<div class="kz-gr-edicao">${escapeHtml(g.edicao)}</div>` : ''}
         <div class="kz-gr-pager">
-          ${prev ? `<button type="button" data-guide="${escapeAttr(prev.id)}"><span class="k">← Guia anterior · ${escapeHtml(guideLabel(prev))}</span><span class="t">${escapeHtml(prev.titulo)}</span></button>` : '<span></span>'}
-          ${next ? `<button type="button" class="next" data-guide="${escapeAttr(next.id)}"><span class="k">Próximo guia · ${escapeHtml(guideLabel(next))} →</span><span class="t">${escapeHtml(next.titulo)}</span></button>` : ''}
+          ${prev ? `<button type="button" data-guide="${escapeAttr(prev.id)}"><span class="k">${kzt('guia.anterior', { rotulo: escapeHtml(guideLabel(prev)) })}</span><span class="t">${escapeHtml(prev.titulo)}</span></button>` : '<span></span>'}
+          ${next ? `<button type="button" class="next" data-guide="${escapeAttr(next.id)}"><span class="k">${kzt('guia.proximo', { rotulo: escapeHtml(guideLabel(next)) })}</span><span class="t">${escapeHtml(next.titulo)}</span></button>` : ''}
         </div>
       </div>
     </div>
@@ -5761,37 +5746,37 @@ function renderGuideReader(g){
 function renderGuiasSistemas(){
   loadGuias();
   if(!guiasData) return guiasError
-    ? `<div class="kz-empty">Não consegui carregar os guias agora. <button class="kz-link-btn" id="guiasRetryBtn">Tentar de novo</button></div>`
-    : `<div class="kz-empty">Carregando guias…</div>`;
+    ? `<div class="kz-empty">${kzt('guia.erroCarregar')} <button class="kz-link-btn" id="guiasRetryBtn">${kzt('guia.tentarDeNovo')}</button></div>`
+    : `<div class="kz-empty">${kzt('guia.carregando')}</div>`;
   const g = state.guideId ? guideBySlug(state.guideId) : null;
   if(g) return renderGuideReader(g);
   if(visualNovo()) return `<div class="kz-gl-grid" id="guideGrid">${guideCardsHtml(state.guideQuery)}</div>`;   // busca fica na linha das abas
   return `
     <div class="kz-gl-tools">
-      <input type="search" class="kz-input" id="guideSearch" placeholder="Buscar nos guias (ex.: Pedras, estrelas, custo)…" value="${escapeAttr(state.guideQuery)}" autocomplete="off">
-      <span class="kz-gl-count">${guiasData.guias.length} guias · edição ${escapeHtml(guiasData.edicao)}</span>
+      <input type="search" class="kz-input" id="guideSearch" placeholder="${kzt('guia.buscarAntigo')}" value="${escapeAttr(state.guideQuery)}" autocomplete="off">
+      <span class="kz-gl-count">${kzt('guia.contagemAntigo', { n: guiasData.guias.length, ed: escapeHtml(guiasData.edicao) })}</span>
     </div>
     <div class="kz-gl-grid" id="guideGrid">${guideCardsHtml(state.guideQuery)}</div>`;
 }
 // Guias no formato do canvas: topo novo, abas e busca na mesma linha, cartões grandes em 3 colunas.
 function renderGuiasTabNovo(){
-  const views = [['sistemas','星','Sistemas do jogo'],['combos','連','Combos e formação']];
+  const views = [['sistemas','星',kzt('guia.sistemas')],['combos','連',kzt('guia.combosFormacao')]];
   const lista = state.guiasView !== 'combos' && guiasData;
   const busca = lista ? `
       <div class="kz-nvg-find">
         <div class="kz-nv-search sm"><span class="kz-nv-scan" aria-hidden="true"></span><div>
           <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFC21A" stroke-width="2.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>
-          <label for="guideSearch" class="kz-sr">Buscar nos guias</label>
-          <input type="search" id="guideSearch" placeholder="Pedras, estrelas, custo…" value="${escapeAttr(state.guideQuery)}" autocomplete="off">
+          <label for="guideSearch" class="kz-sr">${kzt('guia.buscarSr')}</label>
+          <input type="search" id="guideSearch" placeholder="${kzt('guia.buscarNovo')}" value="${escapeAttr(state.guideQuery)}" autocomplete="off">
         </div></div>
-        <span class="kz-nvg-count"><b>${guiasData.guias.length} guias</b> · edição ${escapeHtml(guiasData.edicao)}</span>
+        <span class="kz-nvg-count">${kzt('guia.contagemNovoHtml', { n: '<b>' + guiasData.guias.length + ' ' + kzt('guia.guias') + '</b>', ed: escapeHtml(guiasData.edicao) })}</span>
       </div>` : '';
   return `
   <section class="kz-page kz-nvp kz-nvg">
-    ${nvPageHeadHtml({ key:'guias', kanji:'書', tag:kzt('deco.guias'), title:'Guias', kanjiStyle:'right:6%;top:-60px;font-size:380px',
-      sub:'Como cada sistema do jogo funciona, e como o site monta combos e formação.' })}
+    ${nvPageHeadHtml({ key:'guias', kanji:'書', tag:kzt('deco.guias'), title:kzt('nav.guias'), kanjiStyle:'right:6%;top:-60px;font-size:380px',
+      sub:kzt('guia.subtitulo') })}
     <div class="kz-nvg-bar">
-      <div class="kz-tabs" role="tablist" aria-label="Tipo de guia">
+      <div class="kz-tabs" role="tablist" aria-label="${kzt('guia.tipoDeGuia')}">
         ${views.map(([k,gl,l])=>`<button class="kz-tab ${state.guiasView===k?'active':''}" data-guias-view="${k}" role="tab" aria-selected="${state.guiasView===k}"><span class="glyph">${gl}</span><span>${l}</span></button>`).join('')}
       </div>
       ${busca}
@@ -5802,12 +5787,12 @@ function renderGuiasTabNovo(){
 function renderGuiasTab(){
   const lendo = state.guiasView === 'sistemas' && state.guideId;
   if(visualNovo() && !lendo) return renderGuiasTabNovo();
-  const views = [['sistemas','星','Sistemas do jogo'],['combos','連','Combos e formação']];
+  const views = [['sistemas','星',kzt('guia.sistemas')],['combos','連',kzt('guia.combosFormacao')]];
   return `
   <section class="kz-page">
     ${lendo ? '' : `<div>
-      <h1 class="kz-title">Guias</h1>
-      <div class="kz-subtitle">Como cada sistema do jogo funciona, e como o site monta combos e formação.</div>
+      <h1 class="kz-title">${kzt('nav.guias')}</h1>
+      <div class="kz-subtitle">${kzt('guia.subtitulo')}</div>
     </div>
     <div class="kz-tabs" role="tablist">
       ${views.map(([k,gl,l])=>`<button class="kz-tab ${state.guiasView===k?'active':''}" data-guias-view="${k}" role="tab" aria-selected="${state.guiasView===k}"><span class="glyph">${gl}</span><span>${l}</span></button>`).join('')}
@@ -5879,7 +5864,7 @@ function attachGuiasHandlers(){
 
 /* ======================= FAVORITOS ======================= */
 // Ordem dos Favoritos no visual novo: 'recentes' (guardados por último primeiro), 'raridade' ou 'nome'. Fica só neste navegador.
-const FAV_SORTS = [['recentes','Guardados por último'],['raridade','Raridade'],['nome','Nome']];
+const FAV_SORTS = [['recentes',kzt('fav.guardadosPorUltimo')],['raridade',kzt('filtro.raridade')],['nome',kzt('fav.nome')]];
 function favSortKey(){
   try{ const v = localStorage.getItem('kiai_favs_ordem'); if(FAV_SORTS.some(s=>s[0] === v)) return v; }catch(e){}
   return 'recentes';
@@ -5888,7 +5873,7 @@ function sortedFavChars(){
   const favs = state.characters.filter(c=>isFav(c.id));
   const k = favSortKey();
   if(k === 'raridade') return sortByRarity(favs);
-  if(k === 'nome') return favs.slice().sort((a, b)=> a.name.localeCompare(b.name, 'pt-BR'));
+  if(k === 'nome') return favs.slice().sort((a, b)=> a.name.localeCompare(b.name, KZ_LOCALE));
   const pos = new Map(state.favs.map((id, i)=>[id, i]));
   return favs.slice().sort((a, b)=> pos.get(b.id) - pos.get(a.id));
 }
@@ -5900,24 +5885,24 @@ function renderFavCardNovo(c){
       <div class="kz-card-name">${escapeHtml(c.name)||kzt('geral.semNome')}</div>
       <div class="kz-nvfav-row">
         <span class="kz-card-meta">${nvMetaHtml(c)}</span>
-        <button type="button" class="kz-nvfav-btn" data-fav="${c.id}" aria-pressed="true" aria-label="Tirar ${escapeAttr(c.name)} dos favoritos" title="Tirar dos favoritos"><svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="#FFC21A"><path d="M12 2.8l2.8 6 6.5.7-4.9 4.4 1.4 6.5L12 17l-5.8 3.4 1.4-6.5-4.9-4.4 6.5-.7z"/></svg></button>
+        <button type="button" class="kz-nvfav-btn" data-fav="${c.id}" aria-pressed="true" aria-label="${escapeAttr(kzt('fav.tirarNome', { nome: c.name }))}" title="${kzt('fav.tirar')}"><svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="#FFC21A"><path d="M12 2.8l2.8 6 6.5.7-4.9 4.4 1.4 6.5L12 17l-5.8 3.4 1.4-6.5-4.9-4.4 6.5-.7z"/></svg></button>
       </div>
     </div>
   </div>`;
 }
 function renderFavsTabNovo(){
   const favChars = sortedFavChars(), n = favChars.length, k = favSortKey();
-  const ordenar = n > 1 ? `<label class="kz-nv-lb kz-nvfav-sort">Ordenar<select id="favSort">${FAV_SORTS.map(([v, l])=>`<option value="${v}"${v === k ? ' selected' : ''}>${l}</option>`).join('')}</select></label>` : '';
+  const ordenar = n > 1 ? `<label class="kz-nv-lb kz-nvfav-sort">${kzt('fav.ordenar')}<select id="favSort">${FAV_SORTS.map(([v, l])=>`<option value="${v}"${v === k ? ' selected' : ''}>${l}</option>`).join('')}</select></label>` : '';
   const mais = `
       <button type="button" class="kz-nvfav-more" id="favGoChars">
         <svg aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFC21A" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2.8l2.8 6 6.5.7-4.9 4.4 1.4 6.5L12 17l-5.8 3.4 1.4-6.5-4.9-4.4 6.5-.7z"/></svg>
-        <b>${n ? 'Guardar mais' : 'Nenhum favorito ainda'}</b>
-        <span>Toque na estrela de um guerreiro em Personagens.</span>
+        <b>${n ? kzt('fav.guardarMais') : kzt('fav.nenhum')}</b>
+        <span>${kzt('fav.dicaEstrela')}</span>
       </button>`;
   return `
   <section class="kz-page kz-nvp">
-    ${nvPageHeadHtml({ key:'favs', kanji:'星', tagKanji:'★', tag:kzt('deco.favs'), title:'Favoritos',
-      after: nvCountHtml(n, n === 1 ? 'guerreiro guardado' : 'guerreiros guardados'), side: ordenar, kanjiStyle:'right:8%;top:-50px' })}
+    ${nvPageHeadHtml({ key:'favs', kanji:'星', tagKanji:'★', tag:kzt('deco.favs'), title:kzt('nav.favoritos'),
+      after: nvCountHtml(n, n === 1 ? kzt('fav.guerreiroGuardado') : kzt('fav.guerreirosGuardados')), side: ordenar, kanjiStyle:'right:8%;top:-50px' })}
     <div class="kz-grid kz-nvfav-grid">${favChars.map(renderFavCardNovo).join('')}${mais}</div>
   </section>`;
 }
@@ -5928,16 +5913,16 @@ function renderFavsTab(){
   return `
   <section class="kz-page">
     <div>
-      <h1 class="kz-title">Favoritos</h1>
-      <div class="kz-subtitle">${n} ${n===1?'guerreiro guardado':'guerreiros guardados'}</div>
+      <h1 class="kz-title">${kzt('nav.favoritos')}</h1>
+      <div class="kz-subtitle">${n} ${n===1?kzt('fav.guerreiroGuardado'):kzt('fav.guerreirosGuardados')}</div>
     </div>
     ${n ? `<div class="kz-grid">${favChars.map(visualNovo() ? renderCharCardNovo : renderCharCard).join('')}</div>` : `
     <div class="kz-fav-empty">
       <img src="${ballSrc(5)}" alt="">
       <div class="txt">
-        <div class="t1">Nenhum favorito ainda</div>
-        <div class="t2">Toque na estrela de um guerreiro em Personagens para guardá-lo aqui.</div>
-        <button class="kz-btn kz-btn-primary kz-btn-sm" id="favGoChars" style="align-self:flex-start;">Ver personagens</button>
+        <div class="t1">${kzt('fav.nenhum')}</div>
+        <div class="t2">${kzt('fav.dicaEstrelaLonga')}</div>
+        <button class="kz-btn kz-btn-primary kz-btn-sm" id="favGoChars" style="align-self:flex-start;">${kzt('fav.verPersonagens')}</button>
       </div>
     </div>`}
   </section>`;
@@ -6074,28 +6059,29 @@ function attachMpDoacaoHandlers(view){
 // Inspirado no "Muro dos Aliados" do labninja.com.br, mas com progressão de poder do
 // próprio Dragon Ball em vez de ranks ninja — mais reconhecível pra quem manja de DB.
 const PATENTES = [
-  { key:'guerreiro_z', min:0, label:'Guerreiro Z', desc:'Treinou com os melhores guerreiros do planeta. Segura a linha de frente.' },
-  { key:'saiyajin', min:20, label:'Saiyajin', desc:'Sangue guerreiro nas veias. Cada batalha deixa o poder maior.' },
-  { key:'ssj', min:50, label:'Super Saiyajin', desc:'Cabelo dourado, poder redobrado. Vira o jogo na batalha.' },
-  { key:'ssj_god', min:100, label:'Super Saiyajin God', desc:'Ki divino ao alcance das mãos. Lenda em vida.' },
-  { key:'ssj_blue', min:200, label:'Super Saiyajin Blue', desc:'Domina o poder divino com perfeição. Poucos chegam tão longe.' },
-  { key:'ultra', min:350, label:'Ultra Instinto', desc:'O corpo se move sozinho, no limite do poder.',
+  { key:'guerreiro_z', min:0, label:kzt('pat.guerreiro_z'), desc:kzt('pat.guerreiro_zDesc') },
+  { key:'saiyajin', min:20, label:kzt('pat.saiyajin'), desc:kzt('pat.saiyajinDesc') },
+  { key:'ssj', min:50, label:kzt('pat.ssj'), desc:kzt('pat.ssjDesc') },
+  { key:'ssj_god', min:100, label:kzt('pat.ssj_god'), desc:kzt('pat.ssj_godDesc') },
+  { key:'ssj_blue', min:200, label:kzt('pat.ssj_blue'), desc:kzt('pat.ssj_blueDesc') },
+  { key:'ultra', min:350, label:kzt('pat.ultra'), desc:kzt('pat.ultraDesc'),
     forms:['Ultra Instinto','Ultra Ego','Beast'], customColor:true, defaultColor:'#8cb4ff',
-    note:'A pessoa escolhe a forma (Ultra Instinto, Ultra Ego ou Beast) e a cor.' },
-  { key:'deus_destruicao', min:600, label:'Deus da Destruição', desc:'Decide o destino de universos inteiros. Respeitado — e temido — por todos.' },
-  { key:'anjo', min:1000, label:'Anjo', desc:'Acima até dos deuses. O topo absoluto.',
-    customColor:true, defaultColor:'#e8f1ff', note:'A pessoa escolhe a cor da própria patente.' },
+    note:kzt('pat.ultraNota') },
+  { key:'deus_destruicao', min:600, label:kzt('pat.deus_destruicao'), desc:kzt('pat.deus_destruicaoDesc') },
+  { key:'anjo', min:1000, label:kzt('pat.anjo'), desc:kzt('pat.anjoDesc'),
+    customColor:true, defaultColor:'#e8f1ff', note:kzt('pat.anjoNota') },
 ];
 // Trilha de Honra: reconhecimento pra quem contribui sem doar dinheiro — concedido à mão
 // pelo admin, igual ao ranking por Pix. Cada chave é independente (uma pessoa pode ter várias).
 const HONOR_BADGES = {
-  cacador_erros: { label:'Caçador de Erros', glyph:'⚑', desc:'Encontrou um erro real no site e provou com print do jogo.' },
-  revisor_combo: { label:'Revisor de Combo', glyph:'連', desc:'Conferiu uma cadeia de combo no Simulador e reportou o resultado.' },
-  escriba: { label:'Escriba', glyph:'書', desc:'Ajudou a revisar ou completar descrições de habilidades.' },
-  mestre_kame: { label:'Mestre Kame', glyph:'亀', desc:'Escreveu ou revisou um guia que ensina a jogar melhor.' },
+  cacador_erros: { label:kzt('honra.cacador_erros'), glyph:'⚑', desc:kzt('honra.cacador_errosDesc') },
+  revisor_combo: { label:kzt('honra.revisor_combo'), glyph:'連', desc:kzt('honra.revisor_comboDesc') },
+  escriba: { label:kzt('honra.escriba'), glyph:'書', desc:kzt('honra.escribaDesc') },
+  mestre_kame: { label:kzt('honra.mestre_kame'), glyph:'亀', desc:kzt('honra.mestre_kameDesc') },
 };
 
 function formatBRL(n){
+  if(KZ_LANG === 'en') return '$' + (Number(n||0) / KZ_USD_BRL).toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:2});
   return 'R$ ' + Number(n||0).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
 }
 // Mural público: só quem está ativo (devolução total desativa o apoio). A aba Admin pede com incluirInativos para ver todos.
@@ -6114,7 +6100,7 @@ function donorAvatarInner(name){
 // Patente é sempre calculada do valor acumulado (nunca escolhida à mão) — quem doou mais
 // sobe sozinho, "ser ultrapassado rebaixa" igual no site de referência.
 // Patente única do criador do site: não existe por valor nenhum, só o dono pode ter (o banco também garante isso).
-const PATENTE_ZENOH = { key:'zenoh', min:Infinity, label:"Zen'oh", desc:'Acima de tudo e de todos. A patente única do criador do Zenkyo — ninguém mais pode ter.', unica:true };
+const PATENTE_ZENOH = { key:'zenoh', min:Infinity, label:"Zen'oh", desc:kzt('pat.zenoh'), unica:true };
 function isZenoh(d){ return !!(d && typeof d === 'object' && d.patenteManual === 'zenoh' && (!window.ADMIN_DISCORD_ID || d.linkedUserId === window.ADMIN_DISCORD_ID)); }
 // Aceita o apoiador (usa a patente manual, se o dono tiver definido) ou só o valor acumulado.
 function patenteFor(x){
@@ -6137,7 +6123,7 @@ function patenteColorVars(hex){
 function patenteLook(amount, prof){
   const p = patenteFor(amount);   // 'amount' pode ser o apoiador inteiro
   let label = p.label, style = '';
-  if(p.forms && prof && p.forms.includes(prof.patenteForma)) label = prof.patenteForma;
+  if(p.forms && prof && p.forms.includes(prof.patenteForma)) label = kzTermo(prof.patenteForma);
   if(p.customColor) style = patenteColorVars(patenteHex(prof && prof.patenteCor) || p.defaultColor);
   return { p, label, style };
 }
@@ -6191,7 +6177,7 @@ function applyDiscordSession(session){
   const meta = u.user_metadata || {};
   state.discordUser = {
     id: u.id,
-    username: meta.full_name || meta.name || (meta.custom_claims && meta.custom_claims.global_name) || 'Guerreiro sem nome',
+    username: meta.full_name || meta.name || (meta.custom_claims && meta.custom_claims.global_name) || kzt('conta.semNome'),
     avatarUrl: safeHttpsUrl(meta.avatar_url),
   };
 }
@@ -6226,7 +6212,7 @@ async function persist(key, rawValue){
     if(error) throw error;
   }catch(e){
     console.error('Não consegui sincronizar "'+key+'" com o Supabase', e);
-    showToast('Salvo neste aparelho — não consegui sincronizar com a nuvem');
+    showToast(kzt('conta.salvoLocal'));
   }
 }
 
@@ -6244,8 +6230,8 @@ async function pullUserDataFromRemote(){
     }
     refreshCharacters();
   }catch(e){
-    console.error('Não consegui carregar seus dados da conta', e);
-    showToast('Não consegui carregar seus dados da conta');
+    console.error(kzt('conta.erroDados'), e);
+    showToast(kzt('conta.erroDados'));
   }
 }
 
@@ -6342,10 +6328,10 @@ async function saveMyProfile(){
       semColunas = true;
     }
     await refreshProfilesRemote();
-    showToast(semColunas ? 'Perfil salvo — forma/cor da patente precisam do SQL novo no Supabase' : 'Perfil salvo');
+    showToast(semColunas ? kzt('perfil.salvoSql') : kzt('perfil.salvo'));
   }catch(e){
     console.error('Não consegui salvar seu perfil', e);
-    showToast('Salvo neste aparelho — não consegui sincronizar com a nuvem');
+    showToast(kzt('conta.salvoLocal'));
   }
 }
 // Só usa o perfil linkado se a própria pessoa marcou "público" — nunca mostra dado de
@@ -6376,9 +6362,9 @@ function avatarFotoOr(prof, fallbackHtml){
 function avatarPickerHtml(p, discordHtml){
   const atual = (avatarFoto(p.avatarCharId) || {}).id || '';
   const opt = (id, nome, inner) => `<label class="kz-avpick-opt${atual === id ? ' on' : ''}" title="${escapeAttr(nome)}"><input type="radio" name="perfilAvatarFoto" value="${escapeAttr(id)}" ${atual === id ? 'checked' : ''}><span class="kz-avpick-img">${inner}</span><span class="kz-avpick-nm">${escapeHtml(nome)}</span></label>`;
-  return `<div class="kz-avpick" role="radiogroup" aria-label="Foto de perfil">
-    <span class="kz-nvpf-lb">Foto de perfil</span>
-    <div class="kz-avpick-grid">${opt('', 'Foto do Discord', discordHtml)}${AVATARES_FOTO.map(a => opt(a.id, a.nome, avatarFotoImg(a))).join('')}</div>
+  return `<div class="kz-avpick" role="radiogroup" aria-label="${kzt('perfil.fotoDePerfil')}">
+    <span class="kz-nvpf-lb">${kzt('perfil.fotoDePerfil')}</span>
+    <div class="kz-avpick-grid">${opt('', kzt('perfil.fotoDiscord'), discordHtml)}${AVATARES_FOTO.map(a => opt(a.id, a.nome, avatarFotoImg(a))).join('')}</div>
   </div>`;
 }
 // Apoio vinculado a este login (o admin liga o User UID na Aliança Z) — é dele que vem a patente.
@@ -6394,23 +6380,23 @@ function patenteChoiceHtml(p){
   let extra = '';
   if(pat.forms){
     const cur = pat.forms.includes(p.patenteForma) ? p.patenteForma : pat.forms[0];
-    extra += `<div><label class="field-label">Forma da patente</label><select id="perfilPatenteForma">${pat.forms.map(f=>`<option value="${escapeAttr(f)}" ${f===cur?'selected':''}>${escapeHtml(f)}</option>`).join('')}</select></div>`;
+    extra += `<div><label class="field-label">${kzt('perfil.formaPatente')}</label><select id="perfilPatenteForma">${pat.forms.map(f=>`<option value="${escapeAttr(f)}" ${f===cur?'selected':''}>${escapeHtml(kzTermo(f))}</option>`).join('')}</select></div>`;
   }
   if(pat.customColor){
-    extra += `<div><label class="field-label">Cor da patente</label><input type="color" id="perfilPatenteCor" value="${patenteHex(p.patenteCor) || pat.defaultColor}" style="width:72px;height:40px;padding:2px;cursor:pointer;"></div>`;
+    extra += `<div><label class="field-label">${kzt('perfil.corPatente')}</label><input type="color" id="perfilPatenteCor" value="${patenteHex(p.patenteCor) || pat.defaultColor}" style="width:72px;height:40px;padding:2px;cursor:pointer;"></div>`;
   }
-  return `<div class="kz-patente-mine"><span class="kz-donate-note" style="margin:0;">Sua patente: <b>${escapeHtml(pat.label)}</b></span></div>${extra}`;
+  return `<div class="kz-patente-mine"><span class="kz-donate-note" style="margin:0;">${kzt('perfil.suaPatente', { p: '<b>' + escapeHtml(pat.label) + '</b>' })}</span></div>${extra}`;
 }
 function renderPerfilTab(){
   if(!isSupabaseConfigured()){
-    return `<section class="kz-page"><h1 class="kz-title">Perfil</h1><div class="kz-subtitle">O login com Discord ainda não foi configurado neste site.</div></section>`;
+    return `<section class="kz-page"><h1 class="kz-title">${kzt('nav.perfil')}</h1><div class="kz-subtitle">${kzt('perfil.semLogin')}</div></section>`;
   }
   if(!state.discordUser){
-    if(visualNovo()) return `<section class="kz-page kz-nvp">${nvPageHeadHtml({ key:'perfil', kanji:'印', tag:kzt('deco.perfil'), title:'Perfil', kanjiStyle:'right:8%;top:-60px;font-size:380px',
-      sub:'Entre com Discord (topo da página) pra montar seu perfil: apelido, servidor, bio e redes.' })}</section>`;
+    if(visualNovo()) return `<section class="kz-page kz-nvp">${nvPageHeadHtml({ key:'perfil', kanji:'印', tag:kzt('deco.perfil'), title:kzt('nav.perfil'), kanjiStyle:'right:8%;top:-60px;font-size:380px',
+      sub:kzt('perfil.entreMontar') })}</section>`;
     return `<section class="kz-page">
-      <h1 class="kz-title">Perfil</h1>
-      <div class="kz-subtitle">Entre com Discord (topo da página) pra montar seu perfil: apelido, servidor, bio e redes.</div>
+      <h1 class="kz-title">${kzt('nav.perfil')}</h1>
+      <div class="kz-subtitle">${kzt('perfil.entreMontar')}</div>
     </section>`;
   }
   const p = state.myProfile || blankProfile();
@@ -6425,49 +6411,49 @@ function renderPerfilTab(){
     const redes = p.showSocials && (p.instagram||p.twitch||p.youtube) ? [p.instagram,p.twitch,p.youtube].filter(Boolean).map(escapeHtml).join(' · ') : '';
     return `
   <section class="kz-page kz-nvp kz-nvpf">
-    ${nvPageHeadHtml({ key:'perfil', kanji:'印', tag:kzt('deco.perfil'), title:'Perfil', kanjiStyle:'right:8%;top:-60px;font-size:380px',
-      sub:'Monte como você aparece na Aliança Z: apelido, servidor, bio e redes. Patente e Honras vêm do seu apoio — ninguém digita isso aqui.' })}
+    ${nvPageHeadHtml({ key:'perfil', kanji:'印', tag:kzt('deco.perfil'), title:kzt('nav.perfil'), kanjiStyle:'right:8%;top:-60px;font-size:380px',
+      sub:kzt('perfil.monteComoAparece') })}
     <div class="kz-nvpf-grid">
       <div class="kz-nvpf-form">
         <div class="kz-nvpf-row two">
-          <div><label class="kz-nvpf-lb" for="perfilNickInput">Apelido</label><input type="text" class="kz-input" id="perfilNickInput" value="${escapeAttr(p.nickname)}" placeholder="Como quer aparecer" maxlength="40"></div>
-          <div><label class="kz-nvpf-lb" for="perfilServidorInput">Servidor</label><input type="text" class="kz-input" id="perfilServidorInput" value="${escapeAttr(p.servidor)}" placeholder="Ex: S12" maxlength="20"></div>
+          <div><label class="kz-nvpf-lb" for="perfilNickInput">${kzt('perfil.apelido')}</label><input type="text" class="kz-input" id="perfilNickInput" value="${escapeAttr(p.nickname)}" placeholder="${kzt('perfil.comoAparecer')}" maxlength="40"></div>
+          <div><label class="kz-nvpf-lb" for="perfilServidorInput">${kzt('perfil.servidor')}</label><input type="text" class="kz-input" id="perfilServidorInput" value="${escapeAttr(p.servidor)}" placeholder="${kzt('perfil.exServidor')}" maxlength="20"></div>
         </div>
-        <div><label class="kz-nvpf-lb" for="perfilBioInput">Apresentação (<span id="perfilBioCount">${bioLen}</span>/${PROFILE_BIO_MAX})</label><textarea id="perfilBioInput" maxlength="${PROFILE_BIO_MAX}" rows="3" placeholder="Uma frase sobre você">${escapeHtml(p.bio)}</textarea></div>
+        <div><label class="kz-nvpf-lb" for="perfilBioInput">${kzt('perfil.apresentacao', { n: '<span id="perfilBioCount">' + bioLen + '</span>', max: PROFILE_BIO_MAX })}</label><textarea id="perfilBioInput" maxlength="${PROFILE_BIO_MAX}" rows="3" placeholder="${kzt('perfil.umaFrase')}">${escapeHtml(p.bio)}</textarea></div>
         <div class="kz-nvpf-row three">
-          <div><label class="kz-nvpf-lb" for="perfilInstaInput">Instagram</label><input type="text" class="kz-input" id="perfilInstaInput" value="${escapeAttr(p.instagram)}" placeholder="@usuario" maxlength="60"></div>
+          <div><label class="kz-nvpf-lb" for="perfilInstaInput">Instagram</label><input type="text" class="kz-input" id="perfilInstaInput" value="${escapeAttr(p.instagram)}" placeholder="${kzt('perfil.usuario')}" maxlength="60"></div>
           <div><label class="kz-nvpf-lb" for="perfilTwitchInput">Twitch</label><input type="text" class="kz-input" id="perfilTwitchInput" value="${escapeAttr(p.twitch)}" placeholder="twitch.tv/…" maxlength="80"></div>
-          <div><label class="kz-nvpf-lb" for="perfilYoutubeInput">YouTube</label><input type="text" class="kz-input" id="perfilYoutubeInput" value="${escapeAttr(p.youtube)}" placeholder="Link do canal" maxlength="120"></div>
+          <div><label class="kz-nvpf-lb" for="perfilYoutubeInput">YouTube</label><input type="text" class="kz-input" id="perfilYoutubeInput" value="${escapeAttr(p.youtube)}" placeholder="${kzt('perfil.linkCanal')}" maxlength="120"></div>
         </div>
         ${patenteChoiceHtml(p)}
         ${avatarPickerHtml(p, state.discordUser.avatarUrl ? `<img src="${escapeAttr(state.discordUser.avatarUrl)}" alt="" data-onerr="hide">` : donorAvatarInner(p.nickname || state.discordUser.username))}
-        ${PROFILE_CHAR_AVATAR ? `<div><label class="kz-nvpf-lb" for="perfilAvatarSelect">Avatar</label><select id="perfilAvatarSelect"><option value="">Foto do Discord</option>${state.characters.map(c=>`<option value="${c.id}" ${c.id===p.avatarCharId?'selected':''}>${escapeHtml(c.name)}</option>`).join('')}</select></div>` : ''}
+        ${PROFILE_CHAR_AVATAR ? `<div><label class="kz-nvpf-lb" for="perfilAvatarSelect">${kzt('perfil.avatar')}</label><select id="perfilAvatarSelect"><option value="">${kzt('perfil.fotoDiscord')}</option>${state.characters.map(c=>`<option value="${c.id}" ${c.id===p.avatarCharId?'selected':''}>${escapeHtml(c.name)}</option>`).join('')}</select></div>` : ''}
         <div class="kz-nvpf-checks">
-          <label class="kz-honor-check"><input type="checkbox" id="perfilShowSocialsInput" ${p.showSocials?'checked':''}> Mostrar minhas redes no perfil público</label>
-          <label class="kz-honor-check"><input type="checkbox" id="perfilPublicInput" ${p.public?'checked':''}> Aparecer na Aliança Z com esses dados (se eu já apoiar)</label>
+          <label class="kz-honor-check"><input type="checkbox" id="perfilShowSocialsInput" ${p.showSocials?'checked':''}> ${kzt('perfil.mostrarRedes')}</label>
+          <label class="kz-honor-check"><input type="checkbox" id="perfilPublicInput" ${p.public?'checked':''}> ${kzt('perfil.aparecer')}</label>
         </div>
         <div class="kz-nvpf-foot">
-          <button class="kz-btn kz-btn-primary" id="savePerfilBtn">Salvar perfil</button>
+          <button class="kz-btn kz-btn-primary" id="savePerfilBtn">${kzt('perfil.salvar')}</button>
           <div class="kz-privacy-zone">
-            <a href="privacidade.html" target="_blank" rel="noopener noreferrer">Privacidade e dados</a>
-            <button type="button" class="kz-com-link danger" id="deleteMyDataBtn" title="Remove do servidor seu perfil, seus posts e curtidas e os dados sincronizados">Apagar meus dados</button>
+            <a href="${kzt('estatico.hrefPrivacidade')}" target="_blank" rel="noopener noreferrer">${kzt('estatico.privacidade')}</a>
+            <button type="button" class="kz-com-link danger" id="deleteMyDataBtn" title="${kzt('perfil.apagarTitulo')}">${kzt('perfil.apagar')}</button>
           </div>
         </div>
       </div>
       <aside class="kz-nvpf-side">
-        <span class="kz-nv-lb">Prévia na Aliança Z</span>
+        <span class="kz-nv-lb">${kzt('perfil.previaAlianca')}</span>
         <div class="kz-donor-list kz-nvpf-prev">
           <div class="kz-nv-rays" aria-hidden="true"></div>
           <div class="kz-donor-card kz-nvpf-card patente-${myLook.p.key}" style="pointer-events:none;${myLook.style}">
             <span class="kz-nvpf-av">${av}</span>
             ${nvTtl(nome)}
           </div>
-          ${p.servidor ? `<span class="kz-nvpf-srv">Servidor ${escapeHtml(p.servidor)}</span>` : ''}
+          ${p.servidor ? `<span class="kz-nvpf-srv">${kzt('perfil.servidorNome', { nome: escapeHtml(p.servidor) })}</span>` : ''}
           ${myDonor ? patenteBadgeHtml(myDonor, '', p) : ''}
           ${p.bio ? `<p class="kz-nvpf-quote">“${escapeHtml(p.bio)}”</p>` : ''}
           ${redes ? `<span class="kz-nvpf-srv sm">${redes}</span>` : ''}
         </div>
-        <p class="kz-nvpf-note">A patente aparece aqui só depois do primeiro apoio. O valor nunca é mostrado.</p>
+        <p class="kz-nvpf-note">${kzt('perfil.notaPatente')}</p>
       </aside>
     </div>
     ${isSiteOwner() ? renderCrashLogPanel() : ''}
@@ -6476,50 +6462,50 @@ function renderPerfilTab(){
   return `
   <section class="kz-page">
     <div>
-      <h1 class="kz-title">Perfil</h1>
-      <div class="kz-subtitle">Monte como você aparece na Aliança Z: apelido, servidor, bio e redes. Patente e Honras vêm do seu apoio — ninguém digita isso aqui.</div>
+      <h1 class="kz-title">${kzt('nav.perfil')}</h1>
+      <div class="kz-subtitle">${kzt('perfil.monteComoAparece')}</div>
     </div>
     <div class="kz-donate-layout">
       <div class="kz-panel kz-form-panel">
         <div>
-          <label class="field-label">Apelido</label>
-          <input type="text" id="perfilNickInput" value="${escapeAttr(p.nickname)}" placeholder="Como quer aparecer" maxlength="40">
+          <label class="field-label">${kzt('perfil.apelido')}</label>
+          <input type="text" id="perfilNickInput" value="${escapeAttr(p.nickname)}" placeholder="${kzt('perfil.comoAparecer')}" maxlength="40">
         </div>
         <div>
-          <label class="field-label">Servidor</label>
-          <input type="text" id="perfilServidorInput" value="${escapeAttr(p.servidor)}" placeholder="Ex: S12" maxlength="20">
+          <label class="field-label">${kzt('perfil.servidor')}</label>
+          <input type="text" id="perfilServidorInput" value="${escapeAttr(p.servidor)}" placeholder="${kzt('perfil.exServidor')}" maxlength="20">
         </div>
         <div>
-          <label class="field-label">Apresentação (<span id="perfilBioCount">${bioLen}</span>/${PROFILE_BIO_MAX})</label>
-          <textarea id="perfilBioInput" maxlength="${PROFILE_BIO_MAX}" rows="3" placeholder="Uma frase sobre você">${escapeHtml(p.bio)}</textarea>
+          <label class="field-label">${kzt('perfil.apresentacao', { n: '<span id="perfilBioCount">' + bioLen + '</span>', max: PROFILE_BIO_MAX })}</label>
+          <textarea id="perfilBioInput" maxlength="${PROFILE_BIO_MAX}" rows="3" placeholder="${kzt('perfil.umaFrase')}">${escapeHtml(p.bio)}</textarea>
         </div>
         <div class="grid-2">
-          <div><label class="field-label">Instagram</label><input type="text" id="perfilInstaInput" value="${escapeAttr(p.instagram)}" placeholder="@usuario" maxlength="60"></div>
+          <div><label class="field-label">Instagram</label><input type="text" id="perfilInstaInput" value="${escapeAttr(p.instagram)}" placeholder="${kzt('perfil.usuario')}" maxlength="60"></div>
           <div><label class="field-label">Twitch</label><input type="text" id="perfilTwitchInput" value="${escapeAttr(p.twitch)}" placeholder="twitch.tv/..." maxlength="80"></div>
         </div>
         <div>
           <label class="field-label">YouTube</label>
-          <input type="text" id="perfilYoutubeInput" value="${escapeAttr(p.youtube)}" placeholder="Link do canal" maxlength="120">
+          <input type="text" id="perfilYoutubeInput" value="${escapeAttr(p.youtube)}" placeholder="${kzt('perfil.linkCanal')}" maxlength="120">
         </div>
         ${patenteChoiceHtml(p)}
         ${avatarPickerHtml(p, state.discordUser.avatarUrl ? `<img src="${escapeAttr(state.discordUser.avatarUrl)}" alt="" data-onerr="hide">` : donorAvatarInner(p.nickname || state.discordUser.username))}
         ${PROFILE_CHAR_AVATAR ? `<div>
-          <label class="field-label">Avatar</label>
+          <label class="field-label">${kzt('perfil.avatar')}</label>
           <select id="perfilAvatarSelect">
-            <option value="">Foto do Discord</option>
+            <option value="">${kzt('perfil.fotoDiscord')}</option>
             ${state.characters.map(c=>`<option value="${c.id}" ${c.id===p.avatarCharId?'selected':''}>${escapeHtml(c.name)}</option>`).join('')}
           </select>
         </div>` : ''}
-        <label class="kz-honor-check"><input type="checkbox" id="perfilShowSocialsInput" ${p.showSocials?'checked':''}> Mostrar minhas redes no perfil público</label>
-        <label class="kz-honor-check"><input type="checkbox" id="perfilPublicInput" ${p.public?'checked':''}> Aparecer na Aliança Z com esses dados (se eu já apoiar)</label>
-        <button class="kz-btn kz-btn-primary kz-btn-sm" id="savePerfilBtn">Salvar perfil</button>
+        <label class="kz-honor-check"><input type="checkbox" id="perfilShowSocialsInput" ${p.showSocials?'checked':''}> ${kzt('perfil.mostrarRedes')}</label>
+        <label class="kz-honor-check"><input type="checkbox" id="perfilPublicInput" ${p.public?'checked':''}> ${kzt('perfil.aparecer')}</label>
+        <button class="kz-btn kz-btn-primary kz-btn-sm" id="savePerfilBtn">${kzt('perfil.salvar')}</button>
         <div class="kz-privacy-zone">
-          <a href="privacidade.html" target="_blank" rel="noopener noreferrer">Privacidade e dados</a>
-          <button type="button" class="kz-com-link danger" id="deleteMyDataBtn" title="Remove do servidor seu perfil, seus posts e curtidas e os dados sincronizados">Apagar meus dados</button>
+          <a href="${kzt('estatico.hrefPrivacidade')}" target="_blank" rel="noopener noreferrer">${kzt('estatico.privacidade')}</a>
+          <button type="button" class="kz-com-link danger" id="deleteMyDataBtn" title="${kzt('perfil.apagarTitulo')}">${kzt('perfil.apagar')}</button>
         </div>
       </div>
       <div class="kz-panel kz-donor-list">
-        <span class="kz-label">Prévia</span>
+        <span class="kz-label">${kzt('perfil.previa')}</span>
         <div class="kz-donor-card patente-${myLook.p.key}" style="pointer-events:none;${myLook.style}">
           <span class="kz-donor-avatar">${avatarChar ? portraitInner(avatarChar) : avatarFotoOr(p, donorAvatarInner(p.nickname||state.discordUser.username))}</span>
           <span class="kz-donor-name">${escapeHtml(p.nickname || state.discordUser.username)}</span>
@@ -6605,10 +6591,10 @@ function attachPerfilHandlers(){
   });
   const delBtn = document.getElementById('deleteMyDataBtn');
   if(delBtn) delBtn.addEventListener('click', () => {
-    customConfirm('Apagar do servidor o seu perfil, os seus posts e curtidas da Comunidade e os dados sincronizados (coleção, equipes, tier list)? Os dados guardados neste aparelho continuam. Não dá pra desfazer. A conta de login do Discord só é removida se você pedir (veja a página de Privacidade).', async () => {
+    customConfirm(kzt('perfil.apagarConfirma'), async () => {
       const ok = await deleteMyOnlineData();
-      if(ok){ showToast('Seus dados online foram apagados.'); await signOutDiscord(); }
-      else showToast('Não consegui apagar tudo agora. Tente de novo em instantes.');
+      if(ok){ showToast(kzt('perfil.dadosApagados')); await signOutDiscord(); }
+      else showToast(kzt('perfil.erroApagar'));
     });
   });
   const save = document.getElementById('savePerfilBtn');
@@ -6653,12 +6639,12 @@ async function syncDonorRemote(entryOrId, action){
     }
   }catch(e){
     console.error('Não consegui sincronizar com o Supabase', e);
-    showToast('Salvo neste aparelho — não consegui sincronizar com a nuvem');
+    showToast(kzt('conta.salvoLocal'));
   }
 }
 
 async function signInWithDiscord(){
-  if(!isSupabaseConfigured()){ showToast('Supabase ainda não configurado neste site.'); return; }
+  if(!isSupabaseConfigured()){ showToast(kzt('conta.semBackend')); return; }
   await window.__sb.client.auth.signInWithOAuth({ provider:'discord', options:{ redirectTo: window.location.origin + window.location.pathname } });
 }
 // Apaga do servidor tudo que pertence a este login: posts e curtidas da Comunidade, dados sincronizados e perfil.
@@ -6695,7 +6681,7 @@ async function signOutDiscord(){
 // topo da página (área de conta), pra não ter dois jeitos de logar na mesma tela.
 function renderDiscordLoginNote(){
   if(!isSupabaseConfigured() || state.discordUser) return '';
-  return `<div class="kz-donate-note">Entre com Discord (topo da página) pra vincular seu apoio a um perfil na Aliança Z.</div>`;
+  return `<div class="kz-donate-note">${kzt('conta.vincularApoio')}</div>`;
 }
 
 // Só o dono do site pode usar o painel de adicionar/remover apoiador e conceder Honras.
@@ -6718,10 +6704,10 @@ const NV_PATENTE_LOOK = {
 function nvPodiumHtml(list){
   const lugar = (pos, alto)=>{
     const d = list[pos - 1];
-    let topo = `<span class="kz-nvd-free${pos === 1 ? ' gold' : ''}">Livre</span>`;
+    let topo = `<span class="kz-nvd-free${pos === 1 ? ' gold' : ''}">${kzt('doar.livre')}</span>`;
     if(d){
       const prof = linkedProfileFor(d), nome = (prof && prof.nickname) || d.name;
-      topo = `<button type="button" class="kz-nvd-who" data-open-donor="${d.id}" title="Ver o perfil de ${escapeAttr(nome)}"><span class="av">${donorAvatarHtml(d, prof, nome)}</span><span class="nm">${escapeHtml(nome)}</span></button>`;
+      topo = `<button type="button" class="kz-nvd-who" data-open-donor="${d.id}" title="${escapeAttr(kzt('com.verPerfilDe', { nome }))}"><span class="av">${donorAvatarHtml(d, prof, nome)}</span><span class="nm">${escapeHtml(nome)}</span></button>`;
     }
     return `<div class="kz-nvd-place p${pos}">${pos === 1 ? `<img class="kz-nvd-ball" src="${ballSrc(4)}" alt="" aria-hidden="true">` : ''}${topo}<div class="kz-nvd-step" style="height:${alto}px">${nvTtl(String(pos))}</div></div>`;
   };
@@ -6730,7 +6716,7 @@ function nvPodiumHtml(list){
 // A patente única Zen'oh aparece só como título (o dono não ocupa lugar no ranking nem no pódio).
 function zenohTituloHtml(){
   const z = state.donors.find(d => d.active !== false && isZenoh(d));
-  return z ? `<p class="kz-nvd-zenoh">${patenteBadgeHtml(z, '', linkedProfileFor(z))}<span>Patente única: só o criador do Zenkyo tem.</span></p>` : '';
+  return z ? `<p class="kz-nvd-zenoh">${patenteBadgeHtml(z, '', linkedProfileFor(z))}<span>${kzt('doar.patenteUnica')}</span></p>` : '';
 }
 function renderDoarTabNovo(){
   const list = sortedDonors();
@@ -6739,29 +6725,29 @@ function renderDoarTabNovo(){
   const resto = list.slice(3, limite), maisRanking = list.slice(0, 10).length > 5;
   return `
   <section class="kz-page kz-nvp kz-nvd">
-    ${nvPageHeadHtml({ key:'doar', kanji:'援', tag:kzt('deco.doar'), title:'Doar', kanjiStyle:'right:8%;top:-60px;font-size:380px',
-      sub:'Ajude a manter o Zenkyo no ar. Personagens, Coleção, Montador e guias são de graça e continuam assim — quem apoia ganha lugar na Aliança Z. A doação vai só para o site: não compra itens nem vantagens no jogo.' })}
+    ${nvPageHeadHtml({ key:'doar', kanji:'援', tag:kzt('deco.doar'), title:kzt('nav.doar'), kanjiStyle:'right:8%;top:-60px;font-size:380px',
+      sub:kzt('doar.subtitulo') })}
     <div class="kz-nvd-top">
       <div class="kz-nvd-pn kz-nvd-pix">
         <span class="kz-nv-lb">Doar com Mercado Pago</span>
 ${mpDoacaoHtml()}
-        <p class="kz-nvd-note"><b>Bônus de apoiador:</b> quem apoia com R$ 10 ou mais pode manter até 5 times publicados na Comunidade ao mesmo tempo (o padrão são 2).</p>
-        <p class="kz-nvd-note">O valor exato nunca aparece publicamente — só a Patente.</p>
+        <p class="kz-nvd-note">${kzt('doar.bonus', { valor: kzValorBRL(COMMUNITY.supporterMin), max: COMMUNITY.teamLimitSupporter, min: COMMUNITY.teamLimit })}</p>
+        <p class="kz-nvd-note">${kzt('doar.valorOculto')}</p>
       </div>
       <div class="kz-nvd-pn kz-nvd-ally kz-donor-list">
         <div class="kz-nv-rays" aria-hidden="true"></div>
         <div class="kz-nvd-glow" aria-hidden="true"></div>
-        <div class="kz-nvd-allyhead"><h2>${nvTtl('Aliança Z')}</h2><span><b>${list.length}</b> ${list.length === 1 ? 'nome' : 'nomes'} no mural</span></div>
+        <div class="kz-nvd-allyhead"><h2>${nvTtl(kzt('doar.aliancaZ'))}</h2><span>${kzt('doar.noMural', { n: '<b>' + list.length + '</b>', nomes: kzt(list.length === 1 ? 'doar.nome1' : 'doar.nomeN') })}</span></div>
         ${zenohTituloHtml()}
         ${nvPodiumHtml(list)}
-        ${list.length ? '' : `<p class="kz-nvd-empty">A Aliança Z ainda está vazia — os três primeiros lugares do pódio estão livres. Seja o primeiro.</p>`}
+        ${list.length ? '' : `<p class="kz-nvd-empty">${kzt('doar.aliancaVazia')}</p>`}
         ${resto.length ? `<div class="kz-donor-grid">${resto.map((d, i)=>renderDonorCard(d, i + 3)).join('')}</div>` : ''}
-        ${maisRanking ? `<button type="button" class="kz-btn kz-btn-sm kz-nvd-more" id="rankingToggle" aria-expanded="${state.rankingAberto}">${state.rankingAberto ? 'Mostrar menos ▴' : 'Ver top 10 ▾'}</button>` : ''}
-        ${admin ? '<p class="kz-nvd-note mut">Você é o dono: gerencie doações e o mural na aba <b>Admin</b>.</p>' : ''}
+        ${maisRanking ? `<button type="button" class="kz-btn kz-btn-sm kz-nvd-more" id="rankingToggle" aria-expanded="${state.rankingAberto}">${state.rankingAberto ? kzt('doar.menos') : kzt('doar.top10')}</button>` : ''}
+        ${admin ? `<p class="kz-nvd-note mut">${kzt('doar.voceEDono')}</p>` : ''}
       </div>
     </div>
     <section class="kz-nvd-sec">
-      <div><h2 class="kz-nvd-h2">${nvTtl('Patentes')}</h2><p class="kz-nvd-sub">Sobe conforme o apoio acumulado — do Guerreiro Z ao Anjo. Existe ainda uma patente única, <b>Zen'oh</b>, que só o criador do site tem.</p></div>
+      <div><h2 class="kz-nvd-h2">${nvTtl(kzt('doar.patentes'))}</h2><p class="kz-nvd-sub">${kzt('doar.patentesSubNovo')}</p></div>
       <div class="kz-nvd-pats">
         ${PATENTES.map((p, i)=>{
           const [aura, glow, cor] = NV_PATENTE_LOOK[p.key] || ['#FF6A13','rgba(255,106,19,.8)','#FFF4E6'];
@@ -6774,13 +6760,13 @@ ${mpDoacaoHtml()}
           <h3 style="color:${cor}">${escapeHtml(p.label)}</h3>
           <p class="pd">${escapeHtml(p.desc)}</p>
           ${p.note ? `<p class="px">${escapeHtml(p.note)}</p>` : ''}
-          <span class="pv" style="color:${cor}">${p.min > 0 ? `A partir de ${formatBRL(p.min)}` : 'Qualquer apoio'}</span>
+          <span class="pv" style="color:${cor}">${p.min > 0 ? kzt('doar.aPartirDe', { valor: formatBRL(p.min) }) : kzt('doar.qualquerApoio')}</span>
         </article>`;
         }).join('')}
       </div>
     </section>
     <section class="kz-nvd-sec">
-      <div><h2 class="kz-nvd-h2">${nvTtl('Trilha de Honra')}</h2><p class="kz-nvd-sub">Nem todo mundo pode doar — e tem contribuição que dinheiro nenhum compra.</p></div>
+      <div><h2 class="kz-nvd-h2">${nvTtl(kzt('doar.trilhaHonra'))}</h2><p class="kz-nvd-sub">${kzt('doar.honraSub')}</p></div>
       <div class="kz-nvd-hons">
         ${Object.values(HONOR_BADGES).map(h=>`
         <article class="kz-nvd-hon"><span class="kz-nvf-seal" aria-hidden="true">${h.glyph}</span><div><h3>${escapeHtml(h.label)}</h3><p class="pd">${escapeHtml(h.desc)}</p></div></article>`).join('')}
@@ -6824,30 +6810,30 @@ function renderDoarTab(){
   return `
   <section class="kz-page">
     <div>
-      <h1 class="kz-title">Doar</h1>
-      <div class="kz-subtitle">Ajude a manter o Zenkyo no ar. Personagens, Coleção, Montador e guias são de graça e continuam assim — quem apoia ganha lugar na Aliança Z. A doação vai só para o site: não compra itens nem vantagens no jogo.</div>
+      <h1 class="kz-title">${kzt('nav.doar')}</h1>
+      <div class="kz-subtitle">${kzt('doar.subtitulo')}</div>
     </div>
     <div class="kz-donate-layout">
       <div class="kz-panel kz-donate-card">
         <span class="kz-label">Doar com Mercado Pago</span>
 ${mpDoacaoHtml()}
-        <div class="kz-donate-note"><b>Bônus de apoiador:</b> quem apoia com R$ 10 ou mais pode manter até 5 times publicados na Comunidade ao mesmo tempo (o padrão são 2).</div>
-        <div class="kz-donate-note">O valor exato nunca aparece publicamente — só a Patente.</div>
+        <div class="kz-donate-note">${kzt('doar.bonus', { valor: kzValorBRL(COMMUNITY.supporterMin), max: COMMUNITY.teamLimitSupporter, min: COMMUNITY.teamLimit })}</div>
+        <div class="kz-donate-note">${kzt('doar.valorOculto')}</div>
       </div>
       <div class="kz-panel kz-donor-list">
         <div class="kz-donor-list-head">
-          <span class="kz-label">Aliança Z</span>
-          <span class="kz-donate-note" style="margin:0;">${list.length} ${list.length===1?'nome':'nomes'} no mural</span>
+          <span class="kz-label">${kzt('doar.aliancaZ')}</span>
+          <span class="kz-donate-note" style="margin:0;">${kzt('doar.noMural', { n: list.length, nomes: kzt(list.length === 1 ? 'doar.nome1' : 'doar.nomeN') })}</span>
         </div>
         ${list.length ? `<div class="kz-donor-grid">${list.map((d,i)=>renderDonorCard(d,i)).join('')}</div>`
-          : `<div class="kz-muted">A Aliança Z ainda está vazia — os três primeiros lugares do pódio estão livres. Seja o primeiro.</div>`}
+          : `<div class="kz-muted">${kzt('doar.aliancaVazia')}</div>`}
 
-        ${admin ? '<p class="kz-nvd-note mut">Você é o dono: gerencie doações e o mural na aba <b>Admin</b>.</p>' : ''}
+        ${admin ? `<p class="kz-nvd-note mut">${kzt('doar.voceEDono')}</p>` : ''}
       </div>
     </div>
 
     <div class="kz-page-head" style="margin-top:6px;">
-      <div><h2 class="kz-panel-title" style="font-size:36px;">Patentes</h2><div class="kz-subtitle">Sobe conforme o apoio acumulado — do Guerreiro Z ao Anjo.</div></div>
+      <div><h2 class="kz-panel-title" style="font-size:36px;">${kzt('doar.patentes')}</h2><div class="kz-subtitle">${kzt('doar.patentesSub')}</div></div>
     </div>
     <div class="kz-patente-grid">
       ${PATENTES.map(p=>`
@@ -6855,12 +6841,12 @@ ${mpDoacaoHtml()}
         <span class="kz-patente-name">${escapeHtml(p.label)}</span>
         <span class="kz-patente-desc">${escapeHtml(p.desc)}</span>
         ${p.note ? `<span class="kz-patente-note">${escapeHtml(p.note)}</span>` : ''}
-        <span class="kz-patente-min">${p.min>0 ? `A partir de ${formatBRL(p.min)}` : 'Qualquer apoio'}</span>
+        <span class="kz-patente-min">${p.min>0 ? kzt('doar.aPartirDe', { valor: formatBRL(p.min) }) : kzt('doar.qualquerApoio')}</span>
       </article>`).join('')}
     </div>
 
     <div class="kz-page-head" style="margin-top:6px;">
-      <div><h2 class="kz-panel-title" style="font-size:36px;">Trilha de Honra</h2><div class="kz-subtitle">Nem todo mundo pode doar — e tem contribuição que dinheiro nenhum compra.</div></div>
+      <div><h2 class="kz-panel-title" style="font-size:36px;">${kzt('doar.trilhaHonra')}</h2><div class="kz-subtitle">${kzt('doar.honraSub')}</div></div>
     </div>
     <div class="kz-honra-grid">
       ${Object.values(HONOR_BADGES).map(h=>`
@@ -6881,7 +6867,7 @@ function renderDonorCard(d, i){
   const avatarChar = PROFILE_CHAR_AVATAR && prof && prof.avatarCharId ? state.characters.find(c=>c.id===prof.avatarCharId) : null;
   return `
   <button class="kz-donor-card patente-${p.key}" data-open-donor="${d.id}"${look.style ? ` style="${look.style}"` : ''}>
-    <span class="kz-donor-number">Nº ${d.number != null ? d.number : (i+1)}</span>
+    <span class="kz-donor-number">${kzt('doar.numero', { n: d.number != null ? d.number : (i+1) })}</span>
     <span class="kz-donor-avatar">${avatarChar ? portraitInner(avatarChar) : avatarFotoOr(prof, donorAvatarInner(name))}</span>
     <span class="kz-donor-name">${escapeHtml(name)}</span>
     ${prof && prof.servidor ? `<span class="kz-donate-note" style="margin:0;">${escapeHtml(prof.servidor)}</span>` : ''}
@@ -6932,7 +6918,7 @@ function donorProfileModalHtml(d){
       </div>
       <div class="modal-body" style="align-items:center;text-align:center;">
         <span class="kz-donor-avatar" style="width:72px;height:72px;font-size:24px;">${avatarChar ? portraitInner(avatarChar) : avatarFotoOr(prof, donorAvatarInner(name))}</span>
-        <span class="kz-donor-number">Nº ${d.number}</span>
+        <span class="kz-donor-number">${kzt('doar.numero', { n: d.number })}</span>
         ${prof && prof.servidor ? `<div class="kz-donate-note">${escapeHtml(prof.servidor)}</div>` : ''}
         ${patenteBadgeHtml(d, '', prof)}
         <div class="kz-donate-note" style="max-width:320px;">${escapeHtml(p.desc)}</div>
@@ -7554,7 +7540,7 @@ function renderPickerCards(q){
     return `<div class="picker-card ${placedAt>-1?'placed':''}" data-id="${c.id}">
       <div class="sprite">${portraitInner(c)}</div>
       <div class="pc-name">${escapeHtml(c.name)}</div>
-      ${placedAt>-1 ? `<div class="pc-tag">Casa ${placedAt+1}</div>` : ''}
+      ${placedAt>-1 ? `<div class="pc-tag">${kzt('slot.casa', { n: placedAt+1 })}</div>` : ''}
     </div>`;
   }).join('')}</div>`;
 }
@@ -7565,11 +7551,11 @@ function renderPickerModal(){
   <div class="modal-overlay" id="pickerOverlay">
     <div class="modal" style="max-width:640px;">
       <div class="modal-header">
-        <h2>Casa ${idx+1}</h2>
+        <h2>${kzt('slot.casa', { n: idx+1 })}</h2>
         <button class="kz-close-btn" id="closePickerBtn" aria-label="${kzt('comum.fechar')}">✕</button>
       </div>
       <div class="modal-body">
-        <input type="text" id="pickerSearch" placeholder="Buscar guerreiro ou tag…">
+        <input type="text" id="pickerSearch" placeholder="${kzt('pick.buscar')}">
         <div id="pickerGrid">${renderPickerCards('')}</div>
       </div>
     </div>
@@ -7605,10 +7591,10 @@ function renderSimModal(){
   const n = state.team.filter(Boolean).length;
   root.innerHTML = `
   <div class="modal-overlay" id="simOverlay">
-    <div class="modal kz-sim-modal" role="dialog" aria-label="Simular combo">
+    <div class="modal kz-sim-modal" role="dialog" aria-label="${kzt('cb.simular')}">
       <div class="modal-header">
         <h2>${kzt('cb.simular')}</h2>
-        <span class="kz-roster-hint">${n}/6 em campo</span>
+        <span class="kz-roster-hint">${kzt('cb.emCampoNovo', { n })}</span>
         <button class="kz-close-btn" id="closeSimBtn" aria-label="${kzt('comum.fechar')}">✕</button>
       </div>
       <div class="modal-body"><div class="kz-sim"><div id="simModalBody">${renderSimPanel(true)}</div></div></div>
@@ -7741,12 +7727,12 @@ function swMensagem(tipo){
   });
 }
 async function abrirModoOffline(){
-  if(!offlineSuportado()){ showToast('O modo offline precisa do site em https (ou localhost).'); return; }
+  if(!offlineSuportado()){ showToast(kzt('off.precisaHttps')); return; }
   const st = await swMensagem('status');
-  if(!st){ showToast('Modo offline ainda não ativo: recarregue a página uma vez e tente de novo.'); return; }
-  customConfirm(`Modo offline ativo. O que não mudou fica salvo neste aparelho e abre rápido, até sem internet. Guardados: ${st.casca} arquivos do site e ${st.midia} imagens/dados. Login, mural e pagamentos sempre precisam de internet. Limpar as imagens guardadas?`, async () => {
+  if(!st){ showToast(kzt('off.naoAtivo')); return; }
+  customConfirm(kzt('off.ativo', { casca: st.casca, midia: st.midia }), async () => {
     await swMensagem('limpar');
-    showToast('Cache de imagens limpo');
+    showToast(kzt('off.cacheLimpo'));
   });
 }
 registrarOffline();

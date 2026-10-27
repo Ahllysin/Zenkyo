@@ -2350,6 +2350,31 @@ async function main(){
     assert.ok(pt.length > 0 && en.length > 0);
   });
 
+  await test('Idioma: toda chave usada em kzt(...) no app.js existe no dicionário em português (sem chave esquecida ou com erro de digitação)', () => {
+    const fs = require('fs'), path = require('path');
+    const app = fs.readFileSync(path.join(__dirname, 'js', 'app.js'), 'utf8');
+    const ctx = carregaIdioma('pt', ['js/lang/pt.js']);
+    const tem = new Set(Object.keys(ctx.kzLangTextos.pt));
+    const usadas = new Set();
+    for(let i = app.indexOf('kzt('); i >= 0; i = app.indexOf('kzt(', i + 4)){
+      // primeiro argumento: até a vírgula (ou o fecha-parêntese) do mesmo nível
+      let d = 0, fim = i + 4, q = null;
+      for(; fim < app.length; fim++){
+        const ch = app[fim];
+        if(q){ if(ch === '\\') fim++; else if(ch === q) q = null; continue; }
+        if(ch === "'" || ch === '"' || ch === '`'){ q = ch; continue; }
+        if(ch === '(' || ch === '[' || ch === '{') d++;
+        else if(ch === ')' || ch === ']' || ch === '}'){ if(d === 0) break; d--; }
+        else if(ch === ',' && d === 0) break;
+      }
+      const arg = app.slice(i + 4, fim);
+      for(const m of arg.matchAll(/'([a-zA-Z][\w]*(?:\.[\w]+)+)'/g)) usadas.add(m[1]);
+    }
+    const faltam = [...usadas].filter(k => !tem.has(k));
+    assert.deepStrictEqual(faltam, [], 'chaves usadas e sem texto em pt.js: ' + faltam.join(', '));
+    assert.ok(usadas.size > 300, 'esperava centenas de chaves em uso, achei ' + usadas.size);
+  });
+
   await test('Idioma: en/index.html (gerado) tem lang="en", base na raiz, canonical próprio, en.js e o seletor voltando para o português', () => {
     const fs = require('fs'), path = require('path');
     const pt = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
