@@ -84,9 +84,10 @@ function gerarIngles(htmlPt){
   trocar('<meta property="og:locale" content="pt_BR">', '<meta property="og:locale" content="en_US">');
   trocar('<meta property="og:url" content="' + SITE + '/">', '<meta property="og:url" content="' + SITE + '/en/">');
   trocar('<link rel="canonical" href="' + SITE + '/">', '<link rel="canonical" href="' + SITE + '/en/">');
-  const seletor = /<a class="kz-lang-switch"[^>]*>[^<]*<\/a>/;
+  const bandeiraBR = '<svg class="kz-flag" viewBox="0 0 20 14" aria-hidden="true" focusable="false"><rect width="20" height="14" fill="#009c3b"/><path d="M10 1.6 18.2 7 10 12.4 1.8 7Z" fill="#ffdf00"/><circle cx="10" cy="7" r="3.1" fill="#002776"/></svg>';
+  const seletor = /<a class="kz-lang-switch"[^>]*>(?:<svg[\s\S]*?<\/svg>)?[^<]*<\/a>/;
   if(!seletor.test(h)) throw new Error('index.html não tem o seletor de idioma (a#langSwitch)');
-  h = h.replace(seletor, () => `<a class="kz-lang-switch" id="langSwitch" href="./" hreflang="${attr(en['idioma.outroCodigo'])}" lang="${attr(en['idioma.outroCodigo'])}" title="${attr(en['idioma.trocar'])}" aria-label="${attr(en['idioma.trocar'])}">${en['idioma.outroSigla']}</a>`);
+  h = h.replace(seletor, () => `<a class="kz-lang-switch" id="langSwitch" href="./" hreflang="${attr(en['idioma.outroCodigo'])}" lang="${attr(en['idioma.outroCodigo'])}" title="${attr(en['idioma.trocar'])}" aria-label="${attr(en['idioma.trocar'])}">${bandeiraBR}${en['idioma.outroSigla']}</a>`);
   const ptJs = h.match(/<script src="js\/lang\/pt\.js(?:\?v=[A-Za-z0-9]+)?"><\/script>/);
   if(!ptJs) throw new Error('index.html não carrega js/lang/pt.js');
   // en.js (interface) e dados-en.js (nomes e descrições do jogo) só carregam em /en/
