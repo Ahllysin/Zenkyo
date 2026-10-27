@@ -746,6 +746,7 @@ kzAddLang('en', {
   'pag.botao': 'Donate with Stripe',
   'pag.botaoAbrindo': 'Opening Stripe…',
   'pag.escolhaValor': 'Choose an amount between {min} and {max}.',
+  'pag.emBreve': 'Donations are not open on the English site yet. Thank you for the interest — they will be available soon.',
   'pag.indisponivel': 'Online donations are not available right now. Please try again later.',
   'pag.naoAbriu': 'I could not open Stripe right now. Please try again in a moment.',
   'pag.inesperado': 'Stripe answered in an unexpected way. Please try again.',

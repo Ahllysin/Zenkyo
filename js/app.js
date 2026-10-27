@@ -5957,6 +5957,8 @@ function attachFavsHandlers(){
 // Em inglês a doação é em dólar pelo Stripe Checkout (função "stripe-checkout"); os valores continuam guardados em reais
 // (taxa fixa KZ_USD_BRL) para a patente e o mural funcionarem igual nos dois idiomas.
 const PAG_USD = KZ_LANG === 'en';
+// A doação em inglês ainda não tem provedor de pagamento: a aba mostra um aviso no lugar do formulário.
+const PAG_EM_BREVE = PAG_USD;
 const PAG_FUNCAO = PAG_USD ? 'stripe-checkout' : 'mp-doacao';
 const PAG_HOST = PAG_USD ? /^https:\/\/checkout\.stripe\.com\//i : /^https:\/\/([a-z0-9-]+\.)*mercadopago\.com(\.br)?\//i;
 const MP_VALORES = PAG_USD ? [10, 25, 50, 100] : [10, 20, 50, 100];
@@ -5978,6 +5980,7 @@ function mpRotulo(n){ return PAG_USD ? formatBRL(n) : 'R$ ' + n.toLocaleString('
 function mpValorValido(v){ return Number.isFinite(v) && v >= MP_VALOR_MIN && v <= MP_VALOR_MAX; }
 // Bloco de doação (mesmo conteúdo no visual novo e no antigo). O botão leva a marca data-mp-checkout-cta.
 function mpDoacaoHtml(){
+  if(PAG_EM_BREVE) return `<p class="kz-mp-metodos">${kzt('pag.emBreve')}</p>`;
   const d = state.mpDoacao, v = mpValorEscolhido(), ok = mpValorValido(v);
   const ret = state.mpRetorno && MP_RETORNOS[state.mpRetorno];
   const quem = state.discordUser

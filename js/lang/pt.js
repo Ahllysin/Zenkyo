@@ -746,6 +746,7 @@ kzAddLang('pt', {
   'pag.botao': 'Doar com Mercado Pago',
   'pag.botaoAbrindo': 'Abrindo o Mercado Pago…',
   'pag.escolhaValor': 'Escolha um valor entre {min} e {max}.',
+  'pag.emBreve': 'As doações ainda não estão abertas no site em inglês. Em breve.',
   'pag.indisponivel': 'As doações online não estão disponíveis agora. Tente de novo mais tarde.',
   'pag.naoAbriu': 'Não consegui abrir o Mercado Pago agora. Tente de novo em instantes.',
   'pag.inesperado': 'O Mercado Pago respondeu de um jeito inesperado. Tente de novo.',
