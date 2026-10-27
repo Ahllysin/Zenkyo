@@ -260,7 +260,7 @@ let state = {
   donors: [],                       // [{id, number, name, amount, quote, discord, link, honras:[], active}] — Aliança Z (aba Doar + widget flutuante)
   nextDonorNumber: 1,               // próximo número permanente a distribuir (nunca reaproveita número de quem foi removido)
   rankingAberto: false,             // aba Doar: ranking expandido até o top 10
-  mpDoacao: { valor:20, outro:false, outroValor:'', nome:'', anonimo:false, estado:'', msg:'' },   // aba Doar (Mercado Pago)
+  mpDoacao: { valor:KZ_LANG === 'en' ? 25 : 20, outro:false, outroValor:'', nome:'', anonimo:false, estado:'', msg:'' },   // aba Doar (Mercado Pago)
   admin: { lista:null, carregando:false, erro:'', filtro:'pagas', busca:'' },   // aba Admin (só o dono)
   mpRetorno: null,                  // 'aprovada' | 'pendente' | 'recusada' ao voltar do Mercado Pago
   myDonationTotal: null,            // soma real das doações do próprio login (null = desconhecido)
@@ -5954,42 +5954,51 @@ function attachFavsHandlers(){
 // Pago (Pix, cartão ou saldo) e volta com ?doacao=aprovada|pendente|recusada. Quem lança o apoio na Aliança Z é o
 // webhook "mp-webhook", depois de conferir o pagamento no próprio Mercado Pago — a volta para o site só mostra o aviso.
 // Logado com Discord: soma no apoiador ligado ao perfil. Sem login: com nome entra no mural; anônimo fica fora dele.
-const MP_VALORES = [10, 20, 50, 100];
+// Em inglês a doação é em dólar pelo Stripe Checkout (função "stripe-checkout"); os valores continuam guardados em reais
+// (taxa fixa KZ_USD_BRL) para a patente e o mural funcionarem igual nos dois idiomas.
+const PAG_USD = KZ_LANG === 'en';
+const PAG_FUNCAO = PAG_USD ? 'stripe-checkout' : 'mp-doacao';
+const PAG_HOST = PAG_USD ? /^https:\/\/checkout\.stripe\.com\//i : /^https:\/\/([a-z0-9-]+\.)*mercadopago\.com(\.br)?\//i;
+const MP_VALORES = PAG_USD ? [10, 25, 50, 100] : [10, 20, 50, 100];
 const MP_VALOR_MIN = 5, MP_VALOR_MAX = 5000;
 const MP_RETORNOS = {
-  aprovada: ['ok', 'Pagamento aprovado! Obrigado pelo apoio — a Aliança Z atualiza em alguns segundos.'],
-  pendente: ['wait', 'Pagamento pendente. Se escolheu Pix, conclua no app do banco: o apoio entra quando o Mercado Pago confirmar.'],
-  recusada: ['err', 'O pagamento não foi concluído e nada foi cobrado. Você pode tentar de novo com outra forma de pagamento.'],
+  aprovada: ['ok', kzt('pag.retornoAprovada')],
+  pendente: ['wait', kzt('pag.retornoPendente')],
+  recusada: ['err', kzt('pag.retornoRecusada')],
 };
+// o que a pessoa digita em "outro valor" está na moeda do site (R$ em português, US$ em inglês); aqui sempre sai em reais
 function mpValorEscolhido(){
   const d = state.mpDoacao;
   if(!d.outro) return d.valor;
-  const v = Number(String(d.outroValor || '').replace(',', '.'));
+  const v = Number(String(d.outroValor || '').replace(',', '.')) * (PAG_USD ? KZ_USD_BRL : 1);
   return Number.isFinite(v) ? Math.round(v * 100) / 100 : NaN;
 }
+// rótulo de valor redondo (botões e limites): "R$ 20" em português, "$20" em inglês
+function mpRotulo(n){ return PAG_USD ? formatBRL(n) : 'R$ ' + n.toLocaleString('pt-BR'); }
 function mpValorValido(v){ return Number.isFinite(v) && v >= MP_VALOR_MIN && v <= MP_VALOR_MAX; }
 // Bloco de doação (mesmo conteúdo no visual novo e no antigo). O botão leva a marca data-mp-checkout-cta.
 function mpDoacaoHtml(){
   const d = state.mpDoacao, v = mpValorEscolhido(), ok = mpValorValido(v);
   const ret = state.mpRetorno && MP_RETORNOS[state.mpRetorno];
   const quem = state.discordUser
-    ? `<p class="kz-mp-quem">Vai para o seu perfil: <b>${escapeHtml((state.myProfile && state.myProfile.nickname) || state.discordUser.username || 'você')}</b></p>`
-    : `<label class="kz-mp-campo"><span>Seu nome no mural (opcional)</span><input type="text" id="mpNome" maxlength="40" autocomplete="nickname" placeholder="Como quer aparecer na Aliança Z" value="${escapeAttr(d.nome)}"${d.anonimo ? ' disabled' : ''}></label>
-        <p class="kz-mp-dica">Sem nome, a doação fica anônima. Entre com Discord para somar na sua patente.</p>`;
+    ? `<p class="kz-mp-quem">${kzt('pag.vaiPerfil', { nome: escapeHtml((state.myProfile && state.myProfile.nickname) || state.discordUser.username || kzt('pag.voce')) })}</p>`
+    : `<label class="kz-mp-campo"><span>${kzt('pag.seuNome')}</span><input type="text" id="mpNome" maxlength="40" autocomplete="nickname" placeholder="${escapeAttr(kzt('pag.seuNomePh'))}" value="${escapeAttr(d.nome)}"${d.anonimo ? ' disabled' : ''}></label>
+        <p class="kz-mp-dica">${kzt('pag.semNome')}</p>`;
   const carregando = d.estado === 'carregando';
+  const k = PAG_USD ? 1 / KZ_USD_BRL : 1;   // limites do campo "outro valor" na moeda do site
   return `
         ${ret ? `<div class="kz-mp-retorno ${ret[0]}" role="status">${escapeHtml(ret[1])}</div>` : ''}
-        <p class="kz-mp-metodos">Pix, cartão ou saldo do Mercado Pago — você paga na página segura do Mercado Pago e volta pra cá.</p>
-        <p class="kz-mp-pixdica"><b>Dica:</b> pagando por <b>Pix</b> a tarifa é bem menor, então chega mais apoio pro site. 💛</p>
-        <div class="kz-mp-valores" role="group" aria-label="Valor da doação">
-          ${MP_VALORES.map(x=>{ const on = !d.outro && d.valor === x; return `<button type="button" class="kz-fchip${on ? ' active' : ''}" data-mp-valor="${x}" aria-pressed="${on}">R$ ${x}</button>`; }).join('')}
-          <button type="button" class="kz-fchip${d.outro ? ' active' : ''}" data-mp-outro aria-pressed="${d.outro}">Outro valor</button>
+        <p class="kz-mp-metodos">${kzt('pag.metodos')}</p>
+        <p class="kz-mp-pixdica">${kzt('pag.dica')}</p>
+        <div class="kz-mp-valores" role="group" aria-label="${escapeAttr(kzt('pag.valorAria'))}">
+          ${MP_VALORES.map(x=>{ const on = !d.outro && d.valor === x; return `<button type="button" class="kz-fchip${on ? ' active' : ''}" data-mp-valor="${x}" aria-pressed="${on}">${mpRotulo(x)}</button>`; }).join('')}
+          <button type="button" class="kz-fchip${d.outro ? ' active' : ''}" data-mp-outro aria-pressed="${d.outro}">${kzt('pag.outroValor')}</button>
         </div>
-        ${d.outro ? `<label class="kz-mp-campo"><span>Outro valor (de R$ ${MP_VALOR_MIN} a R$ ${MP_VALOR_MAX.toLocaleString('pt-BR')})</span><input type="number" id="mpOutroValor" inputmode="decimal" min="${MP_VALOR_MIN}" max="${MP_VALOR_MAX}" step="1" placeholder="Ex.: 30" value="${escapeAttr(d.outroValor)}"></label>` : ''}
-        <p class="kz-mp-total">Total: <strong id="mpTotal">${ok ? formatBRL(v) : '—'}</strong></p>
+        ${d.outro ? `<label class="kz-mp-campo"><span>${kzt('pag.outroLabel', { min: mpRotulo(MP_VALOR_MIN), max: mpRotulo(MP_VALOR_MAX) })}</span><input type="number" id="mpOutroValor" inputmode="decimal" min="${MP_VALOR_MIN * k}" max="${MP_VALOR_MAX * k}" step="1" placeholder="${escapeAttr(kzt('pag.outroPh'))}" value="${escapeAttr(d.outroValor)}"></label>` : ''}
+        <p class="kz-mp-total">${kzt('pag.total')} <strong id="mpTotal">${ok ? formatBRL(v) : '—'}</strong></p>
         ${quem}
-        <label class="kz-honor-check kz-mp-anon"><input type="checkbox" id="mpAnonimo"${d.anonimo ? ' checked' : ''}> Doar anonimamente (não aparece no mural)</label>
-        <button type="button" class="kz-donate-cta" id="mpDoarBtn" data-mp-checkout-cta="checkout-pro" aria-label="Doar com Mercado Pago"${carregando ? ' disabled aria-busy="true"' : ''}><span>気</span><span>${carregando ? 'Abrindo o Mercado Pago…' : 'Doar com Mercado Pago'}</span></button>
+        <label class="kz-honor-check kz-mp-anon"><input type="checkbox" id="mpAnonimo"${d.anonimo ? ' checked' : ''}> ${kzt('pag.anonimo')}</label>
+        <button type="button" class="kz-donate-cta" id="mpDoarBtn" data-mp-checkout-cta="${PAG_USD ? 'stripe-checkout' : 'checkout-pro'}" aria-label="${escapeAttr(kzt('pag.botao'))}"${carregando ? ' disabled aria-busy="true"' : ''}><span>気</span><span>${carregando ? kzt('pag.botaoAbrindo') : kzt('pag.botao')}</span></button>
         <div class="kz-mp-status${d.estado === 'erro' ? ' err' : ''}" id="mpStatus" role="status" aria-live="polite">${d.estado === 'erro' ? escapeHtml(d.msg) : ''}</div>`;
 }
 // Ao voltar do Mercado Pago: abre a aba Doar com o aviso e limpa o endereço (o registro de verdade vem do webhook).
@@ -6028,23 +6037,25 @@ async function criarPreferenceMP(funcao){
   if(d.estado === 'carregando') return null;
   const valor = mpValorEscolhido();
   const falha = msg => { d.estado = 'erro'; d.msg = msg; render(); return null; };
-  if(!mpValorValido(valor)) return falha(`Escolha um valor entre R$ ${MP_VALOR_MIN} e R$ ${MP_VALOR_MAX.toLocaleString('pt-BR')}.`);
-  if(!isSupabaseConfigured() || !window.__sb || !window.__sb.client) return falha('As doações online não estão disponíveis agora. Tente de novo mais tarde.');
+  if(!mpValorValido(valor)) return falha(kzt('pag.escolhaValor', { min: mpRotulo(MP_VALOR_MIN), max: mpRotulo(MP_VALOR_MAX) }));
+  if(!isSupabaseConfigured() || !window.__sb || !window.__sb.client) return falha(kzt('pag.indisponivel'));
   d.estado = 'carregando'; d.msg = ''; state.mpRetorno = null; render();
   try{
+    // em dólar a função recebe o valor em US$ (o que a pessoa vê); em reais, o valor em R$
+    const enviado = PAG_USD ? Math.round(valor / KZ_USD_BRL * 100) / 100 : valor;
     const { data, error } = await window.__sb.client.functions.invoke(funcao, {
-      body: { valor, nome: state.discordUser || d.anonimo ? '' : String(d.nome || '').trim().slice(0, 40), anonimo: !!d.anonimo },
+      body: { valor: enviado, nome: state.discordUser || d.anonimo ? '' : String(d.nome || '').trim().slice(0, 40), anonimo: !!d.anonimo },
     });
     if(error){
       let msg = '';
       try{ msg = (await error.context.json()).erro || ''; }catch(e){}
-      return falha(msg || 'Não consegui abrir o Mercado Pago agora. Tente de novo em instantes.');
+      return falha(msg || kzt('pag.naoAbriu'));
     }
-    const url = data && data.init_point;
-    if(typeof url !== 'string' || !/^https:\/\/([a-z0-9-]+\.)*mercadopago\.com(\.br)?\//i.test(url)) return falha('O Mercado Pago respondeu de um jeito inesperado. Tente de novo.');
+    const url = data && (PAG_USD ? data.url : data.init_point);
+    if(typeof url !== 'string' || !PAG_HOST.test(url)) return falha(kzt('pag.inesperado'));
     return { init_point: url };
   }catch(e){
-    return falha('Não consegui abrir o Mercado Pago agora. Tente de novo em instantes.');
+    return falha(kzt('pag.naoAbriu'));
   }
 }
 function attachMpDoacaoHandlers(view){
@@ -6060,7 +6071,7 @@ function attachMpDoacaoHandlers(view){
   if(anon) anon.addEventListener('change', ()=>{ d.anonimo = anon.checked; const n = document.getElementById('mpNome'); if(n) n.disabled = d.anonimo; });
   const btn = view.querySelector('#mpDoarBtn');
   // Checkout Pro: a função "mp-doacao" cria a preference no servidor; o botão leva para o init_point devolvido
-  if(btn) btn.addEventListener('click', ()=> criarPreferenceMP('mp-doacao').then(pref => { if(pref && pref.init_point) window.location.assign(pref.init_point); }));
+  if(btn) btn.addEventListener('click', ()=> criarPreferenceMP(PAG_FUNCAO).then(pref => { if(pref && pref.init_point) window.location.assign(pref.init_point); }));
 }
 
 // Patentes: sobem conforme o total doado (acumulado), do primeiro apoio até o topo.

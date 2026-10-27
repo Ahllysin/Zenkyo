@@ -29,6 +29,27 @@ QUEM APARECE NO MURAL
 SE ALGO DER ERRADO
   Painel do Supabase → Edge Functions → mp-doacao / mp-webhook → Logs.
 
+DOAÇÕES INTERNACIONAIS PELO STRIPE (site em inglês, zenkyo.com.br/en/)
+=======================================================================
+  - Função stripe-checkout → o botão "Donate with Stripe" de /en/ chama esta função. Ela cria a sessão do
+                             Stripe Checkout (em dólar) e devolve o link de pagamento.
+  - Função stripe-webhook  → o Stripe avisa aqui. Ela confere a assinatura, confere valor e moeda e lança o apoio
+                             na Aliança Z (checkout.session.completed); trata reembolso (charge.refunded) e
+                             contestação (charge.dispute.created). Publicar SEM verificação de JWT.
+  - Banco: migrations/20261026_stripe_doacoes.sql acrescenta colunas em mp_pagamentos (provedor, moeda,
+           valor_original, stripe_session_id). A coluna valor continua em REAIS (taxa fixa); a doação do Stripe usa
+           as mesmas funções registrar_apoio_mp e ajustar_devolucao_mp do Mercado Pago.
+  SEGREDOS (Painel do Supabase → Edge Functions → Secrets):
+    STRIPE_SECRET_KEY      Stripe → Developers → API keys → Secret key (sk_test_... para testar, sk_live_... de verdade).
+    STRIPE_WEBHOOK_SECRET  Stripe → Developers → Webhooks → o endpoint abaixo → "Signing secret" (whsec_...).
+    USD_BRL                (opcional) taxa fixa; padrão 5. Precisa ser igual a KZ_USD_BRL em js/i18n.js.
+    SITE_URL_EN            (opcional) padrão https://zenkyo.com.br/en/
+  ENDEREÇO DO WEBHOOK (cadastrar no Stripe; eventos: checkout.session.completed, checkout.session.async_payment_succeeded,
+  charge.refunded, charge.dispute.created):
+    https://luyuprliobxtxnppdohw.supabase.co/functions/v1/stripe-webhook
+  Teste: com chaves de teste, cartão 4242 4242 4242 4242 (qualquer data futura e CVC). Reembolsar no painel do Stripe
+  desconta do mural.
+
 --- Funções do Supabase (pasta supabase/functions) ---
 mp-doacao (cria a preferência), mp-webhook (aviso do Mercado Pago), mp-retorno (confirma na volta ao site),
 mp-conferir (conferir um pagamento, só o dono), mp-reconciliar (confere os pedidos abertos, só o dono; roda na aba Admin).
