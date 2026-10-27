@@ -9,9 +9,13 @@
 //   2) Gera a lista e a VERSÃO do modo offline em sw.js (entre BUILD:START e BUILD:END).
 //   3) Gera uma página estática por guerreiro em p/<nome>.html (para o Google e para links com prévia) e o sitemap.xml.
 //   4) Regera a CSP (update-csp.js).
+//   5) Gera en/index.html (versão em inglês) a partir do index.html: <html lang="en">, <base href="../"> (os caminhos
+//      relativos continuam valendo a partir da raiz), título/descrição/links de idioma e js/lang/en.js. Os textos vêm de
+//      js/lang/pt.js e js/lang/en.js — o código (app.js) é um só para os dois idiomas.
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const vm = require('vm');
 const { execFileSync } = require('child_process');
 
 const ROOT = __dirname;
@@ -34,7 +38,7 @@ function gravar(f, novo){
 const hashTexto = f => hash(Buffer.from(norm(read(f)), 'utf8'));
 
 // ---------- 1) ?v= em index.html ----------
-const VERSIONADOS = ['base.css', 'visual-novo.css', 'js/dados.js', 'js/app.js'];
+const VERSIONADOS = ['base.css', 'visual-novo.css', 'js/i18n.js', 'js/lang/pt.js', 'js/dados.js', 'js/app.js'];
 let html = read('index.html');
 VERSIONADOS.forEach(f => {
   const esc = f.replace(/[.*+?^${}()|[\]\\\/]/g, '\\$&');
@@ -58,6 +62,77 @@ const bloco = "// BUILD:START\nconst VERSION = '" + versao + "';\nconst PRECACHE
 sw = norm(sw).replace(/\/\/ BUILD:START[\s\S]*?\/\/ BUILD:END/, bloco);
 gravar('sw.js', sw);
 
+// ---------- 3a) versão em inglês: en/index.html ----------
+// Lê um js/lang/<idioma>.js sem abrir navegador: o arquivo só chama kzAddLang('xx', { chave: texto }).
+function dicionario(f){
+  const dic = {};
+  vm.runInNewContext(read(f), { kzAddLang: (_idioma, textos) => Object.assign(dic, textos) });
+  return dic;
+}
+function gerarIngles(htmlPt){
+  const pt = dicionario('js/lang/pt.js');
+  const en = Object.assign({}, pt, dicionario('js/lang/en.js'));   // o que faltar em inglês fica em português
+  const attr = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+  let h = htmlPt;
+  const trocar = (de, para) => {
+    if(!h.includes(de)) throw new Error('index.html mudou e a versão em inglês não achou: ' + de.slice(0, 70));
+    h = h.split(de).join(para);
+  };
+  trocar('<html lang="pt-BR">', '<html lang="en">');
+  trocar('<meta charset="UTF-8">', '<meta charset="UTF-8">\n<base href="../">');
+  ['meta.titulo', 'meta.descricao', 'meta.imagemAlt'].forEach(k => trocar(attr(pt[k]), attr(en[k])));
+  trocar('<meta property="og:locale" content="pt_BR">', '<meta property="og:locale" content="en_US">');
+  trocar('<meta property="og:url" content="' + SITE + '/">', '<meta property="og:url" content="' + SITE + '/en/">');
+  trocar('<link rel="canonical" href="' + SITE + '/">', '<link rel="canonical" href="' + SITE + '/en/">');
+  const seletor = /<a class="kz-lang-switch"[^>]*>[^<]*<\/a>/;
+  if(!seletor.test(h)) throw new Error('index.html não tem o seletor de idioma (a#langSwitch)');
+  h = h.replace(seletor, () => `<a class="kz-lang-switch" id="langSwitch" href="./" hreflang="${attr(en['idioma.outroCodigo'])}" lang="${attr(en['idioma.outroCodigo'])}" title="${attr(en['idioma.trocar'])}" aria-label="${attr(en['idioma.trocar'])}">${en['idioma.outroSigla']}</a>`);
+  const ptJs = h.match(/<script src="js\/lang\/pt\.js(?:\?v=[A-Za-z0-9]+)?"><\/script>/);
+  if(!ptJs) throw new Error('index.html não carrega js/lang/pt.js');
+  // en.js (interface) e dados-en.js (nomes e descrições do jogo) só carregam em /en/
+  h = h.replace(ptJs[0], () => ptJs[0] + '\n<script src="js/lang/en.js?v=' + hashTexto('js/lang/en.js') + '"></script>\n<script src="js/lang/dados-en.js?v=' + hashTexto('js/lang/dados-en.js') + '"></script>\n<script src="js/lang/dados-en-extra.js?v=' + hashTexto('js/lang/dados-en-extra.js') + '"></script>');
+
+  // Textos fixos do HTML marcados com data-i18n*: o português fica escrito no próprio index.html e o inglês entra aqui.
+  //   data-i18n-attr="title:chave;aria-label:outra"  troca o valor desses atributos
+  //   data-i18n="chave"       troca o texto do elemento (só texto)     data-i18n-html="chave"  troca o HTML de dentro
+  //   data-i18n-tail="chave"  troca só o texto que vem depois da última tag de dentro (ex.: <span>戦</span>Guerreiros)
+  // Se o português do HTML não for igual ao do dicionário, o build para (evita traduzir o texto errado em silêncio).
+  const compacta = s => String(s).replace(/\s+/g, ' ').trim();
+  const escRe = s => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const escHtml = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const texto = k => { if(!(k in pt)) throw new Error('data-i18n: a chave "' + k + '" não existe em js/lang/pt.js'); return k; };
+  h = h.replace(/<[a-z][^>]*\sdata-i18n-attr="([^"]+)"[^>]*>/gi, (tag, pares) => {
+    pares.split(';').forEach(par => {
+      const [a, k] = par.split(':'); texto(k);
+      const re = new RegExp('(\\s' + escRe(a) + '=")' + escRe(attr(pt[k])) + '(")');
+      if(!re.test(tag)) throw new Error('data-i18n-attr: ' + a + ' não está igual ao português da chave ' + k + ' em ' + tag.slice(0, 80));
+      tag = tag.replace(re, (m, p1, p2) => p1 + attr(en[k]) + p2);
+    });
+    return tag;
+  });
+  const bloco = (marca, tratar) => {
+    const re = new RegExp('(<(\\w+)\\b[^>]*\\s' + marca + '="([^"]+)"[^>]*>)([\\s\\S]*?)(</\\2>)', 'g');
+    h = h.replace(re, (m, abre, tag, k, dentro, fecha) => abre + tratar(texto(k), dentro, marca) + fecha);
+  };
+  bloco('data-i18n', (k, dentro) => {
+    if(compacta(dentro) !== compacta(escHtml(pt[k]))) throw new Error('data-i18n: o texto do HTML não é o da chave ' + k + ': ' + dentro.slice(0, 60));
+    return escHtml(en[k]);
+  });
+  bloco('data-i18n-html', (k, dentro) => {
+    if(compacta(dentro) !== compacta(pt[k])) throw new Error('data-i18n-html: o HTML não é o da chave ' + k);
+    return en[k];
+  });
+  bloco('data-i18n-tail', (k, dentro) => {
+    const re = new RegExp(escRe(escHtml(pt[k])) + '\\s*$');
+    if(!re.test(dentro)) throw new Error('data-i18n-tail: o fim do elemento não é o texto da chave ' + k);
+    return dentro.replace(re, () => escHtml(en[k]));
+  });
+  // Doação em inglês ainda não existe: os botões ficam escondidos (continuam no HTML para o JS não quebrar).
+  // Para ligar de novo, apague esta linha e volte PAG_EM_BREVE para false em js/app.js.
+  h = h.replace(/(<button class="kz-header-donate-btn" id="headerDonateBtn")/, '$1 style="display:none"').replace(/(<button class="kz-nav-btn" data-tab="doar")/, '$1 style="display:none"');
+  return h;
+}
+
 // ---------- 3) páginas por guerreiro + sitemap ----------
 async function paginas(){
   const { loadApp, evalIn } = require('./sandbox-harness');
@@ -66,8 +141,13 @@ async function paginas(){
     raca:c.element, genero:c.gender, tags:c.tags || [], skill:c.skill, supreme:c.supreme, combo:c.combo }))`);
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch]));
   const hoje = new Date().toISOString().slice(0, 10);
-  const urls = [{ loc: SITE + '/', pri: '1.0' }, { loc: SITE + '/privacidade.html', pri: '0.3' }, { loc: SITE + '/termos.html', pri: '0.3' }];
+  // cada página tem a versão em português e a em inglês; "alt" liga as duas com hreflang (o Google mostra a certa para cada pessoa)
+  const par = (pt, en, pri) => { const alt = [['pt-BR', SITE + pt], ['en', SITE + en]]; return [{ loc: SITE + pt, pri, alt }, { loc: SITE + en, pri, alt }]; };
+  const urls = [...par('/', '/en/', '1.0'), ...par('/privacidade.html', '/en/privacy.html', '0.3'), ...par('/termos.html', '/en/terms.html', '0.3')];
   const esperadas = new Set();
+  const dadosEn = {};
+  ['js/lang/dados-en.js', 'js/lang/dados-en-extra.js'].forEach(f => vm.runInNewContext(read(f), { kzAddDados: o => Object.assign(dadosEn, o) }));
+  const enDic = dicionario('js/lang/en.js');
   chars.forEach(c => {
     const desc = [c.raridade, c.tipo && 'tipo ' + c.tipo, c.afinidade && 'afinidade ' + c.afinidade].filter(Boolean).join(' · ');
     const hab = [['Habilidade', c.skill], ['Suprema', c.supreme], ['Ataque combinado', c.combo]].filter(([, a]) => a && (a.name || a.desc))
@@ -104,23 +184,57 @@ ${hab}
 <footer>Zenkyo é um site de fã, sem vínculo com Bandai Namco, Toei Animation, Shueisha ou os criadores do jogo. Dragon Ball e as imagens pertencem aos seus donos.</footer>
 </main></body></html>
 `;
+    const urlEn = `${SITE}/p/en/${c.slug}.html`;
+    const alt = [['pt-BR', url], ['en', urlEn]];
+    const links = alt.map(([l, h]) => `<link rel="alternate" hreflang="${l}" href="${h}">`).join('\n');
     esperadas.add('p/' + c.slug + '.html');
-    gravar('p/' + c.slug + '.html', pagina);
-    urls.push({ loc: url, pri: '0.6' });
+    gravar('p/' + c.slug + '.html', pagina.replace(`<link rel="canonical" href="${url}">`, () => `<link rel="canonical" href="${url}">\n${links}`));
+    urls.push({ loc: url, pri: '0.6', alt });
+    // versão em inglês: mesmo conteúdo, com o texto do jogo vindo de js/lang/dados-en*.js (o que faltar fica em português)
+    const T = s => (s != null && dadosEn[s] != null) ? dadosEn[s] : s;
+    const termo = s => (enDic['termo.' + s] != null ? enDic['termo.' + s] : s);
+    const nomeEn = T(c.nome);
+    const descEn = [c.raridade, c.tipo && termo(c.tipo) + ' type', c.afinidade && termo(c.afinidade) + ' affinity'].filter(Boolean).join(' · ');
+    const habEn = [['Skill', c.skill], ['Supreme', c.supreme], ['Combo attack', c.combo]].filter(([, a]) => a && (a.name || a.desc))
+      .map(([r, a]) => `<h2>${r}${a.name ? ': ' + esc(T(a.name)) : ''}</h2><p>${esc(T(a.desc))}</p>`).join('\n');
+    const metaEn = `${nomeEn} (${descEn}) in Dragon Ball: skills, supreme and combo. See the full profile on Zenkyo.`;
+    const paginaEn = pagina
+      .replace('<html lang="pt-BR">', '<html lang="en">')
+      .replace(/<title>[^]*?<\/title>/, () => `<title>${esc(nomeEn)} — Zenkyo</title>`)
+      .replace(/<meta name="description" content="[^"]*">/, () => `<meta name="description" content="${esc(metaEn)}">`)
+      .replace(`<link rel="canonical" href="${url}">`, () => `<link rel="canonical" href="${urlEn}">\n${links}`)
+      .replace(/<meta property="og:title" content="[^"]*"><meta property="og:description" content="[^"]*">/, () => `<meta property="og:title" content="${esc(nomeEn)} — Zenkyo"><meta property="og:description" content="${esc(metaEn)}">`)
+      .replace(`<meta property="og:url" content="${url}">`, () => `<meta property="og:url" content="${urlEn}">`)
+      .replace(/(href|src)="\.\.\//g, '$1="../../')
+      .replace(/<body>[^]*<\/main><\/body>/, () => `<body><main>
+<p class="meta"><a href="../../en/">Zenkyo</a> › Warriors</p>
+<h1>${esc(nomeEn)}</h1>
+<p class="meta">${esc([c.raridade, termo(c.tipo), termo(c.afinidade), c.raca !== 'Nenhum' ? termo(c.raca) : '', termo(c.genero)].filter(Boolean).join(' · '))}${c.tags.length ? '<br>' + c.tags.map(t => esc(termo(t))).join(' · ') : ''}</p>
+${temRetrato ? `<img src="../../portraits/${c.slug}.webp" alt="${esc(nomeEn)}" width="260" loading="lazy">` : ''}
+${habEn}
+<a class="btn" href="../../en/#/guerreiro/${c.slug}">Open the full profile on Zenkyo</a>
+<footer>Zenkyo is a fan site, not affiliated with Bandai Namco, Toei Animation, Shueisha or the game's creators. Dragon Ball and its images belong to their owners.</footer>
+</main></body>`);
+    esperadas.add('p/en/' + c.slug + '.html');
+    gravar('p/en/' + c.slug + '.html', paginaEn);
+    urls.push({ loc: urlEn, pri: '0.6', alt });
   });
   // páginas que não existem mais (personagem removido/renomeado) saem junto
-  const pdir = path.join(ROOT, 'p');
-  if(fs.existsSync(pdir)) fs.readdirSync(pdir).filter(f => f.endsWith('.html') && !esperadas.has('p/' + f)).forEach(f => {
-    if(CHECK) problemas.push('p/' + f + ' sobrou (guerreiro não existe mais)'); else fs.unlinkSync(path.join(pdir, f));
+  [['p', ''], ['p/en', 'en/']].forEach(([d, pre]) => {
+    const pdir = path.join(ROOT, d);
+    if(fs.existsSync(pdir)) fs.readdirSync(pdir).filter(f => f.endsWith('.html') && !esperadas.has('p/' + pre + f)).forEach(f => {
+      if(CHECK) problemas.push(d + '/' + f + ' sobrou (guerreiro não existe mais)'); else fs.unlinkSync(path.join(pdir, f));
+    });
   });
-  gravar('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
-    urls.map(u => `  <url><loc>${u.loc}</loc><lastmod>${hoje}</lastmod><priority>${u.pri}</priority></url>`).join('\n') + '\n</urlset>\n');
+  gravar('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n' +
+    urls.map(u => `  <url><loc>${u.loc}</loc>${(u.alt || []).map(([l, h]) => `<xhtml:link rel="alternate" hreflang="${l}" href="${h}"/>`).join('')}<lastmod>${hoje}</lastmod><priority>${u.pri}</priority></url>`).join('\n') + '\n</urlset>\n');
   return chars.length;
 }
 
 paginas().then(n => {
   if(!CHECK) execFileSync(process.execPath, [path.join(ROOT, 'update-csp.js')], { stdio: 'inherit' });
   else try{ execFileSync(process.execPath, [path.join(ROOT, 'update-csp.js'), '--check'], { stdio: 'pipe' }); }catch(e){ problemas.push('CSP desatualizada (rode node build.js)'); }
+  gravar('en/index.html', gerarIngles(read('index.html')));   // depois da CSP, que também mexe no index.html
   if(CHECK){
     if(problemas.length){ console.error('build desatualizado:\n - ' + problemas.join('\n - ')); process.exit(1); }
     console.log('build em dia.');

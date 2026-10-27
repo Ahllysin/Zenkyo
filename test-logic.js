@@ -2312,6 +2312,103 @@ async function main(){
     assert.deepStrictEqual(r.limpaveis, { depois: 2, antes: 0 }, 'só pedidos não pagos com mais de 1 dia entram na limpeza');
   });
 
+  console.log('\n[Idioma: português / inglês]');
+
+  // Carrega i18n.js + os dicionários numa página falsa com o <html lang> pedido (como o navegador faria).
+  const carregaIdioma = (lang, arquivos) => {
+    const fs = require('fs'), path = require('path'), vm = require('vm');
+    const ctx = { document: { documentElement: { getAttribute: () => lang }, getElementById: () => null }, location: { hash: '' }, addEventListener(){} };
+    ctx.window = ctx;
+    vm.createContext(ctx);
+    ['js/i18n.js', ...arquivos].forEach(f => vm.runInContext(fs.readFileSync(path.join(__dirname, f), 'utf8'), ctx, { filename: f }));
+    return ctx;
+  };
+
+  await test('Idioma: o site principal fica em português; kzt troca {variáveis} e devolve a chave se ela não existir', () => {
+    assert.strictEqual(evalIn(sandbox, 'KZ_LANG'), 'pt');
+    assert.strictEqual(evalIn(sandbox, "kzt('meta.titulo')"), 'Zenkyo — guerreiros, combos e tier list');
+    assert.strictEqual(evalIn(sandbox, "kzAddLang('pt', { 'teste.vars': 'Olá, {nome}! {nao}' }), kzt('teste.vars', { nome: 'Ana' })"), 'Olá, Ana! {nao}');
+    assert.strictEqual(evalIn(sandbox, "kzt('chave.que.nao.existe')"), 'chave.que.nao.existe');
+  });
+
+  await test('Idioma: em /en/ o texto vem do inglês e o que ainda não foi traduzido cai no português', () => {
+    const en = carregaIdioma('en', ['js/lang/pt.js', 'js/lang/en.js']);
+    assert.strictEqual(en.KZ_LANG, 'en');
+    assert.strictEqual(en.kzt('meta.titulo'), 'Zenkyo — warriors, combos and tier list');
+    en.kzAddLang('pt', { 'teste.so_pt': 'Só em português' });
+    assert.strictEqual(en.kzt('teste.so_pt'), 'Só em português', 'sem tradução, mostra o português (nunca a chave crua)');
+    const pt = carregaIdioma('pt-BR', ['js/lang/pt.js', 'js/lang/en.js']);
+    assert.strictEqual(pt.KZ_LANG, 'pt');
+    assert.strictEqual(pt.kzt('meta.titulo'), 'Zenkyo — guerreiros, combos e tier list', 'página em português ignora o dicionário inglês');
+  });
+
+  await test('Idioma: textos do jogo em inglês — toda chave existe nos dados, números e [termos] batem, e o que falta cai no português', () => {
+    const fs = require('fs'), vm = require('vm');
+    const dados = {};
+    ['js/lang/dados-en.js', 'js/lang/dados-en-extra.js'].forEach(f => vm.runInNewContext(fs.readFileSync(f, 'utf8'), { kzAddDados: o => Object.assign(dados, o) }));
+    const fonte = fs.readFileSync('js/dados.js', 'utf8') + fs.readFileSync('js/app.js', 'utf8');
+    const solta = [], difere = [];
+    const nums = s => (String(s).replace(/(\d),(\d)/g, '$1.$2').match(/\d+(?:\.\d+)?/g) || []).sort().join(',');
+    const cols = s => (String(s).match(/\[[^\]]+\]/g) || []).length;
+    Object.entries(dados).forEach(([pt, en]) => {
+      const bruto = JSON.stringify(pt).slice(1, -1).replace(/\\u00([0-9a-f]{2})/g, (_, h) => String.fromCharCode(parseInt(h, 16)));
+      if(!fonte.includes(pt) && !fonte.includes(bruto) && !fonte.includes(pt.replace(/'/g, "\\'"))) solta.push(pt.slice(0, 50));
+      if(nums(pt) !== nums(en) || cols(pt) !== cols(en)) difere.push(pt.slice(0, 50));
+    });
+    assert.deepStrictEqual(solta, [], 'traduções de texto que não existe mais nos dados: ' + solta.slice(0, 5).join(' | '));
+    assert.deepStrictEqual(difere, [], 'números ou [termos] diferentes do português: ' + difere.slice(0, 5).join(' | '));
+    const en = carregaIdioma('en', ['js/lang/pt.js', 'js/lang/en.js', 'js/lang/dados-en.js']);
+    assert.strictEqual(en.kzTrad('texto que ninguém traduziu'), 'texto que ninguém traduziu');
+  });
+
+  await test('Idioma: toda chave do inglês existe no português (sem chave órfã ou com erro de digitação)', () => {
+    const ctx = carregaIdioma('en', ['js/lang/pt.js', 'js/lang/en.js']);
+    const pt = Object.keys(ctx.kzLangTextos.pt), en = Object.keys(ctx.kzLangTextos.en);
+    const orfas = en.filter(k => !pt.includes(k));
+    assert.deepStrictEqual(orfas, [], 'chaves só no inglês: ' + orfas.join(', '));
+    assert.ok(pt.length > 0 && en.length > 0);
+  });
+
+  await test('Idioma: toda chave usada em kzt(...) no app.js existe no dicionário em português (sem chave esquecida ou com erro de digitação)', () => {
+    const fs = require('fs'), path = require('path');
+    const app = fs.readFileSync(path.join(__dirname, 'js', 'app.js'), 'utf8');
+    const ctx = carregaIdioma('pt', ['js/lang/pt.js']);
+    const tem = new Set(Object.keys(ctx.kzLangTextos.pt));
+    const usadas = new Set();
+    for(let i = app.indexOf('kzt('); i >= 0; i = app.indexOf('kzt(', i + 4)){
+      // primeiro argumento: até a vírgula (ou o fecha-parêntese) do mesmo nível
+      let d = 0, fim = i + 4, q = null;
+      for(; fim < app.length; fim++){
+        const ch = app[fim];
+        if(q){ if(ch === '\\') fim++; else if(ch === q) q = null; continue; }
+        if(ch === "'" || ch === '"' || ch === '`'){ q = ch; continue; }
+        if(ch === '(' || ch === '[' || ch === '{') d++;
+        else if(ch === ')' || ch === ']' || ch === '}'){ if(d === 0) break; d--; }
+        else if(ch === ',' && d === 0) break;
+      }
+      const arg = app.slice(i + 4, fim);
+      for(const m of arg.matchAll(/'([a-zA-Z][\w]*(?:\.[\w]+)+)'/g)) usadas.add(m[1]);
+    }
+    const faltam = [...usadas].filter(k => !tem.has(k));
+    assert.deepStrictEqual(faltam, [], 'chaves usadas e sem texto em pt.js: ' + faltam.join(', '));
+    assert.ok(usadas.size > 300, 'esperava centenas de chaves em uso, achei ' + usadas.size);
+  });
+
+  await test('Idioma: en/index.html (gerado) tem lang="en", base na raiz, canonical próprio, en.js e o seletor voltando para o português', () => {
+    const fs = require('fs'), path = require('path');
+    const pt = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+    const en = fs.readFileSync(path.join(__dirname, 'en', 'index.html'), 'utf8');
+    assert.ok(/<html lang="en">/.test(en) && /<html lang="pt-BR">/.test(pt));
+    assert.ok(en.includes('<base href="../">') && !pt.includes('<base'), 'só a página em inglês precisa do <base>, porque mora em /en/');
+    assert.ok(en.includes('<link rel="canonical" href="https://zenkyo.com.br/en/">') && pt.includes('<link rel="canonical" href="https://zenkyo.com.br/">'));
+    assert.ok(/hreflang="pt-BR" href="https:\/\/zenkyo\.com\.br\/"/.test(pt) && /hreflang="en" href="https:\/\/zenkyo\.com\.br\/en\/"/.test(pt), 'as duas páginas se apontam com hreflang');
+    assert.ok(/<script src="js\/lang\/en\.js\?v=[0-9a-f]+"><\/script>/.test(en) && !pt.includes('lang/en.js'), 'o dicionário inglês só carrega em /en/');
+    assert.ok(/id="langSwitch" href="en\/"/.test(pt) && /id="langSwitch" href=".\/"/.test(en), 'o seletor leva para o outro idioma');
+    const ordem = h => ['js/i18n.js', 'js/lang/pt.js', 'js/dados.js', 'js/app.js'].map(f => h.indexOf('<script src="' + f));
+    [pt, en].forEach(h => { const o = ordem(h); assert.ok(o.every(i => i > 0) && o.every((i, n) => n === 0 || i > o[n - 1]), 'i18n e dicionário carregam antes de dados.js e app.js'); });
+    assert.strictEqual(pt.match(/<meta http-equiv="Content-Security-Policy" content="([^"]*)">/)[1], en.match(/<meta http-equiv="Content-Security-Policy" content="([^"]*)">/)[1], 'mesma CSP nas duas páginas');
+  });
+
   console.log(`\n${passed} passaram, ${failed} falharam.`);
   if(failed > 0) process.exit(1);
 }
