@@ -90,6 +90,42 @@ function gerarIngles(htmlPt){
   const ptJs = h.match(/<script src="js\/lang\/pt\.js(?:\?v=[A-Za-z0-9]+)?"><\/script>/);
   if(!ptJs) throw new Error('index.html não carrega js/lang/pt.js');
   h = h.replace(ptJs[0], () => ptJs[0] + '\n<script src="js/lang/en.js?v=' + hashTexto('js/lang/en.js') + '"></script>');
+
+  // Textos fixos do HTML marcados com data-i18n*: o português fica escrito no próprio index.html e o inglês entra aqui.
+  //   data-i18n-attr="title:chave;aria-label:outra"  troca o valor desses atributos
+  //   data-i18n="chave"       troca o texto do elemento (só texto)     data-i18n-html="chave"  troca o HTML de dentro
+  //   data-i18n-tail="chave"  troca só o texto que vem depois da última tag de dentro (ex.: <span>戦</span>Guerreiros)
+  // Se o português do HTML não for igual ao do dicionário, o build para (evita traduzir o texto errado em silêncio).
+  const compacta = s => String(s).replace(/\s+/g, ' ').trim();
+  const escRe = s => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const escHtml = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const texto = k => { if(!(k in pt)) throw new Error('data-i18n: a chave "' + k + '" não existe em js/lang/pt.js'); return k; };
+  h = h.replace(/<[a-z][^>]*\sdata-i18n-attr="([^"]+)"[^>]*>/gi, (tag, pares) => {
+    pares.split(';').forEach(par => {
+      const [a, k] = par.split(':'); texto(k);
+      const re = new RegExp('(\\s' + escRe(a) + '=")' + escRe(attr(pt[k])) + '(")');
+      if(!re.test(tag)) throw new Error('data-i18n-attr: ' + a + ' não está igual ao português da chave ' + k + ' em ' + tag.slice(0, 80));
+      tag = tag.replace(re, (m, p1, p2) => p1 + attr(en[k]) + p2);
+    });
+    return tag;
+  });
+  const bloco = (marca, tratar) => {
+    const re = new RegExp('(<(\\w+)\\b[^>]*\\s' + marca + '="([^"]+)"[^>]*>)([\\s\\S]*?)(</\\2>)', 'g');
+    h = h.replace(re, (m, abre, tag, k, dentro, fecha) => abre + tratar(texto(k), dentro, marca) + fecha);
+  };
+  bloco('data-i18n', (k, dentro) => {
+    if(compacta(dentro) !== compacta(escHtml(pt[k]))) throw new Error('data-i18n: o texto do HTML não é o da chave ' + k + ': ' + dentro.slice(0, 60));
+    return escHtml(en[k]);
+  });
+  bloco('data-i18n-html', (k, dentro) => {
+    if(compacta(dentro) !== compacta(pt[k])) throw new Error('data-i18n-html: o HTML não é o da chave ' + k);
+    return en[k];
+  });
+  bloco('data-i18n-tail', (k, dentro) => {
+    const re = new RegExp(escRe(escHtml(pt[k])) + '\\s*$');
+    if(!re.test(dentro)) throw new Error('data-i18n-tail: o fim do elemento não é o texto da chave ' + k);
+    return dentro.replace(re, () => escHtml(en[k]));
+  });
   return h;
 }
 

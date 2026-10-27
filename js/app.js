@@ -686,7 +686,7 @@ function getEntry(charId){
 function toggleAcquire(charId){
   const entry = getEntry(charId);
   if(entry.owned){
-    customConfirm('Remover este personagem da sua coleção? O nível de estrela salvo será perdido.', ()=>{
+    customConfirm(kzt('coll.removerConfirma'), ()=>{
       delete state.collection[charId];
       saveCollection();
       updateCollectionCard(charId);
@@ -722,17 +722,17 @@ function renderAccountArea(){
   if(state.discordUser){
     return `
       <div class="kz-account">
-        <button class="kz-account-name" id="accountGoPerfilBtn" title="Ver meu perfil">
+        <button class="kz-account-name" id="accountGoPerfilBtn" title="${kzt('conta.verPerfil')}">
           ${avatarFoto(state.myProfile && state.myProfile.avatarCharId) ? `<span style="display:inline-block;width:24px;height:24px;border-radius:50%;overflow:hidden;vertical-align:middle;">${avatarFotoImg(avatarFoto(state.myProfile.avatarCharId))}</span>`
             : state.discordUser.avatarUrl ? `<img src="${escapeAttr(state.discordUser.avatarUrl)}" alt="" style="width:24px;height:24px;border-radius:50%;">` : ''}
           <span class="kz-account-email">${escapeHtml(state.discordUser.username)}</span>
         </button>
-        <button class="kz-btn kz-btn-sm" id="logoutBtn">Sair</button>
+        <button class="kz-btn kz-btn-sm" id="logoutBtn">${kzt('conta.sair')}</button>
       </div>`;
   }
-  return `<button class="kz-discord-btn kz-header-discord-btn" id="loginBtn" aria-label="Entrar com o Discord" title="Entrar com o Discord">
+  return `<button class="kz-discord-btn kz-header-discord-btn" id="loginBtn" aria-label="${kzt('conta.entrarDiscord')}" title="${kzt('conta.entrarDiscord')}">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg>
-    <span class="kz-discord-txt">Entrar</span>
+    <span class="kz-discord-txt">${kzt('conta.entrar')}</span>
   </button>`;
 }
 
@@ -763,8 +763,8 @@ function customConfirm(message, onConfirm){
         <p style="margin:0;color:var(--text);font-size:14px;line-height:1.5;">${escapeHtml(message)}</p>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-ghost" data-act="cancel">Cancelar</button>
-        <button class="btn btn-primary" data-act="ok">Confirmar</button>
+        <button class="btn btn-ghost" data-act="cancel">${kzt('comum.cancelar')}</button>
+        <button class="btn btn-primary" data-act="ok">${kzt('comum.confirmar')}</button>
       </div>
     </div>`;
   document.body.appendChild(overlay);
@@ -785,7 +785,7 @@ function customPrompt(message, onSubmit){
         <input type="text" id="customPromptInput" style="margin-top:8px;">
       </div>
       <div class="modal-footer">
-        <button class="btn btn-ghost" data-act="cancel">Cancelar</button>
+        <button class="btn btn-ghost" data-act="cancel">${kzt('comum.cancelar')}</button>
         <button class="btn btn-primary" data-act="ok">OK</button>
       </div>
     </div>`;
@@ -902,7 +902,7 @@ function effectBadgeRow(effArr){
    e sem diferença de maiúscula. O texto das habilidades só entra a partir de 3 letras (senão qualquer "a" acharia todo mundo). */
 const _buscaCache = new Map();
 function buscaNorm(x){ return String(x || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
-const BUSCA_ROTULOS = { habilidade:'Habilidade', suprema:'Suprema', passivaUnica:'Passiva única', passivasSupremo:'Passiva', passivaQuatroEstrelas:'Passiva ★4', combinado:'Ataque combinado', passiva:'Passiva', lr:'LR', skill:'Habilidade', supreme:'Suprema', combo:'Ataque combinado' };
+const BUSCA_ROTULOS = { habilidade:kzt('hab.habilidade'), suprema:kzt('hab.suprema'), passivaUnica:kzt('hab.passivaUnica'), passivasSupremo:kzt('hab.passiva'), passivaQuatroEstrelas:kzt('hab.passivaQuatro'), combinado:kzt('hab.ataqueCombinado'), passiva:kzt('hab.passiva'), lr:'LR', skill:kzt('hab.habilidade'), supreme:kzt('hab.suprema'), combo:kzt('hab.ataqueCombinado') };
 function charTextoBusca(c){
   const p = ABILITY_PROGRESSION[c.name];
   const chave = c.id + '|' + c.name + '|' + (c.skill && c.skill.desc || '').length + '|' + (c.supreme && c.supreme.desc || '').length;
@@ -1000,22 +1000,22 @@ function renderSF(scope){
   <div class="kz-sf" data-sf-root="${scope}">
     <div class="kz-sf-head">
       <button type="button" class="kz-sf-toggle ${n?'has':''}" data-sf-toggle="${scope}" aria-expanded="${open}">
-        <span>Filtro de pesquisa</span>${n?`<span class="n">${n}</span>`:''}<span class="caret">${open?'▲':'▼'}</span>
+        <span>${kzt('sf.titulo')}</span>${n?`<span class="n">${n}</span>`:''}<span class="caret">${open?'▲':'▼'}</span>
       </button>
-      ${n?`<button type="button" class="kz-link-btn" data-sf-clear="${scope}">Limpar filtro</button>`:''}
+      ${n?`<button type="button" class="kz-link-btn" data-sf-clear="${scope}">${kzt('sf.limpar')}</button>`:''}
     </div>
     ${open?`
     <div class="kz-sf-body">
       <div class="kz-sf-group">
-        <div class="kz-sf-label">Tags<small>precisa ter todas as marcadas</small></div>
+        <div class="kz-sf-label">${kzt('sf.tags')}<small>${kzt('sf.tagsAjuda')}</small></div>
         <div class="kz-sf-chips">${tags.map(t=>chip('tags', t, t, tagCounts[t])).join('')}</div>
       </div>
       <div class="kz-sf-group">
-        <div class="kz-sf-label">Persegue<small>efeito que ativa o Ataque Combinado</small></div>
+        <div class="kz-sf-label">${kzt('sf.persegue')}<small>${kzt('sf.perseguAjuda')}</small></div>
         <div class="kz-sf-chips">${effChips('trig')}</div>
       </div>
       <div class="kz-sf-group">
-        <div class="kz-sf-label">Causa<small>efeito que o Ataque Combinado causa</small></div>
+        <div class="kz-sf-label">${kzt('sf.causa')}<small>${kzt('sf.causaAjuda')}</small></div>
         <div class="kz-sf-chips">${effChips('eff')}</div>
       </div>
     </div>`:''}
@@ -1039,7 +1039,7 @@ function priorityOrder(){ return [0,1,2,3,4,5]; }
 
 const STARTER_KEYS = ['skill','supreme'];
 const ABILITY_ICON = {skill:'H', supreme:'S', combo:'C'};
-const ABILITY_LABEL = {skill:'Habilidade', supreme:'Suprema', combo:'Ataque Combinado'};
+const ABILITY_LABEL = {skill:kzt('hab.habilidade'), supreme:kzt('hab.suprema'), combo:kzt('hab.ataqueCombinadoTitulo')};
 
 // Quem, no time (inclusive o próprio que usou a habilidade), tem o Ataque Combinado ativado por algum efeito que essa habilidade causa —
 // igual ao "Detalhes do Ataque Comb." do jogo: um passo só, não a cadeia inteira.
@@ -1249,18 +1249,18 @@ function nvTtl(text, attrs){
 // edit = true (aba Combos): a faixa também é um editor — arraste para trocar de casa, toque no × para tirar, toque numa vaga vazia para escolher.
 function nvLineupHtml(team, small, edit){
   const names = (team || []).map(id => (getChar(id) || {}).name).filter(Boolean);
-  const alvo = edit ? '' : ` role="img" aria-label="Formação: ${escapeAttr(names.join(', ') || 'vazia')}"`;
+  const alvo = edit ? '' : ` role="img" aria-label="${escapeAttr(kzt('time.formacao', { nomes: names.join(', ') || kzt('time.vazia') }))}"`;
   return `<div class="kz-nv-lineup${small ? ' sm' : ''}${edit ? ' edit' : ''}"${alvo}>${[0,1,2,3,4,5].map(i => {
     const c = team && team[i] && getChar(team[i]);
     const ed = edit ? ` data-slot="${i}"${state.slotSel === i ? ' data-sel="1"' : ''}` : '';
-    if(c) return `<span class="ln${edit ? ' filled' : ''}"${ed}${edit ? ' draggable="true"' : ''}${edit ? ` title="${escapeAttr('Casa ' + (i + 1) + ' — ' + c.name + ' (arraste para mudar de casa)')}"` : ''}><img src="${faixaSrc(c)}" alt="" loading="lazy" decoding="async" draggable="false" data-onerr="cut" data-card="${portraitSrc(c)}"><b>${i+1}</b>${edit ? `<button type="button" class="ln-x" data-remove-slot="${i}" aria-label="Tirar ${escapeAttr(c.name)} da formação" title="Tirar da formação">×</button>` : ''}</span>`;
-    return `<span class="ln empty"${ed}${edit ? ` role="button" tabindex="0" aria-label="${'Escolher guerreiro para a casa ' + (i + 1)}"` : ''}><i>+</i><b>${i+1}</b></span>`;
+    if(c) return `<span class="ln${edit ? ' filled' : ''}"${ed}${edit ? ' draggable="true"' : ''}${edit ? ` title="${escapeAttr(kzt('time.casaTitulo', { n: i + 1, nome: c.name }))}"` : ''}><img src="${faixaSrc(c)}" alt="" loading="lazy" decoding="async" draggable="false" data-onerr="cut" data-card="${portraitSrc(c)}"><b>${i+1}</b>${edit ? `<button type="button" class="ln-x" data-remove-slot="${i}" aria-label="${escapeAttr(kzt('time.tirarNome', { nome: c.name }))}" title="${kzt('time.tirar')}">×</button>` : ''}</span>`;
+    return `<span class="ln empty"${ed}${edit ? ` role="button" tabindex="0" aria-label="${kzt('time.escolherCasa', { n: i + 1 })}"` : ''}><i>+</i><b>${i+1}</b></span>`;
   }).join('')}</div>`;
 }
 // Depois de cada render, com a prévia ligada: título em pincel (data-text alimenta as camadas do CSS), topo com fogo
 // e kanji em cada aba, e a arte de corpo inteiro na ficha. Personagens (lista) já vem pronto de renderCharsTabNovo.
-const NV_TAB_DECOR = { collection:['集','Sua coleção'], combos:['連','Equipe de 6'], guias:['書','Como o jogo funciona'], tierlist:['番','Seu ranking'],
-  comunidade:['社','Feito por quem joga'], favs:['★','Guardados por você'], perfil:['印','Sua conta'], doar:['援','Apoie o site'] };
+const NV_TAB_DECOR = { collection:['集',kzt('deco.colecao')], combos:['連',kzt('deco.combos')], guias:['書',kzt('deco.guias')], tierlist:['番',kzt('deco.tierlist')],
+  comunidade:['社',kzt('deco.comunidade')], favs:['★',kzt('deco.favs')], perfil:['印',kzt('deco.perfil')], doar:['援',kzt('deco.doar')] };
 function nvBgHtml(kanji, kanjiStyle){
   const embers = NV_EMBERS.slice(0, nvEco() ? 0 : nvLite() ? 3 : 6).map(([l,b,s,d,dl])=>`<span class="kz-nv-em" style="left:${l + 8}%;bottom:${Math.round(b / 2)}px;width:${s}px;height:${s}px;animation-duration:${d}s;animation-delay:${dl}s"></span>`).join('');
   return `<div class="kz-nv-ph-bg" aria-hidden="true"><div class="kz-nv-fire"></div><div class="kz-nv-rays"></div><div class="kz-nv-tone"></div><div class="kz-nv-vig"></div>${kanji ? `<span class="kz-nv-kbig"${kanjiStyle ? ` style="${kanjiStyle}"` : ''}>${kanji}</span>` : ''}${embers}</div>`;
@@ -1327,7 +1327,7 @@ function applyNavState(){
 function render(){
   const view = document.getElementById('view');
   if(!loaded){
-    view.innerHTML = `<div class="kz-loading">Carregando dados de combate…</div>`;
+    view.innerHTML = `<div class="kz-loading">${kzt('geral.carregando')}</div>`;
     return;
   }
   setRouteHash();
@@ -1410,9 +1410,9 @@ function toggleFav(id){
   if(state.tab === 'favs'){ render(); return; }
   document.querySelectorAll(`[data-fav="${id}"]`).forEach(b=>{
     b.classList.toggle('on', on);
-    if(b.classList.contains('kz-fav-btn')) b.title = on ? 'Remover dos favoritos' : 'Favoritar';
+    if(b.classList.contains('kz-fav-btn')) b.title = on ? kzt('fav.remover') : kzt('fav.favoritar');
     const lbl = b.querySelector('.lbl');
-    if(lbl) lbl.textContent = on ? 'Favoritado' : 'Favoritar';
+    if(lbl) lbl.textContent = on ? kzt('fav.favoritado') : kzt('fav.favoritar');
   });
 }
 
@@ -1439,10 +1439,10 @@ function openCharEditor(id){
 
 /* ======================= PERSONAGENS: LISTA ======================= */
 const LIST_FILTER_GROUPS = [
-  ['Raridade','rarity',['SSR','SR','R']],
-  ['Tipo','type',TYPES],
-  ['Afinidade','affinity',AFFINITIES],
-  ['Raça','element',ELEMENTS],
+  [kzt('filtro.raridade'),'rarity',['SSR','SR','R']],
+  [kzt('filtro.tipo'),'type',TYPES],
+  [kzt('filtro.afinidade'),'affinity',AFFINITIES],
+  [kzt('filtro.raca'),'element',ELEMENTS],
 ];
 function defaultHeroChar(){
   return state.characters.find(c=>c.name==='Cooler Dourado') || state.characters[0];
@@ -1463,17 +1463,17 @@ function renderCharsTab(){
       <div class="kz-hero-scrim"></div>
       <div class="kz-hero-name" id="heroName">${hero ? escapeHtml(hero.name) : ''}</div>
       <div class="kz-hero-nav">
-        <button type="button" class="kz-hero-navbtn" data-hero-step="-1" title="Personagem anterior" aria-label="Personagem anterior">‹</button>
-        <button type="button" class="kz-hero-navbtn" data-hero-step="1" title="Próximo personagem" aria-label="Próximo personagem">›</button>
+        <button type="button" class="kz-hero-navbtn" data-hero-step="-1" title="${kzt('chars.anterior')}" aria-label="${kzt('chars.anterior')}">‹</button>
+        <button type="button" class="kz-hero-navbtn" data-hero-step="1" title="${kzt('chars.proximo')}" aria-label="${kzt('chars.proximo')}">›</button>
         ${isHeroAdmin() ? '<button type="button" class="kz-hero-navbtn txt" id="heroAdjustBtn" title="Mover e dar zoom no retrato do topo">Ajustar retrato</button>' : ''}
       </div>
       ${state.heroEdit && state.heroEdit.scope === 'list' ? '<div class="kz-hero-drag" id="heroDrag" title="Arraste para mover"></div>' + heroAdjustBarHtml() : ''}
       <div class="kz-hero-content">
         <div class="kz-hero-titlerow">
-          <h1 class="kz-title kz-hero-title">Personagens</h1>
-          <span class="kz-hero-count" id="charsCount">${chars.length} de ${state.characters.length} guerreiros</span>
+          <h1 class="kz-title kz-hero-title">${kzt('nav.personagens')}</h1>
+          <span class="kz-hero-count" id="charsCount">${kzt('chars.contagem', { n: chars.length, total: state.characters.length })}</span>
         </div>
-        <input type="text" class="kz-input kz-hero-search" id="searchInput" placeholder="Buscar por nome, tag ou habilidade…" value="${escapeAttr(f.search)}">
+        <input type="text" class="kz-input kz-hero-search" id="searchInput" placeholder="${kzt('chars.buscarAntigo')}" value="${escapeAttr(f.search)}">
         <div class="kz-filter-groups">
           ${LIST_FILTER_GROUPS.map(([label,key,vals])=>`
           <div class="kz-filter-row">
@@ -1482,7 +1482,7 @@ function renderCharsTab(){
           </div>`).join('')}
         </div>
         ${renderSF('chars')}
-        <button class="kz-link-btn" id="clearFilters" ${hasActiveFilters()?'':'hidden'}>Limpar filtros</button>
+        <button class="kz-link-btn" id="clearFilters" ${hasActiveFilters()?'':'hidden'}>${kzt('filtro.limparTudo')}</button>
       </div>
     </div>
     ${isHeroAdmin() ? `<div class="kz-list-tools">
@@ -1495,7 +1495,7 @@ function renderCharsTab(){
 
 function renderCharsGrid(chars){
   if(!chars.length){
-    return `<div class="kz-empty">${state.characters.length ? 'Nenhum personagem corresponde aos filtros.' : 'Nenhum personagem cadastrado ainda. Adicione o primeiro lutador.'}</div>`;
+    return `<div class="kz-empty">${state.characters.length ? kzt('chars.nenhumFiltro') : kzt('chars.nenhumCadastro')}</div>`;
   }
   return `<div class="kz-grid">${chars.map(visualNovo() ? renderCharCardNovo : renderCharCard).join('')}</div>`;
 }
@@ -1503,13 +1503,13 @@ function renderCharsGrid(chars){
 function renderCharCard(c){
   const fav = isFav(c.id);
   return `
-  <div class="kz-card" data-id="${c.id}" title="Ver ficha completa">
+  <div class="kz-card" data-id="${c.id}" title="${kzt('chars.verFichaCompleta')}">
     <div class="kz-card-art">
       ${portraitInner(c)}
-      <button class="kz-fav-btn ${fav?'on':''}" data-fav="${c.id}" title="${fav?'Remover dos favoritos':'Favoritar'}" aria-label="Favoritar">★</button>
+      <button class="kz-fav-btn ${fav?'on':''}" data-fav="${c.id}" title="${fav?kzt('fav.remover'):kzt('fav.favoritar')}" aria-label="${kzt('fav.favoritar')}">★</button>
     </div>
     <div class="kz-card-body">
-      <div class="kz-card-name">${escapeHtml(c.name)||'(sem nome)'}</div>
+      <div class="kz-card-name">${escapeHtml(c.name)||kzt('geral.semNome')}</div>
       <div class="kz-card-meta">${escapeHtml(charMeta(c))}</div>
     </div>
   </div>`;
@@ -1606,7 +1606,7 @@ function softRerenderChars(){
   const wrap = document.getElementById('charsGridWrap');
   if(wrap){ wrap.innerHTML = renderCharsGrid(chars); attachCharCardHandlers(wrap); }
   const count = document.getElementById('charsCount');
-  if(count) count.textContent = visualNovo() ? `de ${state.characters.length} guerreiros · escolha o seu` : `${chars.length} de ${state.characters.length} guerreiros`;
+  if(count) count.textContent = visualNovo() ? kzt('chars.contagemNovo', { total: state.characters.length }) : `${kzt('chars.contagem', { n: chars.length, total: state.characters.length })}`;
   ['charsCountNum', 'charsCountBadge'].forEach(k=>{ const el = document.getElementById(k); if(el) el.textContent = chars.length; });
   const clearBtn = document.getElementById('clearFilters');
   if(clearBtn) clearBtn.hidden = !hasActiveFilters();
@@ -1622,8 +1622,8 @@ function renderCharsTabNovo(chars, hero){
   const slam = !nvSlamDone; nvSlamDone = true;
   const embers = NV_EMBERS.slice(0, nvEco() ? 0 : nvLite() ? 3 : NV_EMBERS.length).map(([l,b,s,d,dl])=>`<span class="kz-nv-em" style="left:${l}%;bottom:${b}px;width:${s}px;height:${s}px;animation-duration:${d}s;animation-delay:${dl}s"></span>`).join('');
   const chipLabel = (key, v) => (key === 'affinity' ? nvDotHtml(v) : '') + escapeHtml(v);
-  const bandA = `<span>Combos</span><span class="kj">連</span><span>Tier list</span><span class="kj">番</span><span>Coleção</span><span class="kj">集</span><span>Guias</span><span class="kj">書</span><span>Comunidade</span><span class="kj">社</span>`.repeat(4);
-  const bandB = `<span class="jp">ワクワク</span><span>✦</span><span>${total} guerreiros</span><span>✦</span><span>Monte seu combo</span><span>✦</span><span>Suba na tier list</span><span>✦</span><span>Zenkyo</span><span>✦</span>`.repeat(4);
+  const bandA = `<span>${kzt('nav.combos')}</span><span class="kj">連</span><span>${kzt('banda.tierlist')}</span><span class="kj">番</span><span>${kzt('nav.colecao')}</span><span class="kj">集</span><span>${kzt('nav.guias')}</span><span class="kj">書</span><span>${kzt('nav.comunidade')}</span><span class="kj">社</span>`.repeat(4);
+  const bandB = `<span class="jp">ワクワク</span><span>✦</span><span>${kzt('banda.nGuerreiros', { total })}</span><span>✦</span><span>${kzt('banda.monteCombo')}</span><span>✦</span><span>${kzt('banda.subaTier')}</span><span>✦</span><span>Zenkyo</span><span>✦</span>`.repeat(4);
   let heroSrc = '';
   if(hero){   // refazer a aba (filtros) mantém a arte que estava na tela
     const arts = nvArtsOf(hero);
@@ -1649,7 +1649,7 @@ function renderCharsTabNovo(chars, hero){
       </svg>
       <div aria-hidden="true">${embers}</div>
       <span class="kz-nv-sfx" aria-hidden="true" style="right:1.5%;top:110px;font-size:54px;writing-mode:vertical-rl;transform:rotate(12deg);opacity:.85">ゴゴゴ</span>
-      ${hero ? `<div class="kz-nv-char" id="heroChar" aria-hidden="true" title="Ver a ficha de ${escapeAttr(hero.name)}">
+      ${hero ? `<div class="kz-nv-char" id="heroChar" aria-hidden="true" title="${escapeAttr(kzt('chars.verFicha', { nome: hero.name }))}">
         <div class="kz-nv-char-in">
           ${nvAuraImgs(heroSrc)}
           <img class="main" id="heroImg" src="${heroSrc}" alt="" data-onerr="card" data-card="${portraitSrc(hero)}">
@@ -1657,35 +1657,35 @@ function renderCharsTabNovo(chars, hero){
         <span class="kz-nv-burst"></span>
       </div>
       <div class="kz-nv-plate">
-        <span class="kz-nv-lb">Em destaque</span>
-        ${nvTtl(hero.name, ` id="heroNameStack" role="button" tabindex="0" aria-label="Ver a ficha de ${escapeAttr(hero.name)}"`)}
+        <span class="kz-nv-lb">${kzt('chars.emDestaque')}</span>
+        ${nvTtl(hero.name, ` id="heroNameStack" role="button" tabindex="0" aria-label="${escapeAttr(kzt('chars.verFicha', { nome: hero.name }))}"`)}
         <div class="kz-nv-pips" id="heroPips">${nvHeroPipsHtml(hero)}</div>
         <div class="kz-nv-plate-row">
           <span class="kz-nv-meta" id="heroMeta">${nvMetaHtml(hero)}</span>
           <div class="kz-hero-nav">
-            <button type="button" class="kz-hero-navbtn" data-hero-step="-1" title="Personagem anterior" aria-label="Personagem anterior">‹</button>
-            <button type="button" class="kz-hero-navbtn" data-hero-step="1" title="Próximo personagem" aria-label="Próximo personagem">›</button>
+            <button type="button" class="kz-hero-navbtn" data-hero-step="-1" title="${kzt('chars.anterior')}" aria-label="${kzt('chars.anterior')}">‹</button>
+            <button type="button" class="kz-hero-navbtn" data-hero-step="1" title="${kzt('chars.proximo')}" aria-label="${kzt('chars.proximo')}">›</button>
           </div>
         </div>
       </div>` : ''}
       <div class="kz-nv-content">
-        <span class="kz-nv-tag"><span class="kj">戦</span>Wiki de guerreiros</span>
+        <span class="kz-nv-tag"><span class="kj">戦</span>${kzt('chars.wiki')}</span>
         <div class="kz-nv-titlewrap">
-          <h1 class="kz-nv-h1${slam ? ' slam' : ''}">${nvTtl('Personagens')}</h1>
+          <h1 class="kz-nv-h1${slam ? ' slam' : ''}">${nvTtl(kzt('nav.personagens'))}</h1>
           <span class="kz-nv-sfx" aria-hidden="true">ドドド</span>
         </div>
-        <p class="kz-nv-count"><b id="charsCountNum">${chars.length}</b><span id="charsCount">de ${total} guerreiros · escolha o seu</span></p>
+        <p class="kz-nv-count"><b id="charsCountNum">${chars.length}</b><span id="charsCount">${kzt('chars.contagemNovo', { total })}</span></p>
         <div>
-          <label class="kz-nv-lb" for="searchInput" style="display:block;margin-bottom:10px">Buscar</label>
+          <label class="kz-nv-lb" for="searchInput" style="display:block;margin-bottom:10px">${kzt('chars.buscar')}</label>
           <div class="kz-nv-search"><span class="kz-nv-scan" aria-hidden="true"></span><div>
             <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFC21A" stroke-width="2.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>
-            <input type="text" id="searchInput" placeholder="Nome, tag ou texto da habilidade…" value="${escapeAttr(f.search)}" autocomplete="off">
+            <input type="text" id="searchInput" placeholder="${kzt('chars.buscarNovo')}" value="${escapeAttr(f.search)}" autocomplete="off">
           </div></div>
         </div>
         ${(()=>{   // celular (canvas): botão Filtros + raridade e tipo numa linha que rola; o resto abre no botão
           const n = ['rarity','type','affinity','element'].filter(k=>f[k]).length + sfCount(state.sf.chars);
           const q = (key, v)=>`<button type="button" class="kz-fchip ${f[key]===v?'active':''}" data-filter="${key}" data-val="${escapeAttr(v)}" aria-pressed="${f[key]===v}">${escapeHtml(v)}</button>`;
-          return `<div class="kz-nv-quick"><button type="button" class="kz-fchip kz-nv-ftoggle${n ? ' has' : ''}" id="nvFiltersBtn" aria-expanded="${!!state.nvFiltersOpen}">Filtros${n ? `<span class="n">${n}</span>` : ''}</button>${['SSR','SR','R'].map(v=>q('rarity', v)).join('')}${TYPES.map(v=>q('type', v)).join('')}</div>`;
+          return `<div class="kz-nv-quick"><button type="button" class="kz-fchip kz-nv-ftoggle${n ? ' has' : ''}" id="nvFiltersBtn" aria-expanded="${!!state.nvFiltersOpen}">${kzt('chars.filtros')}${n ? `<span class="n">${n}</span>` : ''}</button>${['SSR','SR','R'].map(v=>q('rarity', v)).join('')}${TYPES.map(v=>q('type', v)).join('')}</div>`;
         })()}
         <div class="kz-filter-groups">
           ${LIST_FILTER_GROUPS.map(([label,key,vals])=>`
@@ -1695,7 +1695,7 @@ function renderCharsTabNovo(chars, hero){
           </div>`).join('')}
         </div>
         ${renderSF('chars')}
-        <button class="kz-link-btn" id="clearFilters" ${hasActiveFilters()?'':'hidden'}>Limpar filtros</button>
+        <button class="kz-link-btn" id="clearFilters" ${hasActiveFilters()?'':'hidden'}>${kzt('filtro.limparTudo')}</button>
       </div>
     </div>
     <div class="kz-nv-bands" aria-hidden="true">
@@ -1707,7 +1707,7 @@ function renderCharsTabNovo(chars, hero){
       <button class="kz-btn kz-btn-sm" id="addCharBtn">+ Adicionar personagem</button>
     </div>` : ''}
     <div class="kz-nv-gridhead">
-      <h2>${nvTtl('Guerreiros')}</h2>
+      <h2>${nvTtl(kzt('chars.titulo'))}</h2>
       <span class="kz-nv-badge" id="charsCountBadge">${chars.length}</span>
       <svg aria-hidden="true" viewBox="0 0 300 20" preserveAspectRatio="none"><path d="M2 12 C 60 4, 120 16, 180 9 S 270 6, 298 10" fill="none" stroke="#FF6A13" stroke-width="5" stroke-linecap="round"/></svg>
     </div>
@@ -1717,13 +1717,13 @@ function renderCharsTabNovo(chars, hero){
 function renderCharCardNovo(c){
   const fav = isFav(c.id);
   return `
-  <div class="kz-card" data-id="${c.id}" title="Ver ficha completa">
+  <div class="kz-card" data-id="${c.id}" title="${kzt('chars.verFichaCompleta')}">
     <div class="kz-card-art">
       ${portraitInner(c)}
-      <button class="kz-fav-btn ${fav?'on':''}" data-fav="${c.id}" title="${fav?'Remover dos favoritos':'Favoritar'}" aria-label="Favoritar ${escapeAttr(c.name)}">★</button>
+      <button class="kz-fav-btn ${fav?'on':''}" data-fav="${c.id}" title="${fav?kzt('fav.remover'):kzt('fav.favoritar')}" aria-label="${kzt('fav.favoritar')} ${escapeAttr(c.name)}">★</button>
     </div>
     <div class="kz-card-body">
-      <div class="kz-card-name">${escapeHtml(c.name)||'(sem nome)'}</div>
+      <div class="kz-card-name">${escapeHtml(c.name)||kzt('geral.semNome')}</div>
       <div class="kz-card-meta">${nvMetaHtml(c)}</div>
       ${buscaTrechoHtml(c)}
     </div>
@@ -1739,8 +1739,8 @@ function setHeroNovo(c){
   const main = document.getElementById('heroImg');
   if(main) main.dataset.card = portraitSrc(c);
   document.querySelectorAll('#heroNameStack > span').forEach(s=>{ s.textContent = c.name; });
-  document.getElementById('heroNameStack')?.setAttribute('aria-label', `Ver a ficha de ${c.name}`);
-  box.title = `Ver a ficha de ${c.name}`;
+  document.getElementById('heroNameStack')?.setAttribute('aria-label', kzt('chars.verFicha', { nome: c.name }));
+  box.title = kzt('chars.verFicha', { nome: c.name });
   const meta = document.getElementById('heroMeta');
   if(meta) meta.innerHTML = nvMetaHtml(c);
   nvHeroStart(c);
@@ -1780,7 +1780,7 @@ function nvHeroPipsHtml(c){
   const auto = !nvReduceMotion();
   return Array.from({ length:n }, (_, i)=>{
     const on = i === nvHeroRot.i;
-    return `<button type="button" class="kz-nv-pip${on ? ' on' : ''}" data-art="${i}" aria-label="Arte ${i + 1} de ${n}"${on ? ' aria-current="true"' : ''}>${on && auto ? '<i></i>' : ''}</button>`;
+    return `<button type="button" class="kz-nv-pip${on ? ' on' : ''}" data-art="${i}" aria-label="${kzt('chars.arte', { i: i + 1, n })}"${on ? ' aria-current="true"' : ''}>${on && auto ? '<i></i>' : ''}</button>`;
   }).join('');
 }
 function nvHeroStart(c){
@@ -1818,7 +1818,7 @@ function nvHeroGo(c, i){
 }
 
 /* ======================= PERSONAGENS: FICHA ======================= */
-const DETAIL_TABS = [['habilidades','技','Habilidades'],['comida','食','Afinidade'],['vinculos','絆','Vínculos']];
+const DETAIL_TABS = [['habilidades','技',kzt('detalhe.habilidades')],['comida','食',kzt('detalhe.afinidade')],['vinculos','絆',kzt('detalhe.vinculos')]];
 
 // Ordem usada pra passar de um guerreiro pro outro: a mesma da lista (respeita os filtros ativos).
 function charStepList(currentId){
@@ -1836,8 +1836,8 @@ function charStepButtonsHtml(currentId){
   const prev = charStepTarget(currentId, -1), next = charStepTarget(currentId, 1);
   if(!prev || !next) return '';
   return `
-  <button class="kz-step-btn prev" data-step="-1" title="${escapeAttr(prev.name)}"><span class="arr">‹</span><span class="col"><span class="lbl">Anterior</span><span class="nm">${escapeHtml(prev.name)}</span></span></button>
-  <button class="kz-step-btn next" data-step="1" title="${escapeAttr(next.name)}"><span class="col"><span class="lbl">Próximo</span><span class="nm">${escapeHtml(next.name)}</span></span><span class="arr">›</span></button>`;
+  <button class="kz-step-btn prev" data-step="-1" title="${escapeAttr(prev.name)}"><span class="arr">‹</span><span class="col"><span class="lbl">${kzt('ficha.anterior')}</span><span class="nm">${escapeHtml(prev.name)}</span></span></button>
+  <button class="kz-step-btn next" data-step="1" title="${escapeAttr(next.name)}"><span class="col"><span class="lbl">${kzt('ficha.proximo')}</span><span class="nm">${escapeHtml(next.name)}</span></span><span class="arr">›</span></button>`;
 }
 // Troca o personagem aberto mantendo a aba da ficha (Habilidades/Comida/Vínculos).
 function stepCharDetail(dir){
@@ -2096,7 +2096,7 @@ function stepHeroChar(dir){
 
 function renderCharDetailPage(charId){
   const c = getChar(charId);
-  if(!c) return `<div class="kz-empty">Personagem não encontrado.</div>`;
+  if(!c) return `<div class="kz-empty">${kzt('ficha.naoEncontrado')}</div>`;
   if(visualNovo()) return renderCharDetailNovo(c);
   const fav = isFav(c.id);
   const cur = DETAIL_TABS.find(t=>t[0]===state.charDetailTab) || DETAIL_TABS[0];
@@ -2113,22 +2113,22 @@ function renderCharDetailPage(charId){
       ${state.heroEdit && state.heroEdit.scope === 'detail' && state.heroEdit.id === c.id ? '<div class="kz-hero-drag" id="heroDrag" title="Arraste para mover"></div>' + heroAdjustBarHtml() : ''}
       <div class="kz-detail-content">
         <div class="kz-detail-top">
-          <button class="kz-back-btn" id="charDetailBackBtn"><span class="arr">←</span><span>Voltar aos Personagens</span></button>
+          <button class="kz-back-btn" id="charDetailBackBtn"><span class="arr">←</span><span>${kzt('ficha.voltar')}</span></button>
           ${charStepButtonsHtml(c.id)}
         </div>
         <div class="kz-detail-main">
           <div class="kz-detail-card">${portraitInner(c)}</div>
           <div class="kz-detail-info">
-            <div class="kz-name-band"><h1>${escapeHtml(c.name)||'(sem nome)'}</h1></div>
+            <div class="kz-name-band"><h1>${escapeHtml(c.name)||kzt('geral.semNome')}</h1></div>
             <div class="kz-pill-row">
               ${pillHtml(c.element, c.element)}${pillHtml(c.gender, c.gender)}${rarityPillHtml(c)}
               ${c.type ? pillHtml(c.type, c.type) : ''}${c.affinity ? pillHtml(c.affinity, c.affinity) : ''}
             </div>
             ${(c.tags||[]).length ? `<div class="kz-pill-row">${c.tags.map(tagPillHtml).join('')}</div>` : ''}
-            <div class="kz-pill-row kz-role-line"><span class="kz-label">Papel</span>${rolePillsHtml(c, 3)}</div>
+            <div class="kz-pill-row kz-role-line"><span class="kz-label">${kzt('ficha.papel')}</span>${rolePillsHtml(c, 3)}</div>
             <div class="kz-action-row">
-              <button class="kz-build-btn" id="buildWithCharBtn" data-id="${c.id}"><span class="glyph">連</span><span>Montar combo com este guerreiro</span></button>
-              <button class="kz-fav-toggle ${fav?'on':''}" data-fav="${c.id}"><span class="star">★</span><span class="lbl">${fav?'Favoritado':'Favoritar'}</span></button>
+              <button class="kz-build-btn" id="buildWithCharBtn" data-id="${c.id}"><span class="glyph">連</span><span>${kzt('ficha.montarCom')}</span></button>
+              <button class="kz-fav-toggle ${fav?'on':''}" data-fav="${c.id}"><span class="star">★</span><span class="lbl">${fav?kzt('fav.favoritado'):kzt('fav.favoritar')}</span></button>
               ${isHeroAdmin() ? `<button class="kz-edit-btn edit-char" data-id="${c.id}" title="Editar os dados usados no Montador de Combos">Editar dados de combo</button>` : ''}
               ${isHeroAdmin() ? `<button class="kz-edit-btn" id="heroAdjustBtn" data-id="${c.id}" title="Mover e dar zoom no retrato de fundo">Ajustar retrato</button>` : ''}
             </div>
@@ -2152,6 +2152,9 @@ function renderCharDetailPage(charId){
    lado, os painéis de Papel em batalha e Sinergias. Afinidade e Vínculos usam as mesmas seções da ficha atual.
    Mantém os ids e classes que attachCharDetailHandlers usa (charDetailBackBtn, kz-step-btn, data-cdptab, data-fav,
    buildWithCharBtn, edit-char, data-open-char, data-guide). */
+// Títulos dos grupos de habilidade vêm dos dados em português (também servem de chave); aqui só muda o texto mostrado.
+const GRUPO_TITULOS = { 'Habilidade':'hab.habilidade', 'Suprema':'hab.suprema', 'Ataque Combinado':'hab.ataqueCombinadoTitulo', 'Passiva Única':'hab.passivaUnicaTitulo', 'Passiva (Padrão)':'hab.passivaPadrao', 'Super Despertar (LR)':'hab.superDespertar', 'Passivas do Supremo':'hab.passivasSupremo' };
+function grupoTitulo(t){ return GRUPO_TITULOS[t] ? kzt(GRUPO_TITULOS[t]) : t; }
 const NVF_SEAL = { 'Habilidade':'技', 'Suprema':'極', 'Ataque Combinado':'連', 'Passiva Única':'魂', 'Passiva (Padrão)':'能', 'Super Despertar (LR)':'覚', 'Passivas do Supremo':'王' };
 const NVF_EFF_TERM = { '[Derrubada]':'derrubada', '[Empurrão]':'empurrao', '[Elevação Alta]':'elevacao_alta', '[Elevação Baixa]':'elevacao_baixa' };
 function nvfTermsHtml(txt){
@@ -2180,23 +2183,23 @@ function nvfAbilityBlock(c, g){
   const niveis = tiers.length > 1 ? `<div class="kz-nvf-lvs">${tiers.map((x, i)=>`<button type="button" class="kz-nvf-lv${i === sel ? ' on' : ''}${x.data ? '' : ' vazio'}" data-ab-key="${escapeAttr(key)}" data-ab-i="${i}" aria-pressed="${i === sel}"><span class="st ${starPhase(x.reqLevel)}" aria-hidden="true">★</span>${escapeHtml(reqLabelText(x.reqLevel))}</button>`).join('')}</div>` : '';
   return `
       <section class="kz-nvf-mv" data-ab-block="${escapeAttr(key)}">
-        <div class="kz-nvf-mv-side">${nvfIconHtml(d, NVF_SEAL[g.title] || '技')}<h2>${escapeHtml(g.title)}</h2>${efeitos}</div>
+        <div class="kz-nvf-mv-side">${nvfIconHtml(d, NVF_SEAL[g.title] || '技')}<h2>${escapeHtml(grupoTitulo(g.title))}</h2>${efeitos}</div>
         <div class="kz-nvf-mv-main">
           ${niveis}
-          <div class="kz-nvf-mv-meta">${textStarsHtml(t.reqLevel)}<span class="lb">${escapeHtml(tipo)} · ${escapeHtml(reqLabelText(t.reqLevel))}</span>${d && d.dano ? `<span class="kz-nvf-dmg">Dano ${escapeHtml(d.dano)}</span>` : ''}</div>
-          <h3 class="kz-nvf-sn">${d ? (escapeHtml(d.nome) || '—') : 'Ainda não capturado'}</h3>
-          <p class="kz-nvf-ds">${d ? nvfTermsHtml(d.desc) : 'Este dado ainda não foi extraído do jogo.'}</p>
+          <div class="kz-nvf-mv-meta">${textStarsHtml(t.reqLevel)}<span class="lb">${escapeHtml(tipo)} · ${escapeHtml(reqLabelText(t.reqLevel))}</span>${d && d.dano ? `<span class="kz-nvf-dmg">${kzt('hab.dano', { v: escapeHtml(d.dano) })}</span>` : ''}</div>
+          <h3 class="kz-nvf-sn">${d ? (escapeHtml(d.nome) || '—') : kzt('hab.naoCapturado')}</h3>
+          <p class="kz-nvf-ds">${d ? nvfTermsHtml(d.desc) : kzt('hab.naoExtraido')}</p>
         </div>
       </section>`;
 }
 function nvfAbilitiesHtml(c){
   const p = ABILITY_PROGRESSION[c.name];
   const unlocks = p ? getAbilityUnlocks(c.name, 10) : null;
-  if(!unlocks) return `<div class="kz-empty-ball"><img src="${ballSrc(1)}" alt=""><div>Dados de habilidade ainda não disponíveis para este personagem.</div></div>`;
+  if(!unlocks) return `<div class="kz-empty-ball"><img src="${ballSrc(1)}" alt=""><div>${kzt('hab.semDados')}</div></div>`;
   const sup = p.passivasSupremo || [];
   const supHtml = sup.length ? `
       <section class="kz-nvf-mv">
-        <div class="kz-nvf-mv-side">${nvfSealHtml(NVF_SEAL['Passivas do Supremo'])}<h2>Passivas do Supremo</h2></div>
+        <div class="kz-nvf-mv-side">${nvfSealHtml(NVF_SEAL['Passivas do Supremo'])}<h2>${kzt('hab.passivasSupremo')}</h2></div>
         <div class="kz-nvf-mv-main">${sup.map(ps=>`<div class="kz-nvf-sup">${SHOW_ABILITY_ICONS && ps.icone ? `<img class="ico" src="${escapeAttr(encodeURI(ps.icone))}" alt="" data-onerr="remove">` : ''}<div><h3 class="kz-nvf-sn sm">${escapeHtml(ps.nome) || '—'}</h3><p class="kz-nvf-ds">${nvfTermsHtml(ps.desc)}</p></div></div>`).join('')}</div>
       </section>` : '';
   return unlocks.groups.map(g=> nvfAbilityBlock(c, g)).join('') + supHtml;
@@ -2207,23 +2210,23 @@ function nvfRolePanel(c){
     const info = ROLE_INFO[r], ev = a.why[r].slice(0, 2);
     return `
         <div class="kz-nvf-role" style="--c:${info.rgb[0]};--t:${info.rgb[1]}">
-          <div class="hd">${nvfSealHtml(info.glyph, info.rgb)}<b>${escapeHtml(info.label)}</b><span class="rk${i === 0 ? ' main' : ''}">${i === 0 ? 'Principal' : 'Secundário'}</span></div>
+          <div class="hd">${nvfSealHtml(info.glyph, info.rgb)}<b>${escapeHtml(info.label)}</b><span class="rk${i === 0 ? ' main' : ''}">${i === 0 ? kzt('papel.principal') : kzt('papel.secundario')}</span></div>
           <p>${escapeHtml(info.about)}</p>
-          ${ev.length ? `<ul>${ev.map(e=>`<li>${escapeHtml(roleEvidence(e))}</li>`).join('')}</ul>` : `<p class="mut">Definido pelo tipo do guerreiro (${escapeHtml(c.type || '—')}).</p>`}
+          ${ev.length ? `<ul>${ev.map(e=>`<li>${escapeHtml(roleEvidence(e))}</li>`).join('')}</ul>` : `<p class="mut">${kzt('papel.definidoPorTipo', { tipo: escapeHtml(c.type || '—') })}</p>`}
         </div>`;
   }).join('<div class="sep" aria-hidden="true"></div>');
-  return `<div class="kz-nvf-pn"><h2>Papel em batalha</h2>${linhas}</div>`;
+  return `<div class="kz-nvf-pn"><h2>${kzt('papel.emBatalha')}</h2>${linhas}</div>`;
 }
 function nvfSynergyPanel(c){
   const s = synergyInfo(c);
   const pals = s.recebe.map(n=>{ const o = state.characters.find(x=>x.name === n); return o ? `<button type="button" class="kz-nvf-pal" data-nvf-open="${escapeAttr(o.id)}">${escapeHtml(n)}</button>` : ''; }).join('');
   return `
       <div class="kz-nvf-pn">
-        <h2>Sinergias</h2>
+        <h2>${kzt('sin.titulo')}</h2>
         ${s.proprias.length ? `<ul class="kz-nvf-syn">${s.proprias.map(t=>`<li>${t}</li>`).join('')}</ul>` : ''}
-        ${pals ? `<p class="kz-nvf-pn-sub">Fortalecido por</p><div class="kz-nvf-pals">${pals}</div>` : ''}
-        ${!s.proprias.length && !pals ? '<p class="mut">Nenhuma sinergia conhecida com outros guerreiros.</p>' : ''}
-        <button type="button" class="kz-btn" id="nvfTestBtn" data-id="${c.id}"><span class="kj" aria-hidden="true">連</span>Testar no montador</button>
+        ${pals ? `<p class="kz-nvf-pn-sub">${kzt('sin.fortalecidoPor')}</p><div class="kz-nvf-pals">${pals}</div>` : ''}
+        ${!s.proprias.length && !pals ? `<p class="mut">${kzt('sin.nenhuma')}</p>` : ''}
+        <button type="button" class="kz-btn" id="nvfTestBtn" data-id="${c.id}"><span class="kj" aria-hidden="true">連</span>${kzt('sin.testar')}</button>
       </div>`;
 }
 function renderCharDetailNovo(c){
@@ -2232,15 +2235,15 @@ function renderCharDetailNovo(c){
   const cor = v=>{ const r = PILL_RGB[v]; return r ? `<b style="color:${r[1]};text-shadow:0 0 12px rgba(${r[0]},.7)">${escapeHtml(v)}</b>` : `<b>${escapeHtml(v || '—')}</b>`; };
   const rar = rarityLabel(c.rarity), rs = RARITY_PILL[rar] || RARITY_PILL.R;
   const hud = [
-    ['Raridade', `<b class="rar" style="background:${rs.bg};color:${rs.color}">${escapeHtml(rar)}${isLimitedChar(c) ? ' ★' : ''}</b>`],
-    c.type && ['Tipo', cor(c.type)],
-    c.affinity && ['Afinidade', nvDotHtml(c.affinity) + cor(c.affinity)],
-    c.element && ['Raça', cor(c.element)],
-    c.gender && ['Gênero', cor(c.gender)],
+    [kzt('filtro.raridade'), `<b class="rar" style="background:${rs.bg};color:${rs.color}">${escapeHtml(rar)}${isLimitedChar(c) ? ' ★' : ''}</b>`],
+    c.type && [kzt('filtro.tipo'), cor(c.type)],
+    c.affinity && [kzt('filtro.afinidade'), nvDotHtml(c.affinity) + cor(c.affinity)],
+    c.element && [kzt('filtro.raca'), cor(c.element)],
+    c.gender && [kzt('ficha.genero'), cor(c.gender)],
   ].filter(Boolean).map(([k, v])=>`<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
   const tags = (c.tags || []).map(t=>{ const r = TAG_RGB[t] || ['201,162,75','#e0c070']; return `<span class="kz-nvf-tg" style="--c:${r[0]};--t:${r[1]}">#${escapeHtml(t)}</span>`; }).join('');
-  const papeis = rolesOf(c).slice(0, 3).map((r, i)=>{ const info = ROLE_INFO[r]; return `<div class="kz-nvf-rolebig" style="--t:${info.rgb[1]}">${nvfSealHtml(info.glyph, info.rgb)}<span><b>${escapeHtml(info.label)}</b><small>${i === 0 ? 'Papel principal' : 'Papel secundário'}</small></span></div>`; }).join('');
-  const nome = c.name || '(sem nome)', fs = nome.length > 20 ? 72 : nome.length > 13 ? 92 : 116;   // nome longo: título menor
+  const papeis = rolesOf(c).slice(0, 3).map((r, i)=>{ const info = ROLE_INFO[r]; return `<div class="kz-nvf-rolebig" style="--t:${info.rgb[1]}">${nvfSealHtml(info.glyph, info.rgb)}<span><b>${escapeHtml(info.label)}</b><small>${i === 0 ? kzt('papel.papelPrincipal') : kzt('papel.papelSecundario')}</small></span></div>`; }).join('');
+  const nome = c.name || kzt('geral.semNome'), fs = nome.length > 20 ? 72 : nome.length > 13 ? 92 : 116;   // nome longo: título menor
   const corpo = cur[0] === 'habilidades'
     ? `<div class="kz-nvf-body"><div class="kz-nvf-abs">${nvfAbilitiesHtml(c)}</div><aside class="kz-nvf-side">${nvfRolePanel(c)}${nvfSynergyPanel(c)}</aside></div>`
     : `<div class="kz-tabpanel"><div class="kz-panel-head"><span class="kz-panel-glyph">${cur[1]}</span><h2 class="kz-panel-title">${cur[2]}</h2></div>${cur[0] === 'comida' ? renderCharFoodSection(c) : renderCharBondsSection(c)}</div>`;
@@ -2253,17 +2256,17 @@ function renderCharDetailNovo(c){
         <polyline class="kz-nv-bolt b2" points="560,70 532,160 560,176 516,290 548,306 500,410"/>
       </svg>
       <div class="kz-nvf-top">
-        <button class="kz-back-btn" id="charDetailBackBtn"><span class="arr">←</span><span>Personagens</span></button>
+        <button class="kz-back-btn" id="charDetailBackBtn"><span class="arr">←</span><span>${kzt('nav.personagens')}</span></button>
         <div class="kz-nvf-steps">${charStepButtonsHtml(c.id)}</div>
-        <button type="button" class="kz-back-btn kz-nvf-share" id="charShareBtn" title="Copiar o link desta ficha"><span class="arr">🔗</span><span>Copiar link</span></button>
+        <button type="button" class="kz-back-btn kz-nvf-share" id="charShareBtn" title="${kzt('ficha.copiarLinkTitulo')}"><span class="arr">🔗</span><span>${kzt('ficha.copiarLink')}</span></button>
       </div>
       <div class="kz-nvf-grid">
         <div class="kz-nvf-art">
           <div class="kz-nv-dchar" aria-hidden="true">${nvAuraImgs(renderSrc(c))}<img class="main" src="${renderSrc(c)}" alt="" data-onerr="card" data-card="${portraitSrc(c)}"></div>
-          <img class="kz-nvf-mini" src="${portraitSrc(c)}" alt="Carta de ${escapeAttr(nome)}" data-onerr="hide">
+          <img class="kz-nvf-mini" src="${portraitSrc(c)}" alt="${escapeAttr(kzt('ficha.carta', { nome }))}" data-onerr="hide">
         </div>
         <div class="kz-nvf-info">
-          <span class="kz-nv-tag"><span class="kj">戦</span>Ficha do guerreiro</span>
+          <span class="kz-nv-tag"><span class="kj">戦</span>${kzt('ficha.fichaDoGuerreiro')}</span>
           <div class="kz-nvf-titlewrap">
             <h1 class="kz-nvf-h1" style="--fs:${fs}px">${nvTtl(nome)}</h1>
             <span class="kz-nv-sfx" aria-hidden="true">ゴゴゴ</span>
@@ -2272,8 +2275,8 @@ function renderCharDetailNovo(c){
           ${tags ? `<div class="kz-nvf-tags">${tags}</div>` : ''}
           ${papeis ? `<div class="kz-nvf-roles">${papeis}</div>` : ''}
           <div class="kz-nvf-actions">
-            <button class="kz-build-btn" id="buildWithCharBtn" data-id="${c.id}"><span class="glyph">連</span><span>Montar combo com ele</span></button>
-            <button class="kz-fav-toggle ${fav ? 'on' : ''}" data-fav="${c.id}"><span class="star">★</span><span class="lbl">${fav ? 'Favoritado' : 'Favoritar'}</span></button>
+            <button class="kz-build-btn" id="buildWithCharBtn" data-id="${c.id}"><span class="glyph">連</span><span>${kzt('ficha.montarComEle')}</span></button>
+            <button class="kz-fav-toggle ${fav ? 'on' : ''}" data-fav="${c.id}"><span class="star">★</span><span class="lbl">${fav ? kzt('fav.favoritado') : kzt('fav.favoritar')}</span></button>
             ${isHeroAdmin() ? `<button class="kz-edit-btn edit-char" data-id="${c.id}" title="Editar os dados usados no Montador de Combos">Editar dados de combo</button>` : ''}
           </div>
         </div>
@@ -2322,10 +2325,10 @@ function renderDetailAbilityRow(tier){
         ${textStarsHtml(tier.reqLevel)}
         <span class="kz-ab-tipo" style="color:${tipoColor(tipo)};">${escapeHtml(tipo)}</span>
         <span class="kz-ab-req">${reqLabelText(tier.reqLevel)}</span>
-        ${!noData && data.dano ? `<span class="kz-ab-dano">Dano ${escapeHtml(data.dano)}</span>` : ''}
+        ${!noData && data.dano ? `<span class="kz-ab-dano">${kzt('hab.dano', { v: escapeHtml(data.dano) })}</span>` : ''}
       </div>
-      <div class="kz-ab-name">${noData ? 'Ainda não capturado' : (escapeHtml(data.nome)||'—')}</div>
-      <div class="kz-ab-desc">${noData ? 'Este dado ainda não foi extraído do jogo.' : escapeHtml(data.desc||'')}</div>
+      <div class="kz-ab-name">${noData ? kzt('hab.naoCapturado') : (escapeHtml(data.nome)||'—')}</div>
+      <div class="kz-ab-desc">${noData ? kzt('hab.naoExtraido') : escapeHtml(data.desc||'')}</div>
     </div>
   </div>`;
 }
@@ -2333,11 +2336,11 @@ function renderDetailAbilityRow(tier){
 // Efeitos de combo do guerreiro mostrados ao lado de cada grupo de habilidade: [[rótulo, efeitos], ...].
 function abilityGroupEffects(c, title){
   const parts = [];
-  if(title === 'Habilidade' && c.skill.effects.length) parts.push(['Causa', c.skill.effects]);
-  if(title === 'Suprema' && c.supreme.effects.length) parts.push(['Causa', c.supreme.effects]);
+  if(title === 'Habilidade' && c.skill.effects.length) parts.push([kzt('sf.causa'), c.skill.effects]);
+  if(title === 'Suprema' && c.supreme.effects.length) parts.push([kzt('sf.causa'), c.supreme.effects]);
   if(title === 'Ataque Combinado'){
-    if((c.combo.triggers||[]).length) parts.push(['Requisito', c.combo.triggers]);
-    if((c.combo.effects||[]).length) parts.push(['Causa', c.combo.effects]);
+    if((c.combo.triggers||[]).length) parts.push([kzt('ficha.requisito'), c.combo.triggers]);
+    if((c.combo.effects||[]).length) parts.push([kzt('sf.causa'), c.combo.effects]);
   }
   return parts;
 }
@@ -2347,18 +2350,18 @@ function renderDetailAbilities(c){
   const p = ABILITY_PROGRESSION[c.name];
   const unlocks = p ? getAbilityUnlocks(c.name, 10) : null;
   if(!unlocks){
-    return `<div class="kz-empty-ball"><img src="${ballSrc(1)}" alt=""><div>Dados de habilidade ainda não disponíveis para este personagem.</div></div>`;
+    return `<div class="kz-empty-ball"><img src="${ballSrc(1)}" alt=""><div>${kzt('hab.semDados')}</div></div>`;
   }
   const groupEffects = title => abilityGroupEffects(c, title).map(([lbl, effs])=>`<span class="kz-ab-effects"><span>${lbl}</span>${effs.map(effPillHtml).join('')}</span>`).join('');
   const groups = unlocks.groups.map(g=>`
     <div class="kz-ab-group">
-      <div class="kz-ab-group-head"><span class="kz-ab-group-title">${escapeHtml(g.title)}</span>${groupEffects(g.title)}</div>
+      <div class="kz-ab-group-head"><span class="kz-ab-group-title">${escapeHtml(grupoTitulo(g.title))}</span>${groupEffects(g.title)}</div>
       ${g.tiers.map(renderDetailAbilityRow).join('')}
     </div>`).join('');
   const sup = p.passivasSupremo || [];
   const supHtml = sup.length ? `
     <div class="kz-ab-group">
-      <div class="kz-ab-group-head"><span class="kz-ab-group-title">Passivas do Supremo</span></div>
+      <div class="kz-ab-group-head"><span class="kz-ab-group-title">${kzt('hab.passivasSupremo')}</span></div>
       <div class="kz-supremo-grid">
         ${sup.map(ps=>`<div class="kz-supremo-card">${(SHOW_ABILITY_ICONS && ps.icone) ? `<div class="ico"><img src="${escapeAttr(encodeURI(ps.icone))}" alt="" data-onerr="remove-parent"></div>` : ''}<div class="t"><div class="n">${escapeHtml(ps.nome)||'—'}</div><div class="d">${escapeHtml(ps.desc||'')}</div></div></div>`).join('')}
       </div>
@@ -2408,14 +2411,14 @@ function affinityPopHtml(giftSlug, atual){
     const o = state.characters.find(x=>x.name === n);
     if(!o){
       const fora = iconeSrcNome(n);
-      return `<span class="cdp-pop-av fora" title="${escapeAttr(n)} (ainda não está no site)"><span class="face">${fora ? `<img src="${fora}" alt="" loading="lazy" data-onerr="hide">` : `<span class="ini">${escapeHtml(initials(n))}</span>`}</span><span class="nm">${escapeHtml(n)}</span></span>`;
+      return `<span class="cdp-pop-av fora" title="${escapeAttr(kzt('afin.foraDoSite', { nome: n }))}"><span class="face">${fora ? `<img src="${fora}" alt="" loading="lazy" data-onerr="hide">` : `<span class="ini">${escapeHtml(initials(n))}</span>`}</span><span class="nm">${escapeHtml(n)}</span></span>`;
     }
     const ico = iconeSrc(o);   // ícone da pasta Icones; sem ele, o rosto recortado da carta
     const img = ico ? `<img src="${ico}" alt="" loading="lazy" data-onerr="hide">`
       : `<img src="portraits/mini/${slug(o.name)}.webp" alt="" loading="lazy" style="${heroStyleOf(heroFrame('detail', o.id))}" data-onerr="hide">`;
     return `<button type="button" class="cdp-pop-av${n === atual ? ' eu' : ''}" ${n === atual ? '' : `data-open-char="${escapeAttr(o.id)}"`} title="${escapeAttr(n)}"><span class="face">${img}</span><span class="nm">${escapeHtml(n)}</span></button>`;
   };
-  return `<div class="cdp-food-pop" role="tooltip"><span class="t">Quem usa este presente</span><div class="cdp-food-pop-grid">${users.map(av).join('')}</div></div>`;
+  return `<div class="cdp-food-pop" role="tooltip"><span class="t">${kzt('afin.quemUsa')}</span><div class="cdp-food-pop-grid">${users.map(av).join('')}</div></div>`;
 }
 function affinityFoodTier(exp){ return exp >= 60 ? 'rarity-dourado' : exp >= 20 ? 'rarity-roxo' : 'rarity-azul'; }
 function affinityIconHtml(slug){ return /^[a-z0-9-]{1,60}$/.test(slug) ? `<img src="assets/presentes/${slug}.webp" alt="" loading="lazy" data-onerr="hide">` : '🍽'; }
@@ -2425,18 +2428,18 @@ function affinityResumoHtml(){
   const linhas = grupos.map(g=>`<tr><td>${g.membros.map(nomeLink).join(', ')}</td>${g.slugs.map(s=>`<td><span class="cdp-gift-cell">${affinityIconHtml(s)}${escapeHtml(AFFINITY_GIFTS[s] || s)}</span></td>`).join('')}</tr>`).join('');
   return `
   <div class="cdp-aff-block">
-    <h3 class="cdp-aff-title">Como a Afinidade funciona</h3>
+    <h3 class="cdp-aff-title">${kzt('afin.comoFunciona')}</h3>
     <ul class="cdp-aff-list">
-      <li>Abre no Nv.36 da conta, em Apoio &gt; Afinidade.</li>
-      <li>Cada guerreiro aceita 3 presentes, de 5, 20 e 60 EXP. Dar presentes não custa ouro nem Pedras.</li>
-      <li>São 7 estágios (D, C, B, A, S, SS e SSS), com 78.300 EXP no total. Ao encher um estágio, toque em Impulso de Afinidade para seguir.</li>
-      <li>A EXP que sobra no fim de um estágio é perdida: perto do limite, use o presente de 5.</li>
-      <li>Aumenta ATQ, DEF, PV e mais dois atributos da categoria do guerreiro, só para ele. A Prioridade ganha soma na Velocidade da Equipe.</li>
+      <li>${kzt('afin.l1')}</li>
+      <li>${kzt('afin.l2')}</li>
+      <li>${kzt('afin.l3')}</li>
+      <li>${kzt('afin.l4')}</li>
+      <li>${kzt('afin.l5')}</li>
     </ul>
-    <details class="kz-gd"><summary><span class="tx"><b>Presentes de todos os guerreiros</b><small>${Object.keys(AFFINITY_CHAR_GIFTS).length} guerreiros · ${grupos.length} grupos com os mesmos presentes</small></span></summary>
-      <div class="kz-gd-body"><div class="kz-gt-wrap"><table class="kz-gt"><thead><tr><th>Guerreiros</th><th>5 EXP</th><th>20 EXP</th><th>60 EXP</th></tr></thead><tbody>${linhas}</tbody></table></div></div>
+    <details class="kz-gd"><summary><span class="tx"><b>${kzt('afin.todosPresentes')}</b><small>${kzt('afin.resumoGrupos', { n: Object.keys(AFFINITY_CHAR_GIFTS).length, g: grupos.length })}</small></span></summary>
+      <div class="kz-gd-body"><div class="kz-gt-wrap"><table class="kz-gt"><thead><tr><th>${kzt('afin.colGuerreiros')}</th><th>5 EXP</th><th>20 EXP</th><th>60 EXP</th></tr></thead><tbody>${linhas}</tbody></table></div></div>
     </details>
-    <button type="button" class="kz-btn kz-btn-sm" data-guide="afinidade">Abrir o guia de Afinidade →</button>
+    <button type="button" class="kz-btn kz-btn-sm" data-guide="afinidade">${kzt('afin.abrirGuia')}</button>
   </div>`;
 }
 function renderCharFoodSection(c){
@@ -2447,7 +2450,7 @@ function renderCharFoodSection(c){
   const fontes = AFFINITY_SOURCES[affinityKey(c.name)];
   const topo = foods.length ? `
   <div class="cdp-aff-block">
-    <h3 class="cdp-aff-title">Presentes que ${escapeHtml(c.name)} aceita</h3>
+    <h3 class="cdp-aff-title">${kzt('afin.presentesQue', { nome: escapeHtml(c.name) })}</h3>
     <div class="cdp-food-row">${foods.map(f=>`
       <div class="cdp-food-item"${f.slug ? ' tabindex="0"' : ''}>
         <div class="cdp-food-icon ${f.exp ? affinityFoodTier(f.exp) : foodRarityClass(f.raridade)}">${f.slug ? affinityIconHtml(f.slug) : '🍽'}</div>
@@ -2455,9 +2458,9 @@ function renderCharFoodSection(c){
         ${f.exp ? `<div class="cdp-food-exp">+${+f.exp} EXP</div>` : ''}
         ${f.slug ? affinityPopHtml(f.slug, c.name) : ''}
       </div>`).join('')}</div>
-    ${outros.length ? `<div class="cdp-aff-group">Aceitam os mesmos presentes: ${outros.map(n=>{ const o = state.characters.find(x=>x.name === n); return o ? `<button type="button" class="kz-link-btn" data-open-char="${escapeAttr(o.id)}">${escapeHtml(n)}</button>` : escapeHtml(n); }).join(', ')} <span>(cada um tem a própria Afinidade)</span></div>` : ''}
-    ${fontes ? `<div class="cdp-aff-src"><b>Onde conseguir:</b> ${escapeHtml(fontes)}</div>` : ''}
-  </div>` : `<div class="kz-empty-ball"><img src="${ballSrc(2)}" alt=""><div>Os presentes de ${escapeHtml(c.name)} ainda não estão no site.</div></div>`;
+    ${outros.length ? `<div class="cdp-aff-group">${kzt('afin.mesmosPresentes')}${outros.map(n=>{ const o = state.characters.find(x=>x.name === n); return o ? `<button type="button" class="kz-link-btn" data-open-char="${escapeAttr(o.id)}">${escapeHtml(n)}</button>` : escapeHtml(n); }).join(', ')} <span>${kzt('afin.cadaUm')}</span></div>` : ''}
+    ${fontes ? `<div class="cdp-aff-src"><b>${kzt('afin.ondeConseguir')}</b> ${escapeHtml(fontes)}</div>` : ''}
+  </div>` : `<div class="kz-empty-ball"><img src="${ballSrc(2)}" alt=""><div>${kzt('afin.semPresentes', { nome: escapeHtml(c.name) })}</div></div>`;
   return topo + affinityResumoHtml();
 }
 
@@ -2465,7 +2468,7 @@ function renderCharBondsSection(c){
   const extras = CHAR_EXTRAS[c.name];
   const bonds = extras ? extras.vinculos : [];
   if(!bonds || !bonds.length){
-    return `<div class="kz-empty-ball"><img src="${ballSrc(6)}" alt=""><div>Vínculos ainda não capturados para este personagem.</div></div>`;
+    return `<div class="kz-empty-ball"><img src="${ballSrc(6)}" alt=""><div>${kzt('vinc.semDados')}</div></div>`;
   }
   return `<div class="cdp-bond-list">${bonds.map(b=>`
     <div class="cdp-bond-row">
@@ -2475,7 +2478,7 @@ function renderCharBondsSection(c){
       </div>
       <div class="cdp-bond-info">
         ${b.bonus ? `<div class="cdp-bond-bonus">${escapeHtml(b.bonus)}</div>` : ''}
-        <div class="cdp-bond-skill">${escapeHtml(b.habilidadeNome)||'—'}${b.ativo===false ? '<span class="inactive-tag">Inativo</span>' : ''}</div>
+        <div class="cdp-bond-skill">${escapeHtml(b.habilidadeNome)||'—'}${b.ativo===false ? `<span class="inactive-tag">${kzt('vinc.inativo')}</span>` : ''}</div>
         ${b.requisito ? `<div class="cdp-bond-req">${escapeHtml(b.requisito)}</div>` : ''}
         ${b.habilidadeDesc ? `<div class="kz-ab-desc">${escapeHtml(b.habilidadeDesc)}</div>` : ''}
       </div>
@@ -2521,16 +2524,16 @@ function collCounterInner(){
   if(visualNovo()){   // canvas: esferas desenhadas (com as estrelas dentro) e o número grande embaixo
     const lit = [1,2,3,4,5,6,7].filter(i=> pct >= i/7 - 1e-9 || (i === 1 && owned > 0)).length;
     const balls = [1,2,3,4,5,6,7].map(i=>`<span class="kz-nvc-ball ${i <= lit ? 'lit' : 'off'}"><img src="${ballSrc(i)}" alt="" loading="lazy" decoding="async"></span>`).join('');
-    return `<div class="kz-nvc-balls" role="img" aria-label="Progresso da coleção: ${lit} de 7 esferas">${balls}</div>${nvCountHtml(owned, `de ${total} adquiridos`)}`;
+    return `<div class="kz-nvc-balls" role="img" aria-label="${kzt('coll.progressoEsferas', { lit })}">${balls}</div>${nvCountHtml(owned, kzt('coll.adquiridosNovo', { total }))}`;
   }
   const balls = [1,2,3,4,5,6,7].map(i=>{
     const on = pct >= i/7 - 1e-9 || (i === 1 && owned > 0);
     return `<img class="${on?'on':'off'}" src="${ballSrc(i)}" alt="">`;
   }).join('');
-  return `<div class="kz-coll-balls">${balls}</div><span class="kz-coll-summary">${owned} de ${total} adquiridos</span>`;
+  return `<div class="kz-coll-balls">${balls}</div><span class="kz-coll-summary">${kzt('coll.adquiridos', { owned, total })}</span>`;
 }
 
-const COLL_FILTER_GROUPS = [['Tipo','collectionType',TYPES],['Afinidade','collectionAffinity',AFFINITIES]];
+const COLL_FILTER_GROUPS = [[kzt('filtro.tipo'),'collectionType',TYPES],[kzt('filtro.afinidade'),'collectionAffinity',AFFINITIES]];
 
 // Coleção no formato do canvas: topo com esferas e contador, uma linha de busca e filtros, grade de 6 cartas.
 function renderCollectionTabNovo(){
@@ -2539,18 +2542,18 @@ function renderCollectionTabNovo(){
   const chip = (key, v)=>`<button type="button" class="kz-fchip ${state[key]===v?'active':''}" data-cfilter="${key}" data-val="${escapeAttr(v)}" aria-pressed="${state[key]===v}">${key === 'collectionAffinity' ? nvDotHtml(v) : ''}${escapeHtml(v)}</button>`;
   return `
   <section class="kz-page kz-nvp">
-    ${nvPageHeadHtml({ key:'collection', kanji:'集', tag:'Sua coleção', title:'Coleção', kanjiStyle:'left:36%;right:auto;top:-70px;font-size:420px',
-      sub:`Marque os guerreiros que você tem e o nível de estrela de cada um. ${state.discordUser ? 'Sincronizado com a sua conta.' : 'Fica salvo neste aparelho.'}`,
+    ${nvPageHeadHtml({ key:'collection', kanji:'集', tag:kzt('deco.colecao'), title:kzt('nav.colecao'), kanjiStyle:'left:36%;right:auto;top:-70px;font-size:420px',
+      sub:`${kzt('coll.sub')} ${state.discordUser ? kzt('coll.sync') : kzt('coll.local')}`,
       side:`<div class="kz-nvc-counter" id="collCounter">${collCounterInner()}</div>` })}
     <div class="kz-nv-toolbar">
       <div class="kz-nv-search sm"><span class="kz-nv-scan" aria-hidden="true"></span><div>
         <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFC21A" stroke-width="2.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>
-        <label for="collSearch" class="kz-sr">Buscar personagem</label>
-        <input type="text" id="collSearch" placeholder="Buscar personagem ou habilidade…" value="${escapeAttr(state.collectionSearch||'')}" autocomplete="off">
+        <label for="collSearch" class="kz-sr">${kzt('coll.buscarPersonagem')}</label>
+        <input type="text" id="collSearch" placeholder="${kzt('coll.buscarPlaceholder')}" value="${escapeAttr(state.collectionSearch||'')}" autocomplete="off">
       </div></div>
       <div class="kz-nv-switchwrap">
         <button type="button" class="kz-nv-switch${on ? ' on' : ''}" id="collOnlyOwned" role="switch" aria-checked="${on}" aria-labelledby="collOnlyOwnedLbl"><span></span></button>
-        <span class="kz-nv-lb" id="collOnlyOwnedLbl">Só adquiridos</span>
+        <span class="kz-nv-lb" id="collOnlyOwnedLbl">${kzt('coll.soAdquiridos')}</span>
       </div>
       ${COLL_FILTER_GROUPS.map(([label,key,vals])=>`<div class="kz-nv-chipgrp"><span class="kz-nv-lb">${label}</span>${vals.map(v=>chip(key, v)).join('')}</div>`).join('')}
       ${renderSF('coll')}
@@ -2561,32 +2564,32 @@ function renderCollectionTabNovo(){
 function renderCollectionCardNovo(c){
   const e = getEntry(c.id);
   const owned = !!e.owned, lv = e.level || 0, phase = starPhase(lv), filled = starFilled(lv), pname = STAR_PHASE_NAME[phase];
-  const nome = escapeHtml(c.name)||'(sem nome)';
+  const nome = escapeHtml(c.name)||kzt('geral.semNome');
   if(!owned) return `
   <div class="kz-coll-card kz-nvc off" data-id="${c.id}">
     <div class="kz-nvc-fr">${portraitInner(c)}<span class="kz-nvc-stamp" aria-hidden="true">封</span></div>
     <div class="kz-nvc-nm">${nome}</div>
-    <button type="button" class="kz-btn kz-nvc-acq coll-acquire" data-id="${c.id}">Adquirir</button>
+    <button type="button" class="kz-btn kz-nvc-acq coll-acquire" data-id="${c.id}">${kzt('coll.adquirir')}</button>
   </div>`;
   const stars = [1,2,3,4,5].map(i=>`<button type="button" class="kz-star-btn ${i<=filled?phase:''}" data-star="${i}" title="${pname} ${i}" aria-label="${pname} ${i}">★</button>`).join('');
   const canLR = maxStarLevel(c) > 10;
   const extra = [
-    lv === 5 ? `<button type="button" class="kz-awaken-btn" data-awaken>Despertar</button>` : '',
-    lv === 10 && canLR ? `<button type="button" class="kz-awaken-btn lr" data-lr-awaken title="Super Despertar: estrelas coloridas (LR)">Super Despertar</button>` : '',
-    phase === 'blue' ? `<button type="button" class="kz-gold-back-btn" data-goldback>◂ Dourada</button>` : '',
-    phase === 'lr' ? `<button type="button" class="kz-gold-back-btn" data-blueback>◂ Azul</button>` : '',
+    lv === 5 ? `<button type="button" class="kz-awaken-btn" data-awaken>${kzt('coll.despertar')}</button>` : '',
+    lv === 10 && canLR ? `<button type="button" class="kz-awaken-btn lr" data-lr-awaken title="${kzt('coll.superDespertarTitulo')}">${kzt('coll.superDespertar')}</button>` : '',
+    phase === 'blue' ? `<button type="button" class="kz-gold-back-btn" data-goldback>${kzt('coll.voltarDourada')}</button>` : '',
+    phase === 'lr' ? `<button type="button" class="kz-gold-back-btn" data-blueback>${kzt('coll.voltarAzul')}</button>` : '',
   ].join('');
   return `
   <div class="kz-coll-card kz-nvc owned ${phase}" data-id="${c.id}">
-    <div class="kz-nvc-fr" data-open-popup title="Ver habilidades">${portraitInner(c)}</div>
+    <div class="kz-nvc-fr" data-open-popup title="${kzt('coll.verHabilidadesTitulo')}">${portraitInner(c)}</div>
     <div class="kz-nvc-nm">${nome}</div>
     <div class="kz-coll-stars kz-nvc-st" data-charid="${c.id}" data-phase="${phase}">
-      <div class="kz-nvc-strow"><div class="kz-star-btns">${stars}</div><span class="kz-nvc-lv ${phase}">Nv.${filled} ${pname}</span></div>
+      <div class="kz-nvc-strow"><div class="kz-star-btns">${stars}</div><span class="kz-nvc-lv ${phase}">${kzt('coll.nivel', { n: filled, fase: pname })}</span></div>
       ${extra ? `<div class="kz-nvc-extra">${extra}</div>` : ''}
     </div>
     <div class="kz-nvc-acts">
-      <button type="button" class="kz-nvc-mini" data-open-popup title="${collUnlockCount(c, lv)} habilidades liberadas">Ver habilidades ›</button>
-      <button type="button" class="kz-nvc-rm coll-remove" data-id="${c.id}" title="Remover da coleção" aria-label="Remover ${escapeAttr(c.name)} da coleção">Remover</button>
+      <button type="button" class="kz-nvc-mini" data-open-popup title="${kzt('coll.liberadasTitulo', { n: collUnlockCount(c, lv) })}">${kzt('coll.verHabilidades')} ›</button>
+      <button type="button" class="kz-nvc-rm coll-remove" data-id="${c.id}" title="${kzt('coll.removerTitulo')}" aria-label="${escapeAttr(kzt('coll.removerNome', { nome: c.name }))}">${kzt('coll.remover')}</button>
     </div>
   </div>`;
 }
@@ -2598,15 +2601,15 @@ function renderCollectionTab(){
   <section class="kz-page">
     <div class="kz-page-head">
       <div>
-        <h1 class="kz-title">Coleção</h1>
-        <div class="kz-subtitle">Marque os guerreiros que você tem e o nível de estrela de cada um. ${state.discordUser ? 'Sincronizado com a sua conta.' : 'Fica salvo neste aparelho.'}</div>
+        <h1 class="kz-title">${kzt('nav.colecao')}</h1>
+        <div class="kz-subtitle">${kzt('coll.sub')} ${state.discordUser ? kzt('coll.sync') : kzt('coll.local')}</div>
       </div>
       <div class="kz-coll-counter" id="collCounter">${collCounterInner()}</div>
     </div>
     <div class="kz-filter-panel">
       <div class="kz-filter-top">
-        <input type="text" class="kz-input" id="collSearch" placeholder="Buscar personagem ou habilidade…" value="${escapeAttr(state.collectionSearch||'')}">
-        <button class="kz-owned-toggle ${on?'on':''}" id="collOnlyOwned"><span class="box">${on?'✓':''}</span><span>Só adquiridos</span></button>
+        <input type="text" class="kz-input" id="collSearch" placeholder="${kzt('coll.buscarPlaceholder')}" value="${escapeAttr(state.collectionSearch||'')}">
+        <button class="kz-owned-toggle ${on?'on':''}" id="collOnlyOwned"><span class="box">${on?'✓':''}</span><span>${kzt('coll.soAdquiridos')}</span></button>
       </div>
       ${COLL_FILTER_GROUPS.map(([label,key,vals])=>`
       <div class="kz-filter-row">
@@ -2622,10 +2625,10 @@ function renderCollectionTab(){
 function renderCollectionGrid(chars){
   if(visualNovo()) return chars.length
     ? `<div class="kz-nvc-grid">${chars.map(renderCollectionCardNovo).join('')}</div>`
-    : `<div class="kz-empty">Nenhum personagem encontrado.</div>`;
+    : `<div class="kz-empty">${kzt('coll.nenhumEncontrado')}</div>`;
   return chars.length
     ? `<div class="kz-coll-grid">${chars.map(renderCollectionCard).join('')}</div>`
-    : `<div class="kz-empty">Nenhum personagem encontrado.</div>`;
+    : `<div class="kz-empty">${kzt('coll.nenhumEncontrado')}</div>`;
 }
 
 function renderCollectionCard(c){
@@ -2642,24 +2645,24 @@ function renderCollectionCard(c){
       <div class="kz-coll-stars" data-charid="${c.id}" data-phase="${phase}">
         <div class="kz-star-btns">${stars}</div>
         <div class="kz-phase-row">
-          <span class="kz-phase-label ${phase}">Nv.${filled} ${pname}</span>
-          ${lv === 5 ? `<button class="kz-awaken-btn" data-awaken>Despertar</button>` : ''}
-          ${lv === 10 && canLR ? `<button class="kz-awaken-btn lr" data-lr-awaken title="Super Despertar: estrelas coloridas (LR)">Super Despertar</button>` : ''}
-          ${phase === 'blue' ? `<button class="kz-gold-back-btn" data-goldback>◂ Dourada</button>` : ''}
-          ${phase === 'lr' ? `<button class="kz-gold-back-btn" data-blueback>◂ Azul</button>` : ''}
+          <span class="kz-phase-label ${phase}">${kzt('coll.nivel', { n: filled, fase: pname })}</span>
+          ${lv === 5 ? `<button class="kz-awaken-btn" data-awaken>${kzt('coll.despertar')}</button>` : ''}
+          ${lv === 10 && canLR ? `<button class="kz-awaken-btn lr" data-lr-awaken title="${kzt('coll.superDespertarTitulo')}">${kzt('coll.superDespertar')}</button>` : ''}
+          ${phase === 'blue' ? `<button class="kz-gold-back-btn" data-goldback>${kzt('coll.voltarDourada')}</button>` : ''}
+          ${phase === 'lr' ? `<button class="kz-gold-back-btn" data-blueback>${kzt('coll.voltarAzul')}</button>` : ''}
         </div>
       </div>` : ''}
     </div>
     <div class="kz-coll-body">
       <div>
-        <div class="kz-coll-name">${escapeHtml(c.name)||'(sem nome)'}</div>
+        <div class="kz-coll-name">${escapeHtml(c.name)||kzt('geral.semNome')}</div>
         <div class="kz-card-meta">${escapeHtml(charMeta(c))}</div>
       </div>
       ${owned ? `
       <div class="kz-coll-actions">
-        <button class="kz-see-ab-btn" data-open-popup><span>${collUnlockCount(c, lv)} liberadas</span><span>Ver habilidades ▸</span></button>
-        <button class="kz-remove-btn coll-remove" data-id="${c.id}">Remover da coleção</button>
-      </div>` : `<button class="kz-acquire-btn coll-acquire" data-id="${c.id}">Adquirir</button>`}
+        <button class="kz-see-ab-btn" data-open-popup><span>${kzt('coll.liberadas', { n: collUnlockCount(c, lv) })}</span><span>${kzt('coll.verHabilidades')} ▸</span></button>
+        <button class="kz-remove-btn coll-remove" data-id="${c.id}">${kzt('coll.removerTitulo')}</button>
+      </div>` : `<button class="kz-acquire-btn coll-acquire" data-id="${c.id}">${kzt('coll.adquirir')}</button>`}
     </div>
   </div>`;
 }
@@ -2765,7 +2768,7 @@ function renderAbilityPopup(charId){
   const unlocks = getAbilityUnlocks(c.name, lv);
   const body = unlocks ? unlocks.groups.map(g=>`
     <div class="kz-popup-group">
-      <span class="kz-label">${escapeHtml(g.title)}</span>
+      <span class="kz-label">${escapeHtml(grupoTitulo(g.title))}</span>
       ${g.tiers.map(t=>{
         const locked = !t.unlocked, data = t.data, noData = !data;
         const tipo = tipoText(!noData && data.tipo ? data.tipo : t.fallbackTipo);
@@ -2774,24 +2777,24 @@ function renderAbilityPopup(charId){
           <div class="kz-popup-row-head">
             ${textStarsHtml(t.reqLevel)}
             <span class="tipo" style="color:${tipoColor(tipo)};">${escapeHtml(tipo)}</span>
-            ${locked ? '<span class="kz-locked-tag">Bloqueado</span>' : ''}
+            ${locked ? `<span class="kz-locked-tag">${kzt('coll.bloqueado')}</span>` : ''}
           </div>
-          <div class="nm">${noData ? 'Ainda não capturado' : (escapeHtml(data.nome)||'—')}</div>
-          <div class="ds">${noData ? 'Este dado ainda não foi extraído do jogo.' : escapeHtml(data.desc||'')}</div>
+          <div class="nm">${noData ? kzt('hab.naoCapturado') : (escapeHtml(data.nome)||'—')}</div>
+          <div class="ds">${noData ? kzt('hab.naoExtraido') : escapeHtml(data.desc||'')}</div>
         </div>`;
       }).join('')}
-    </div>`).join('') : `<div class="kz-muted">Dados de habilidade ainda não disponíveis para este personagem.</div>`;
+    </div>`).join('') : `<div class="kz-muted">${kzt('hab.semDados')}</div>`;
 
   root.innerHTML = `
   <div class="modal-overlay" id="abilityPopupOverlay">
-    <div class="modal kz-popup" role="dialog" aria-label="Habilidades de ${escapeAttr(c.name)}">
+    <div class="modal kz-popup" role="dialog" aria-label="${escapeAttr(kzt('coll.habilidadesDe', { nome: c.name }))}">
       <div class="kz-popup-head">
         <div class="kz-popup-art">${portraitInner(c)}</div>
         <div class="kz-popup-title">
           <div class="kz-popup-name">${escapeHtml(c.name)}</div>
-          <div class="kz-popup-level">${textStarsHtml(lv)}<span class="lbl">${lv ? reqLabelText(lv) : 'Sem estrelas'}</span></div>
+          <div class="kz-popup-level">${textStarsHtml(lv)}<span class="lbl">${lv ? reqLabelText(lv) : kzt('coll.semEstrelas')}</span></div>
         </div>
-        <button class="kz-close-btn" id="closeAbilityPopupBtn" aria-label="Fechar">✕</button>
+        <button class="kz-close-btn" id="closeAbilityPopupBtn" aria-label="${kzt('comum.fechar')}">✕</button>
       </div>
       <div class="kz-popup-body">${body}</div>
     </div>
@@ -2815,13 +2818,13 @@ function renderTierRow(t, i, all){
   const n = (all || state.tierList.tiers).length;
   return `
   <div class="tier-row" data-tier-row="${t.id}">
-    <div class="tier-label" contenteditable="true" spellcheck="false" lang="pt-BR" data-tier="${t.id}" style="${visualNovo() ? `--tc:${t.color}` : `background:${t.color}`};">${escapeHtml(t.label)}</div>
+    <div class="tier-label" contenteditable="true" spellcheck="false" lang="${KZ_LANG === 'en' ? 'en' : 'pt-BR'}" data-tier="${t.id}" style="${visualNovo() ? `--tc:${t.color}` : `background:${t.color}`};">${escapeHtml(t.label)}</div>
     <div class="tier-items" data-tier="${t.id}">${chars.map(renderTierItem).join('')}</div>
     <div class="tier-ctrl">
-      <span class="tier-handle" draggable="true" data-tier="${t.id}" title="Arraste para reordenar este rank" aria-label="Reordenar rank">⋮⋮</span>
-      <button class="tier-move-btn" data-tier="${t.id}" data-dir="-1" title="Subir este rank" ${i===0?'disabled':''}>▲</button>
-      <button class="tier-move-btn" data-tier="${t.id}" data-dir="1" title="Descer este rank" ${i===n-1?'disabled':''}>▼</button>
-      <button class="tier-remove-btn" data-tier="${t.id}" title="Remover este rank">✕</button>
+      <span class="tier-handle" draggable="true" data-tier="${t.id}" title="${kzt('tier.reordenarTitulo')}" aria-label="${kzt('tier.reordenar')}">⋮⋮</span>
+      <button class="tier-move-btn" data-tier="${t.id}" data-dir="-1" title="${kzt('tier.subir')}" ${i===0?'disabled':''}>▲</button>
+      <button class="tier-move-btn" data-tier="${t.id}" data-dir="1" title="${kzt('tier.descer')}" ${i===n-1?'disabled':''}>▼</button>
+      <button class="tier-remove-btn" data-tier="${t.id}" title="${kzt('tier.remover')}">✕</button>
     </div>
   </div>`;
 }
@@ -2832,13 +2835,13 @@ function renderTierListTabNovo(){
   const dl = `<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg>`;
   return `
   <section class="kz-page kz-nvp kz-nvt">
-    ${nvPageHeadHtml({ key:'tierlist', kanji:'番', tag:'Seu ranking', title:'Tier List', kanjiStyle:'right:22%;top:-60px;font-size:380px',
-      sub:`Arraste os guerreiros entre os ranks. Reorganize os ranks pela alça ⋮⋮ ou pelas setas e clique no nome de um rank pra renomear. ${state.discordUser ? 'Sincronizado com a sua conta.' : 'Fica salvo neste aparelho.'}`,
-      side:`<button class="kz-btn" id="tierSuggestBtn">Sugestão por raridade</button><button class="kz-btn" id="tierListResetBtn">Esvaziar</button><button class="kz-btn kz-btn-primary" id="tierListExportBtn">${dl}Exportar imagem</button>` })}
+    ${nvPageHeadHtml({ key:'tierlist', kanji:'番', tag:kzt('deco.tierlist'), title:kzt('nav.tierlist'), kanjiStyle:'right:22%;top:-60px;font-size:380px',
+      sub:`${kzt('tier.subNovo')} ${state.discordUser ? kzt('coll.sync') : kzt('coll.local')}`,
+      side:`<button class="kz-btn" id="tierSuggestBtn">${kzt('tier.sugestao')}</button><button class="kz-btn" id="tierListResetBtn">${kzt('tier.esvaziar')}</button><button class="kz-btn kz-btn-primary" id="tierListExportBtn">${dl}${kzt('tier.exportar')}</button>` })}
     <div class="kz-tier-rows">${state.tierList.tiers.map((t,i,a)=>renderTierRow(t,i,a)).join('')}</div>
-    <button class="kz-btn kz-nvt-add" id="tierAddBtn">+ Adicionar rank</button>
+    <button class="kz-btn kz-nvt-add" id="tierAddBtn">${kzt('tier.adicionarRank')}</button>
     <div class="tier-pool">
-      <div class="kz-nvt-poolhead"><span class="kz-label">Sem tier (${unrankedChars.length})</span><span class="kz-nvt-hint">Arraste daqui pra um rank</span></div>
+      <div class="kz-nvt-poolhead"><span class="kz-label">${kzt('tier.semTier', { n: unrankedChars.length })}</span><span class="kz-nvt-hint">${kzt('tier.arrasteDaqui')}</span></div>
       <div class="tier-pool-items" data-tier="unranked">${unrankedChars.map(renderTierItem).join('')}</div>
     </div>
   </section>`;
@@ -2850,19 +2853,19 @@ function renderTierListTab(){
   <section class="kz-page">
     <div class="kz-page-head">
       <div>
-        <h1 class="kz-title">Tier List</h1>
-        <div class="kz-subtitle">Arraste os guerreiros entre os ranks. Reorganize os ranks pela alça ⋮⋮ (ou pelas setas ▲▼) e clique no nome de um rank pra renomear. Fica salvo neste aparelho.</div>
+        <h1 class="kz-title">${kzt('nav.tierlist')}</h1>
+        <div class="kz-subtitle">${kzt('tier.subAntigo')}</div>
       </div>
       <div class="kz-head-actions">
-        <button class="kz-btn" id="tierSuggestBtn">Sugestão por raridade</button>
-        <button class="kz-btn" id="tierListResetBtn">Esvaziar</button>
-        <button class="kz-btn" id="tierListExportBtn">Exportar imagem</button>
+        <button class="kz-btn" id="tierSuggestBtn">${kzt('tier.sugestao')}</button>
+        <button class="kz-btn" id="tierListResetBtn">${kzt('tier.esvaziar')}</button>
+        <button class="kz-btn" id="tierListExportBtn">${kzt('tier.exportar')}</button>
       </div>
     </div>
     <div class="kz-tier-rows">${state.tierList.tiers.map((t,i,a)=>renderTierRow(t,i,a)).join('')}</div>
-    <button class="kz-btn kz-btn-sm" id="tierAddBtn" style="align-self:flex-start;">+ Adicionar rank</button>
+    <button class="kz-btn kz-btn-sm" id="tierAddBtn" style="align-self:flex-start;">${kzt('tier.adicionarRank')}</button>
     <div class="tier-pool">
-      <span class="kz-label">Sem tier (${unrankedChars.length})</span>
+      <span class="kz-label">${kzt('tier.semTier', { n: unrankedChars.length })}</span>
       <div class="tier-pool-items" data-tier="unranked">${unrankedChars.map(renderTierItem).join('')}</div>
     </div>
   </section>`;
@@ -2894,7 +2897,7 @@ const TIER_LABEL_MIN_FONT = 12;
 // Mede numa "sonda" fora da tela (o label real é esticado pelo flex, então o scrollHeight dele não serve).
 function fitTierLabelFont(el){
   const probe = document.createElement('div');
-  probe.lang = 'pt-BR';
+  probe.lang = KZ_LANG === 'en' ? 'en' : 'pt-BR';
   probe.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;pointer-events:none;'
     + `width:${el.offsetWidth || 130}px;padding:8px 10px;box-sizing:border-box;`
     + "font-family:'Kaushan Script',cursive;line-height:1.1;"
@@ -3005,7 +3008,7 @@ function attachTierListHandlers(){
 
   const suggestBtn = document.getElementById('tierSuggestBtn');
   if(suggestBtn) suggestBtn.addEventListener('click', ()=>{
-    customConfirm('Reorganizar a tier list pela raridade (Limitado → 1º rank, SSR → 2º, SR → 3º, R → 4º)? Isso substitui a organização atual.', ()=>{
+    customConfirm(kzt('tier.sugestaoConfirma'), ()=>{
       suggestTierListByRarity();
       render();
     });
@@ -3013,7 +3016,7 @@ function attachTierListHandlers(){
 
   const resetBtn = document.getElementById('tierListResetBtn');
   if(resetBtn) resetBtn.addEventListener('click', ()=>{
-    customConfirm('Esvaziar a tier list e voltar todos os personagens pra "Sem tier"?', ()=>{
+    customConfirm(kzt('tier.esvaziarConfirma'), ()=>{
       state.tierList.tiers.forEach(t=>{ t.items = []; });
       state.tierList.unranked = state.characters.map(c=>c.id);
       saveTierList();
@@ -3089,7 +3092,7 @@ async function exportTierListImage(){
   const ITEM_W = 64*S, ITEM_H = Math.round(ITEM_W * 4/3), GAP = 6*S, LABEL_W = 110*S, PADDING = 14*S;
   const canvasWidth = 1000*S;
   const itemsPerRow = Math.max(1, Math.floor((canvasWidth - LABEL_W - PADDING*2 - GAP) / (ITEM_W + GAP)));
-  showToast('Gerando a imagem em alta resolução…');
+  showToast(kzt('tier.gerando'));
 
   try{ if(document.fonts && document.fonts.load) await document.fonts.load("40px 'Kaushan Script'"); }catch(e){}
 
@@ -3174,9 +3177,9 @@ async function exportTierListImage(){
     a.click();
     a.remove();
     setTimeout(()=> URL.revokeObjectURL(url), 10000);
-    showToast('Imagem salva (' + canvas.width + '×' + canvas.height + ')');
+    showToast(kzt('tier.imagemSalva', { w: canvas.width, h: canvas.height }));
   }catch(e){
-    showToast('Não foi possível gerar a imagem — o navegador bloqueou a leitura das artes por segurança (comum abrindo o arquivo direto do disco). Deve funcionar quando o site estiver hospedado.');
+    showToast(kzt('tier.erroImagem'));
   }
 }
 
@@ -3185,27 +3188,27 @@ async function exportTierListImage(){
 // guerreiro em papéis. É uma leitura automática por palavras-chave — serve de guia, não de verdade absoluta.
 const ROLE_ORDER = ['dano','dot','tank','sobrevivencia','cura','suporte','controle'];
 const ROLE_INFO = {
-  dano:     { label:'Dano',          full:'Causador de Dano', glyph:'攻', rgb:['192,57,43','#ef8b7f'],  pillar:'dano',     thr:7,
-    about:'Alto dano, crítico e afins: golpes fortes, dano adicional, taxa de crítico, ataques em área.' },
-  dot:      { label:'Dano Contínuo', full:'Dano Contínuo',    glyph:'炎', rgb:['217,123,42','#f0a05f'], pillar:'dano',     thr:4,
-    about:'Queimadura, veneno, sangramento e parecidos: o dano continua acontecendo turno após turno.' },
-  tank:     { label:'Tank',          full:'Tank',             glyph:'守', rgb:['59,130,196','#86c0f0'], pillar:'tank',     thr:8,
-    about:'Aguenta a pancada: redução de dano, bloqueio, escudo e proteção dos aliados.' },
-  sobrevivencia: { label:'Sobrevivência', full:'Sobrevivência', glyph:'生', rgb:['46,170,140','#7fe0c8'], pillar:'tank', thr:2,
-    about:'Sobrevive por conta própria: reviver, ou ter pelo menos 2 habilidades de autocura (cura própria ou roubo de vida). Não ajuda os aliados — isso é Cura.' },
-  cura:     { label:'Cura',          full:'Curandeiro',       glyph:'癒', rgb:['63,174,90','#86e3a2'],  pillar:'suporte',  thr:3,
-    about:'Recupera a vida dos aliados ou os revive. Curar só a si mesmo não conta: isso é Sobrevivência.' },
-  suporte:  { label:'Suporte',       full:'Suporte',          glyph:'援', rgb:['201,162,55','#e8cf6f'], pillar:'suporte',  thr:4,
-    about:'Fortalece o time: aumento de status dos aliados (ATQ, DEF, Fúria...), escudos e imunidade a efeitos.' },
-  controle: { label:'Controle',      full:'Controle',         glyph:'縛', rgb:['139,95,191','#c3aaf0'], pillar:'controle', thr:4,
-    about:'Enfraquece e trava os inimigos: redução de status (ATQ, DEF, cura...) e efeitos de controle (atordoamento, silêncio, paralisia, encanto, drenagem de Fúria).' },
+  dano:     { label:kzt('papel.dano'),          full:kzt('papel.danoFull'), glyph:'攻', rgb:['192,57,43','#ef8b7f'],  pillar:'dano',     thr:7,
+    about:kzt('sobre.dano') },
+  dot:      { label:kzt('papel.dot'), full:kzt('papel.dot'),    glyph:'炎', rgb:['217,123,42','#f0a05f'], pillar:'dano',     thr:4,
+    about:kzt('sobre.dot') },
+  tank:     { label:kzt('papel.tank'),          full:kzt('papel.tank'),             glyph:'守', rgb:['59,130,196','#86c0f0'], pillar:'tank',     thr:8,
+    about:kzt('sobre.tank') },
+  sobrevivencia: { label:kzt('papel.sobrevivencia'), full:kzt('papel.sobrevivencia'), glyph:'生', rgb:['46,170,140','#7fe0c8'], pillar:'tank', thr:2,
+    about:kzt('sobre.sobrevivencia') },
+  cura:     { label:kzt('papel.cura'),          full:kzt('papel.curaFull'),       glyph:'癒', rgb:['63,174,90','#86e3a2'],  pillar:'suporte',  thr:3,
+    about:kzt('sobre.cura') },
+  suporte:  { label:kzt('papel.suporte'),       full:kzt('papel.suporte'),          glyph:'援', rgb:['201,162,55','#e8cf6f'], pillar:'suporte',  thr:4,
+    about:kzt('sobre.suporte') },
+  controle: { label:kzt('papel.controle'),      full:kzt('papel.controle'),         glyph:'縛', rgb:['139,95,191','#c3aaf0'], pillar:'controle', thr:4,
+    about:kzt('sobre.controle') },
 };
 // Um time equilibrado cobre quatro frentes (alvos pensados para 6 guerreiros).
 const PILLARS = {
-  dano:     { label:'Dano',     target:2,   weight:0.30, cap:4 },
-  tank:     { label:'Tank',     target:1.5, weight:0.30, cap:3 },
-  suporte:  { label:'Suporte',  target:1,   weight:0.25, cap:3 },
-  controle: { label:'Controle', target:1,   weight:0.15, cap:3 },
+  dano:     { label:kzt('papel.dano'),     target:2,   weight:0.30, cap:4 },
+  tank:     { label:kzt('papel.tank'),     target:1.5, weight:0.30, cap:3 },
+  suporte:  { label:kzt('papel.suporte'),  target:1,   weight:0.25, cap:3 },
+  controle: { label:kzt('papel.controle'), target:1,   weight:0.15, cap:3 },
 };
 const PILLAR_ORDER = ['dano','tank','suporte','controle'];
 const ROLE_WEIGHTS = [1, 0.6, 0.4];           // principal, secundário, terciário
@@ -3369,13 +3372,13 @@ function renderRoleCard(c){
   const rows = a.roles.map((r, i) => {
     const ev = a.why[r].slice(0, 2);
     return `<div class="kz-role-row">
-      <div class="kz-role-row-head">${rolePillHtml(r)}<span class="kz-role-rank">${i === 0 ? 'Papel principal' : 'Papel secundário'}</span></div>
+      <div class="kz-role-row-head">${rolePillHtml(r)}<span class="kz-role-rank">${i === 0 ? kzt('papel.papelPrincipal') : kzt('papel.papelSecundario')}</span></div>
       <div class="kz-role-about">${escapeHtml(ROLE_INFO[r].about)}</div>
-      ${ev.length ? `<ul class="kz-role-ev">${ev.map(e => `<li>${escapeHtml(roleEvidence(e))}</li>`).join('')}</ul>` : `<div class="kz-role-ev kz-muted">Definido pelo tipo do guerreiro (${escapeHtml(c.type || '—')}).</div>`}
+      ${ev.length ? `<ul class="kz-role-ev">${ev.map(e => `<li>${escapeHtml(roleEvidence(e))}</li>`).join('')}</ul>` : `<div class="kz-role-ev kz-muted">${kzt('papel.definidoPorTipo', { tipo: escapeHtml(c.type || '—') })}</div>`}
     </div>`;
   }).join('');
   return `<div class="kz-role-card">
-    <div class="kz-role-card-head"><span class="kz-label">Papel em batalha</span></div>
+    <div class="kz-role-card-head"><span class="kz-label">${kzt('papel.emBatalha')}</span></div>
     <div class="kz-role-rows">${rows}</div>
     ${synergyCardHtml(c)}
   </div>`;
@@ -3387,17 +3390,17 @@ function renderRoleCard(c){
    e duplas/trios que se ajudam pelo nome (Goku SS4 + Vegeta SS4, Kale + Caulifla…). "peso" é o quanto vale
    com o efeito completo (1 = muito forte); nos de grupo, o valor cresce com cada aliado do grupo até "max". */
 const SYNERGY_GROUPS = {
-  maligno:    { label:'Malignos',          test:c=>(c.tags||[]).includes('Guerreiro Maligno') },
-  saiyajin:   { label:'Saiyajins',         test:c=>c.element === 'Saiyajin' },
-  fusao:      { label:'de Fusão',          test:c=>(c.tags||[]).includes('Guerreiro de Fusão') },
-  fusao_ss4:  { label:'de Fusão e SS4',    test:c=>(c.tags||[]).includes('Guerreiro de Fusão') || (c.tags||[]).includes('SS4') },
-  orgulho:    { label:'da Tropa do Orgulho', test:c=>(c.tags||[]).includes('Tropa do Orgulho') },
-  lendario:   { label:'Lendários',         test:c=>(c.tags||[]).includes('Guerreiro Lendário') },
-  artista:    { label:'Artistas Marciais', test:c=>(c.tags||[]).includes('Artista Marcial') },
-  guerreiras: { label:'Guerreiras',        test:c=>c.gender === 'Feminino' },
-  androide:   { label:'Androides',         test:c=>c.element === 'Androide' },
-  divino:     { label:'Anjos e Deuses da Destruição', test:c=>(c.tags||[]).includes('Anjo') || (c.tags||[]).includes('Deus da Destruição') },
-  raio:       { label:'de afinidade Raio', test:c=>c.affinity === 'Raio' },
+  maligno:    { label:kzt('grupo.maligno'),          test:c=>(c.tags||[]).includes('Guerreiro Maligno') },
+  saiyajin:   { label:kzt('grupo.saiyajin'),         test:c=>c.element === 'Saiyajin' },
+  fusao:      { label:kzt('grupo.fusao'),          test:c=>(c.tags||[]).includes('Guerreiro de Fusão') },
+  fusao_ss4:  { label:kzt('grupo.fusaoSS4'),    test:c=>(c.tags||[]).includes('Guerreiro de Fusão') || (c.tags||[]).includes('SS4') },
+  orgulho:    { label:kzt('grupo.orgulho'), test:c=>(c.tags||[]).includes('Tropa do Orgulho') },
+  lendario:   { label:kzt('grupo.lendario'),         test:c=>(c.tags||[]).includes('Guerreiro Lendário') },
+  artista:    { label:kzt('grupo.artista'), test:c=>(c.tags||[]).includes('Artista Marcial') },
+  guerreiras: { label:kzt('grupo.guerreiras'),        test:c=>c.gender === 'Feminino' },
+  androide:   { label:kzt('grupo.androide'),         test:c=>c.element === 'Androide' },
+  divino:     { label:kzt('grupo.divino'), test:c=>(c.tags||[]).includes('Anjo') || (c.tags||[]).includes('Deus da Destruição') },
+  raio:       { label:kzt('grupo.raio'), test:c=>c.affinity === 'Raio' },
 };
 const SYNERGY_RULES = {
   'Goku SS4':          [{ com:['Vegeta SS4'], peso:1, txt:'libera o Supremo combinado com Vegeta SS4' }],
@@ -3500,7 +3503,7 @@ function synergyItemHtml(a){
 // Na ficha: o que o guerreiro faz pela equipe e quem fortalece ele.
 function synergyInfo(c){
   const proprias = (SYNERGY_RULES[c.name] || []).map(r=>{
-    if(r.grupo){ const g = SYNERGY_GROUPS[r.grupo]; const n = state.characters.filter(o=>o.id !== c.id && g.test(o)).length; return `${escapeHtml(r.txt)} <span class="rx">(${n} guerreiros ${escapeHtml(g.label)})</span>`; }
+    if(r.grupo){ const g = SYNERGY_GROUPS[r.grupo]; const n = state.characters.filter(o=>o.id !== c.id && g.test(o)).length; return `${escapeHtml(r.txt)} <span class="rx">${kzt('sin.nGuerreiros', { n, grupo: escapeHtml(g.label) })}</span>`; }
     if(r.prefixo) return escapeHtml(r.txt);
     return escapeHtml(r.txt);
   });
@@ -3515,9 +3518,9 @@ function synergyCardHtml(c){
   const { proprias, recebe:unicos } = synergyInfo(c);
   if(!proprias.length && !unicos.length) return '';
   return `<div class="kz-role-syn">
-    <span class="kz-label">Sinergias</span>
+    <span class="kz-label">${kzt('sin.titulo')}</span>
     ${proprias.length ? `<ul>${proprias.map(t=>`<li>${t}</li>`).join('')}</ul>` : ''}
-    ${unicos.length ? `<div class="rx">Fortalecido por: ${unicos.slice(0, 8).map(escapeHtml).join(', ')}${unicos.length > 8 ? ` e mais ${unicos.length - 8}` : ''}.</div>` : ''}
+    ${unicos.length ? `<div class="rx">${kzt('sin.fortalecidoPor')}: ${unicos.slice(0, 8).map(escapeHtml).join(', ')}${unicos.length > 8 ? ` ${kzt('geral.eMais', { n: unicos.length - 8 })}` : ''}.</div>` : ''}
   </div>`;
 }
 
@@ -3561,20 +3564,20 @@ function compositionHtml(teamArg){
   const chips = PILLAR_ORDER.map(k => {
     const info = ROLE_INFO[k === 'suporte' ? 'suporte' : k === 'controle' ? 'controle' : k];
     const r = info.rgb, isMiss = miss.includes(k);
-    return `<span class="kz-comp-chip${isMiss ? ' miss' : ''}" style="border-color:rgba(${r[0]},${isMiss ? .35 : .7});color:${isMiss ? '#9a93a3' : r[1]};"><span class="g">${info.glyph}</span>${PILLARS[k].label} <b>${(Math.round(v[k] * 10) / 10).toString().replace('.', ',')}</b></span>`;
+    return `<span class="kz-comp-chip${isMiss ? ' miss' : ''}" style="border-color:rgba(${r[0]},${isMiss ? .35 : .7});color:${isMiss ? '#9a93a3' : r[1]};"><span class="g">${info.glyph}</span>${PILLARS[k].label} <b>${(Math.round(v[k] * 10) / 10).toString().replace('.', KZ_DECIMAL)}</b></span>`;
   }).join('');
-  const note = !miss.length ? 'Equipe equilibrada.' : `Falta: ${miss.map(k => PILLARS[k].label).join(', ')}.`;
+  const note = !miss.length ? kzt('comp.equilibradaPonto') : kzt('comp.falta', { lista: miss.map(k => PILLARS[k].label).join(', ') });
   const syn = synergyReport(team).ativos;
-  return `<div class="kz-comp" title="Soma dos papéis dos guerreiros em campo (principal vale 1, secundário 0,6). Alvo pra 6 guerreiros: Dano 2 · Tank 1,5 · Suporte 1 · Controle 1.">
-    <span class="kz-label">Composição</span>${chips}<span class="kz-comp-note ${miss.length ? 'warn' : 'ok'}">${note}</span><span class="kz-comp-bal">Equilíbrio <b>${bal}%</b></span>
-  </div>${syn.length ? `<div class="kz-comp-syn"><span class="t">Sinergias ativas (${syn.length})</span>${syn.slice(0, 4).map(a=>`<div class="kz-syn-line">${synergyItemHtml(a)}</div>`).join('')}${syn.length > 4 ? `<div class="kz-syn-line">e mais ${syn.length - 4}.</div>` : ''}</div>` : ''}`;
+  return `<div class="kz-comp" title="${kzt('comp.tituloAjuda')}">
+    <span class="kz-label">${kzt('comp.composicao')}</span>${chips}<span class="kz-comp-note ${miss.length ? 'warn' : 'ok'}">${note}</span><span class="kz-comp-bal">${kzt('comp.equilibrio')} <b>${bal}%</b></span>
+  </div>${syn.length ? `<div class="kz-comp-syn"><span class="t">${kzt('comp.sinergiasAtivas', { n: syn.length })}</span>${syn.slice(0, 4).map(a=>`<div class="kz-syn-line">${synergyItemHtml(a)}</div>`).join('')}${syn.length > 4 ? `<div class="kz-syn-line">${kzt('comp.eMaisN', { n: syn.length - 4 })}</div>` : ''}</div>` : ''}`;
 }
 
 /* ---------- Montagem automática (completa a equipe a partir de 1 a 5 guerreiros) ---------- */
 const AUTO_MODES = {
-  equilibrado: { label:'Equilibrado',    wc:0.45, wb:0.35, ws:0.2,  hint:'Combos + papéis (dano, tank, suporte e controle) + sinergias entre habilidades' },
-  combos:      { label:'Mais combos',    wc:0.85, wb:0.1,  ws:0.05, hint:'Prioriza a maior quantidade de combos' },
-  sinergias:   { label:'Mais sinergias', wc:0.3,  wb:0.2,  ws:0.5,  hint:'Prioriza guerreiros que se fortalecem (ex.: Goku SS4 + Vegeta SS4, Malignos juntos)' },
+  equilibrado: { label:kzt('auto.equilibrado'),    wc:0.45, wb:0.35, ws:0.2,  hint:kzt('auto.equilibradoDica') },
+  combos:      { label:kzt('auto.maisCombos'),    wc:0.85, wb:0.1,  ws:0.05, hint:kzt('auto.maisCombosDica') },
+  sinergias:   { label:kzt('auto.maisSinergias'), wc:0.3,  wb:0.2,  ws:0.5,  hint:kzt('auto.maisSinergiasDica') },
 };
 function autoObjective(team, mode){
   const m = AUTO_MODES[mode] || AUTO_MODES.equilibrado;
@@ -3639,19 +3642,19 @@ function renderAutoBar(){
   const rar = state.recRarity || 'all';
   const opts = (state.autoOpts && state.autoOpts.base === JSON.stringify(state.team)) ? state.autoOpts.list : null;
   const modeOpts = Object.entries(AUTO_MODES).map(([k, m]) => `<option value="${k}" ${mode === k ? 'selected' : ''}>${m.label}</option>`).join('');
-  const rarOpts = [['all', 'Todas'], ['SSR', 'Só SSR'], ['SR', 'Só SR'], ['R', 'Só R']].map(([v, l]) => `<option value="${v}" ${rar === v ? 'selected' : ''}>${l}</option>`).join('');
+  const rarOpts = [['all', kzt('auto.todas')], ['SSR', kzt('auto.soSSR')], ['SR', kzt('auto.soSR')], ['R', kzt('auto.soR')]].map(([v, l]) => `<option value="${v}" ${rar === v ? 'selected' : ''}>${l}</option>`).join('');
   let rows = '';
   if(opts){
     rows = opts.length
       ? `<div class="kz-auto-rows">${opts.map((o, i) => renderAutoOptionRow(o, i)).join('')}</div>`
-      : `<div class="kz-muted" style="font-size:12.5px;">Não encontrei guerreiros que completem essa equipe com esse filtro de raridade.</div>`;
+      : `<div class="kz-muted" style="font-size:12.5px;">${kzt('auto.nadaEncontrado')}</div>`;
   }
   return `<div class="kz-auto">
     <div class="kz-auto-bar">
-      <span class="kz-auto-lbl" title="Escolha de 1 a 3 guerreiros nas casas e clique em Completar equipe: eu preencho o resto olhando o que cada um persegue e causa e o papel de cada um.">Montagem automática</span>
-      <label>Foco <select class="kz-select-sm" id="autoModeSelect" title="${escapeAttr(AUTO_MODES[mode].hint)}">${modeOpts}</select></label>
-      <label>Novos guerreiros <select class="kz-select-sm" id="autoRarSelect">${rarOpts}</select></label>
-      ${opts ? '<button type="button" class="kz-com-link" id="autoCloseBtn">Fechar sugestões</button>' : ''}
+      <span class="kz-auto-lbl" title="${kzt('auto.tituloAjuda')}">${kzt('auto.montagem')}</span>
+      <label>${kzt('auto.foco')} <select class="kz-select-sm" id="autoModeSelect" title="${escapeAttr(AUTO_MODES[mode].hint)}">${modeOpts}</select></label>
+      <label>${kzt('auto.novosGuerreiros')} <select class="kz-select-sm" id="autoRarSelect">${rarOpts}</select></label>
+      ${opts ? `<button type="button" class="kz-com-link" id="autoCloseBtn">${kzt('auto.fechar')}</button>` : ''}
     </div>
     ${rows}
   </div>`;
@@ -3661,21 +3664,21 @@ function renderAutoOptionRow(o, i){
   const core = new Set((state.autoOpts && state.autoOpts.core) || []);
   const minis = o.team.map((id, slot) => {
     const c = id && getChar(id);
-    return c ? `<span class="kz-auto-mini${core.has(id) ? ' core' : ''}" title="${escapeAttr('Casa ' + (slot + 1) + ' — ' + c.name)}">${portraitInner(c)}</span>` : '<span class="kz-auto-mini empty"></span>';
+    return c ? `<span class="kz-auto-mini${core.has(id) ? ' core' : ''}" title="${escapeAttr(kzt('time.casaNome', { n: slot + 1, nome: c.name }))}">${portraitInner(c)}</span>` : '<span class="kz-auto-mini empty"></span>';
   }).join('');
   return `<div class="kz-auto-row${i === 0 ? ' top' : ''}">
     <div class="kz-auto-row-team">${minis}</div>
-    <div class="kz-auto-row-info"><b>${i === 0 ? 'Melhor opção' : 'Opção ' + (i + 1)}</b>
-      <span><b>${o.combos}</b>/${comboMax} combos · cadeia <b>${o.longest + 1}</b> · equilíbrio <b>${Math.round(o.balance * 100)}%</b>${o.missing.length ? ` · <span class="warn">falta ${o.missing.map(k => PILLARS[k].label).join(', ')}</span>` : ''}</span></div>
-    <button type="button" class="kz-btn kz-btn-sm kz-btn-primary" data-auto-apply="${i}">Usar</button>
-    ${(o.syn || []).length ? `<div class="kz-auto-syn">${o.syn.slice(0, 3).map(a=>`<div class="kz-syn-line">${synergyItemHtml(a)}</div>`).join('')}${o.syn.length > 3 ? `<div class="kz-syn-line">e mais ${o.syn.length - 3} sinergia${o.syn.length - 3 > 1 ? 's' : ''}.</div>` : ''}</div>` : ''}
+    <div class="kz-auto-row-info"><b>${i === 0 ? kzt('auto.melhor') : kzt('auto.opcao', { n: i + 1 })}</b>
+      <span>${kzt('auto.linhaOpcao', { combos: '<b>' + o.combos + '</b>', max: comboMax, cadeia: '<b>' + (o.longest + 1) + '</b>', bal: '<b>' + Math.round(o.balance * 100) + '</b>' })}${o.missing.length ? ` · <span class="warn">${kzt('auto.falta', { lista: o.missing.map(k => PILLARS[k].label).join(', ') })}</span>` : ''}</span></div>
+    <button type="button" class="kz-btn kz-btn-sm kz-btn-primary" data-auto-apply="${i}">${kzt('auto.usar')}</button>
+    ${(o.syn || []).length ? `<div class="kz-auto-syn">${o.syn.slice(0, 3).map(a=>`<div class="kz-syn-line">${synergyItemHtml(a)}</div>`).join('')}${o.syn.length > 3 ? `<div class="kz-syn-line">${kzt(o.syn.length - 3 > 1 ? 'auto.maisSinergiasPl' : 'auto.maisSinergia', { n: o.syn.length - 3 })}</div>` : ''}</div>` : ''}
   </div>`;
 }
 function runAutoBuild(){
   const filled = state.team.filter(Boolean);
-  if(!filled.length){ showToast('Coloque ao menos 1 guerreiro em campo.'); return; }
-  if(filled.length === 6){ showToast('A equipe já está completa.'); return; }
-  showToast('Montando equipes…');
+  if(!filled.length){ showToast(kzt('auto.toastMinimo')); return; }
+  if(filled.length === 6){ showToast(kzt('auto.toastCompleta')); return; }
+  showToast(kzt('auto.toastMontando'));
   setTimeout(() => {
     const list = buildTeamOptions(state.autoMode || 'equilibrado', state.recRarity || 'all', 3);
     state.autoOpts = { base: JSON.stringify(state.team), core: filled, list };
@@ -3688,9 +3691,9 @@ function applyAutoOption(i){
   const prev = [...state.team];
   commitTeam([...o.team]);
   state.optUndo = { before: prev, after: [...o.team] };
-  state.optInfo = `Equipe montada: <b>${o.combos} combos</b> · maior cadeia <b>${o.longest + 1} hits</b> · equilíbrio <b>${Math.round(o.balance * 100)}%</b>${o.missing.length ? ' · falta ' + o.missing.map(k => PILLARS[k].label).join(', ') : ''}.`;
+  state.optInfo = kzt('auto.infoMontada', { combos: o.combos, hits: o.longest + 1, bal: Math.round(o.balance * 100) }) + (o.missing.length ? ' · ' + kzt('auto.falta', { lista: o.missing.map(k => PILLARS[k].label).join(', ') }) : '') + '.';
   render();
-  showToast('Equipe montada!');
+  showToast(kzt('auto.toastMontada'));
 }
 
 /* ======================= DESCREVA O TIME ======================= */
@@ -3698,59 +3701,59 @@ function applyAutoOption(i){
 // Sem IA externa: lê o texto por palavras-chave e escolhe guerreiros pelo que está nos dados (habilidades, gênero, raça,
 // afinidade, papéis). Gênero/raça/afinidade/raridade/grupo são filtros; efeito, papel e tipo pontuam; o resto vem do Montador.
 const DESC_MECHS = [
-  { key:'queimadura', label:'Queimadura',    q:/queim|burn|incendi|ardente|fogo continuo|em chamas/,  d:/queima/ },
-  { key:'sangramento', label:'Sangramento',  q:/sangr|bleed|hemorrag|laceraca|ferida/,                d:/sangr|lacera|ferimento|ferida mortal/ },
-  { key:'veneno',     label:'Veneno',        q:/venen|poison|toxic/,                                  d:/envenen|veneno/ },
-  { key:'atordoamento', label:'Atordoamento', q:/atordo|stun|desmaiar|apagar o inimigo/,              d:/atordo/ },
-  { key:'silencio',   label:'Silêncio',      q:/silenc|calar|travar (o )?(supremo|ultimate)|bloquear (o )?supremo/, d:/sil[eê]nc|suprim|supress/ },
-  { key:'paralisia',  label:'Paralisia',     q:/paralis|imobiliz|prender|prisao|travar (o )?inimigo|congel/, d:/paralis|imobiliza|prisão|preso/ },
-  { key:'petrificacao', label:'Petrificação', q:/petrific|pedra no inimigo/,                           d:/petrific/ },
-  { key:'confusao',   label:'Confusão',      q:/confus/,                                              d:/confus/ },
-  { key:'encanto',    label:'Encanto',       q:/encant|charme|enfeiti/,                               d:/encant/ },
-  { key:'cegueira',   label:'Cegueira',      q:/cegueira|cegar|cego/,                                 d:/cegueira/ },
-  { key:'escudo',     label:'Escudo',        q:/escudo|shield|barreira|protecao/,                     d:/escudo|muralha de energia|parede de energia/ },
-  { key:'critico',    label:'Crítico',       q:/critic|crit\b/,                                       d:/cr[ií]t/ },
-  { key:'furia',      label:'Fúria/Raiva',   q:/furia|raiva|rage|ki rapido|carregar rapido|encher a barra/, d:/raiva|f[uú]ria/ },
-  { key:'derrubada',  label:'Derrubada',     q:/derrub|knock|jogar no chao/,                          d:/derrub/ },
-  { key:'empurrao',   label:'Empurrão',      q:/empurr|push|jogar pra tras|jogar para tras/,          d:/empurr/ },
-  { key:'elevacao',   label:'Elevação',      q:/eleva|juggle|aereo|jogar (pro|para o) (alto|ar)|pro alto|no ar(?!\w)|pro ar(?!\w)|para o ar(?!\w)|levantar o inimigo/, d:/eleva[cç]/ },
+  { key:'queimadura', label:kzt('mec.queimadura'),    q:/queim|burn|incendi|ardente|fogo continuo|em chamas|on fire/,  d:/queima/ },
+  { key:'sangramento', label:kzt('mec.sangramento'),  q:/sangr|bleed|hemorrag|laceraca|ferida/,                d:/sangr|lacera|ferimento|ferida mortal/ },
+  { key:'veneno',     label:kzt('mec.veneno'),        q:/venen|venom|poison|toxic/,                                  d:/envenen|veneno/ },
+  { key:'atordoamento', label:kzt('mec.atordoamento'), q:/atordo|stun|desmaiar|apagar o inimigo/,              d:/atordo/ },
+  { key:'silencio',   label:kzt('mec.silencio'),      q:/silenc|calar|travar (o )?(supremo|ultimate)|bloquear (o )?supremo/, d:/sil[eê]nc|suprim|supress/ },
+  { key:'paralisia',  label:kzt('mec.paralisia'),     q:/paralis|imobiliz|prender|prisao|travar (o )?inimigo|congel|paraly|immobil|freez|frozen/, d:/paralis|imobiliza|prisão|preso/ },
+  { key:'petrificacao', label:kzt('mec.petrificacao'), q:/petrific|pedra no inimigo/,                           d:/petrific/ },
+  { key:'confusao',   label:kzt('mec.confusao'),      q:/confus/,                                              d:/confus/ },
+  { key:'encanto',    label:kzt('mec.encanto'),       q:/encant|charme|enfeiti/,                               d:/encant/ },
+  { key:'cegueira',   label:kzt('mec.cegueira'),      q:/cegueira|cegar|cego|blind/,                                 d:/cegueira/ },
+  { key:'escudo',     label:kzt('mec.escudo'),        q:/escudo|shield|barreira|protecao/,                     d:/escudo|muralha de energia|parede de energia/ },
+  { key:'critico',    label:kzt('mec.critico'),       q:/critic|crit\b/,                                       d:/cr[ií]t/ },
+  { key:'furia',      label:kzt('mec.furia'),   q:/furia|raiva|rage|ki rapido|carregar rapido|encher a barra/, d:/raiva|f[uú]ria/ },
+  { key:'derrubada',  label:kzt('mec.derrubada'),     q:/derrub|knock|jogar no chao/,                          d:/derrub/ },
+  { key:'empurrao',   label:kzt('mec.empurrao'),      q:/empurr|push|jogar pra tras|jogar para tras/,          d:/empurr/ },
+  { key:'elevacao',   label:kzt('mec.elevacao'),      q:/eleva|juggle|aereo|jogar (pro|para o) (alto|ar)|pro alto|no ar(?!\w)|pro ar(?!\w)|para o ar(?!\w)|levantar o inimigo|launch|airborne|in the air|into the air/, d:/eleva[cç]/ },
 ];
 const DESC_ROLES = [
   ['tank', /\btank|resistente|aguent|defensiv|linha de frente|frontline|protege|\bsegurar\b|\bsegura\b/],
   ['suporte', /suporte|buff|apoio|support|fortalec|aumentar (o )?(ataque|status)/],
-  ['controle', /controle|\bcc\b|crowd|travar|incapacit|debuff|enfraquec/],
+  ['controle', /control|\bcc\b|crowd|travar|incapacit|debuff|enfraquec/],
   ['cura', /\bcura\b|curar|curandeir|healer|\bheal|regenera|recuper(ar|a) vida/],
-  ['sobrevivencia', /reviv|sobreviv|imortal|nao morre|ressusc/],
-  ['dot', /dano continuo|dano por turno|\bdot\b|dano ao longo/],
+  ['sobrevivencia', /reviv|sobreviv|surviv|imortal|immortal|nao morre|ressusc/],
+  ['dot', /dano continuo|dano por turno|\bdot\b|dano ao longo|damage over time|over time/],
   ['dano', /\bdano\b|ofensiv|agressiv|\bdps\b|burst|\bforte\b|bater forte|matar rapido|glass cannon/],
 ];
-const DESC_TYPES = [['Ataque', /tipo ataque|\bde ataque\b|atacantes?\b/], ['Defesa', /tipo defesa|\bde defesa\b/], ['Habilidade', /tipo habilidade|\bde habilidade\b/]];
-const DESC_RACES = [['Saiyajin', /saiyajin|saiyan|sayajin|saiya\b/], ['Androide', /androide|android/], ['Humano', /humano/]];
+const DESC_TYPES = [['Ataque', /tipo ataque|\bde ataque\b|atacantes?\b|attack type|attackers?\b/], ['Defesa', /tipo defesa|\bde defesa\b|defen[sc]e type/], ['Habilidade', /tipo habilidade|\bde habilidade\b|skill type/]];
+const DESC_RACES = [['Saiyajin', /saiyajin|saiyan|sayajin|saiya\b/], ['Androide', /androide|android/], ['Humano', /humano|human/]];
 const DESC_TAGS = [
-  ['Guerreiro Maligno', /malign|\bvila(o|s|oes)\b|do mal\b|sombri|trevas/], ['Guerreiro de Fusão', /fusa|fusion|fundid/], ['Guerreiro Dourado', /dourad|golden/],
-  ['Artista Marcial', /artista marcial|artistas marciais|lutador/], ['Anjo', /\banjos?\b/], ['SSG', /\bssg\b|super saiyajin god|deus saiyajin/],
-  ['SS4', /\bss4\b|\bssj4\b|super saiyajin 4/], ['Tropa do Orgulho', /orgulho/], ['Deus da Destruição', /deus(es)? da destrui|\bhakai\b/],
+  ['Guerreiro Maligno', /malign|\bvila(o|s|oes)\b|do mal\b|sombri|trevas|\bevil\b|villain/], ['Guerreiro de Fusão', /fusa|fusion|fundid/], ['Guerreiro Dourado', /dourad|golden/],
+  ['Artista Marcial', /artista marcial|artistas marciais|lutador|martial art/], ['Anjo', /\banjos?\b|\bangels?\b/], ['SSG', /\bssg\b|super saiyajin god|deus saiyajin/],
+  ['SS4', /\bss4\b|\bssj4\b|super saiyajin 4/], ['Tropa do Orgulho', /orgulho|pride/], ['Deus da Destruição', /deus(es)? da destrui|\bhakai\b|gods? of destruction/],
 ];
-const DESC_AFFS = [['Fogo', /\bfogo\b|vermelh|\bred\b/], ['Raio', /\braio\b|eletric|amarel|\byellow\b/], ['Pedra', /\bpedra\b|\bterra\b|\bverde\b|\bgreen\b/], ['Luz', /\bluz\b|branc|\bwhite\b/]];
-const DESC_NEG = /\b(sem|exceto|menos|nao quero|nem|tirando|fora)\b/;
-const DESC_GERAL = /melhor time|time forte|time completo|equilibrad|qualquer time|time bom|monte um time|monta um time|me ajuda|me sugere|sugest/;
+const DESC_AFFS = [['Fogo', /\bfogo\b|vermelh|\bred\b|\bfire\b/], ['Raio', /\braio\b|eletric|amarel|\byellow\b|lightning|thunder/], ['Pedra', /\bpedra\b|\bterra\b|\bverde\b|\bgreen\b|\brock\b|\bstone\b|\bearth\b/], ['Luz', /\bluz\b|branc|\bwhite\b|\blight\b/]];
+const DESC_NEG = /\b(sem|exceto|menos|nao quero|nem|tirando|fora|without|except|excluding|dont want|do not want)\b/;
+const DESC_GERAL = /melhor time|time forte|time completo|equilibrad|qualquer time|time bom|monte um time|monta um time|me ajuda|me sugere|sugest|best team|strong team|complete team|balanced|any team|good team|build a team|help me|suggest/;
 function descNorm(s){ return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
 // Lê um trecho do texto (já sem acento) e devolve os filtros encontrados.
 function descLerTrecho(t){
   const crit = { mechs:[], roles:[], types:[], genders:[], races:[], tags:[], affs:[], rars:[], labels:[] };
   DESC_MECHS.forEach(m => { if(m.q.test(t)){ crit.mechs.push(m); crit.labels.push(m.label); } });
   DESC_ROLES.forEach(([r, re]) => { if(re.test(t)){ crit.roles.push(r); crit.labels.push(ROLE_INFO[r].label); } });
-  DESC_TYPES.forEach(([ty, re]) => { if(re.test(t)){ crit.types.push(ty); crit.labels.push('Tipo ' + ty); } });
-  if(/feminin|mulher|garota|menina|guerreira|dama|\belas\b/.test(t)){ crit.genders.push('Feminino'); crit.labels.push('Feminino'); }
-  else if(/masculin|homens|\bhomem\b|\beles\b|\bmarmanj/.test(t)){ crit.genders.push('Masculino'); crit.labels.push('Masculino'); }
-  DESC_RACES.forEach(([r, re]) => { if(re.test(t)){ crit.races.push(r); crit.labels.push(r); } });
-  DESC_TAGS.forEach(([g, re]) => { if(re.test(t)){ crit.tags.push(g); crit.labels.push(g.replace(/^Guerreiro (de |)/, '')); } });
-  DESC_AFFS.forEach(([a, re]) => { if(re.test(t)){ crit.affs.push(a); crit.labels.push('Afinidade ' + a); } });
+  DESC_TYPES.forEach(([ty, re]) => { if(re.test(t)){ crit.types.push(ty); crit.labels.push(kzt('desc.tipo', { t: kzTermo(ty) })); } });
+  if(/feminin|mulher|garota|menina|guerreira|dama|\belas\b|female|woman|women|\bgirls?\b|\bshe\b/.test(t)){ crit.genders.push('Feminino'); crit.labels.push(kzTermo('Feminino')); }
+  else if(/masculin|homens|\bhomem\b|\beles\b|\bmarmanj|\bmale\b|\bmen\b|\bman\b/.test(t)){ crit.genders.push('Masculino'); crit.labels.push(kzTermo('Masculino')); }
+  DESC_RACES.forEach(([r, re]) => { if(re.test(t)){ crit.races.push(r); crit.labels.push(kzTermo(r)); } });
+  DESC_TAGS.forEach(([g, re]) => { if(re.test(t)){ crit.tags.push(g); crit.labels.push(kzTermo(g.replace(/^Guerreiro (de |)/, ''))); } });
+  DESC_AFFS.forEach(([a, re]) => { if(re.test(t)){ crit.affs.push(a); crit.labels.push(kzt('desc.afinidade', { a: kzTermo(a) })); } });
   if(/\bssr\b/.test(t)){ crit.rars.push('SSR'); crit.labels.push('SSR'); }
   else if(/\bsr\b/.test(t)){ crit.rars.push('SR'); crit.labels.push('SR'); }
-  if(/limitad/.test(t)){ crit.rars.push('SSR [Limitado]'); crit.labels.push('Limitado'); }
-  if(/lendari/.test(t)){ crit.rars.push('SSR [Lendário]'); crit.labels.push('Lendário'); }
-  if(/ultimate/.test(t)){ crit.rars.push('SSR [Ultimate]'); crit.labels.push('Ultimate'); }
+  if(/limitad|limited/.test(t)){ crit.rars.push('SSR [Limitado]'); crit.labels.push(kzTermo('Limitado')); }
+  if(/lendari|legendary/.test(t)){ crit.rars.push('SSR [Lendário]'); crit.labels.push(kzTermo('Lendário')); }
+  if(/ultimate/.test(t)){ crit.rars.push('SSR [Ultimate]'); crit.labels.push(kzTermo('Ultimate')); }
   return crit;
 }
 const DESC_PALAVRAS_SOLTAS = /^(time|times|equipe|equipes|quero|pra|para|com|sem|que|uma|uns|das|dos|ssr|tipo|forte|bom|jogo|cartas|monte|monta|montar|sobre|ajuda|jogar|alguem|fazer|alguma|melhor|possivel|inimigo|inimigos|pessoal)$/;
@@ -3769,9 +3772,9 @@ function parseTeamPrompt(text){
   if(neg){
     const ex = descLerTrecho(neg);
     const total = ex.mechs.length + ex.roles.length + ex.types.length + ex.genders.length + ex.races.length + ex.tags.length + ex.affs.length + ex.rars.length;
-    if(total){ crit.excl = ex; crit.labels = crit.labels.concat(ex.labels.map(l => 'sem ' + l)); }
+    if(total){ crit.excl = ex; crit.labels = crit.labels.concat(ex.labels.map(l => kzt('desc.sem', { l }))); }
   }
-  if(/combo/.test(pos)) crit.mode = 'combos'; else if(/sinergia/.test(pos)) crit.mode = 'sinergias';
+  if(/combo/.test(pos)) crit.mode = 'combos'; else if(/sinergia|synerg/.test(pos)) crit.mode = 'sinergias';
   // guerreiros citados pelo nome completo ("com Vegetto SSGSS") entram obrigatoriamente
   (state.characters || []).forEach(c => {
     const n = descNorm(c.name);
@@ -3781,7 +3784,7 @@ function parseTeamPrompt(text){
   const palavras = pos.split(/[^a-z0-9]+/).filter(w => w.length >= 4 && !DESC_PALAVRAS_SOLTAS.test(w));
   const primeiros = new Set((state.characters || []).filter(c => !crit.names.includes(c.id)).map(c => descNorm(c.name).split(/[^a-z0-9]+/)[0]));
   crit.refs = [...new Set(palavras.filter(w => primeiros.has(w)))];
-  crit.refs.forEach(w => { crit.labels.push('Citado: ' + w.charAt(0).toUpperCase() + w.slice(1)); });
+  crit.refs.forEach(w => { crit.labels.push(kzt('desc.citado', { w: w.charAt(0).toUpperCase() + w.slice(1) })); });
   crit.geral = DESC_GERAL.test(pos);
   crit.vazio = !(crit.mechs.length || crit.roles.length || crit.types.length || crit.genders.length || crit.races.length || crit.tags.length
     || crit.affs.length || crit.rars.length || crit.names.length || crit.refs.length || crit.excl || crit.geral);
@@ -3827,11 +3830,11 @@ function descRelevance(c, crit){
     const i = roles.indexOf(r);
     if(i >= 0){ sum += i === 0 ? 1 : 0.6; tags.push(ROLE_INFO[r].label); }
   });
-  (crit.types || []).forEach(ty => { n++; if(c.type === ty){ sum += 1; tags.push('Tipo ' + ty); } });
+  (crit.types || []).forEach(ty => { n++; if(c.type === ty){ sum += 1; tags.push(kzt('desc.tipo', { t: kzTermo(ty) })); } });
   if((crit.refs || []).length){
     n++;
     const primeiro = descNorm(c.name).split(/[^a-z0-9]+/)[0];
-    if(crit.refs.includes(primeiro) && (!crit._refOk || crit._refOk.has(c.id))){ sum += 1; tags.push('Citado'); }
+    if(crit.refs.includes(primeiro) && (!crit._refOk || crit._refOk.has(c.id))){ sum += 1; tags.push(kzt('desc.citadoTag')); }
   }
   return { rel: n ? sum / n : 0, tags, soft: n > 0 };
 }
@@ -3899,7 +3902,7 @@ function buildDescribedTeams(crit, maxOptions){
 function descPostsParecidos(crit, texto){
   const posts = (state.communityPosts || []).filter(p => p.kind === 'team' && (p.reports || 0) < 3);
   if(!posts.length) return [];
-  const quer = new Set(crit.labels.filter(l => !/^sem /.test(l) && !/^Citado/.test(l)));
+  const quer = new Set(crit.labels.filter(l => !l.startsWith(kzt('desc.sem', { l: '' })) && !l.startsWith(kzt('desc.citado', { w: '' }))));
   const palavras = descNorm(texto).split(/[^a-z0-9]+/).filter(w => w.length >= 5 && !DESC_PALAVRAS_SOLTAS.test(w));
   const temSoft = !!(crit.mechs.length || crit.roles.length || crit.types.length);
   const out = [];
@@ -3929,15 +3932,15 @@ function renderDescComunidade(coms){
   if(!coms || !coms.length) return '';
   const rows = coms.map(c => {
     const minis = c.team.map(id => { const ch = getChar(id); return ch ? `<span class="kz-auto-mini" title="${escapeAttr(ch.name)}">${portraitInner(ch)}</span>` : ''; }).join('');
-    const motivo = c.falaDe.length ? `A descrição fala de: ${c.falaDe.map(escapeHtml).join(', ')}` : c.palavrasHit ? 'A descrição tem palavras do seu pedido' : 'Os guerreiros combinam com o pedido';
+    const motivo = c.falaDe.length ? kzt('desc.motivoFala', { lista: c.falaDe.map(escapeHtml).join(', ') }) : c.palavrasHit ? kzt('desc.motivoPalavras') : kzt('desc.motivoGuerreiros');
     return `<div class="kz-auto-row">
       <div class="kz-auto-row-team">${minis}</div>
       <div class="kz-auto-row-info"><b>${escapeHtml(c.post.title)}</b>
-        <span>por ${escapeHtml(c.post.author)} · ♥ ${c.post.likes || 0} · ${motivo}</span>${c.post.desc ? `<span class="kz-desc-postdesc">“${escapeHtml(c.post.desc.length > 110 ? c.post.desc.slice(0, 110) + '…' : c.post.desc)}”</span>` : ''}</div>
-      <button type="button" class="kz-btn kz-btn-sm kz-btn-primary" data-desc-com="${escapeAttr(c.post.id)}">Usar</button>
+        <span>${kzt('desc.porAutor', { autor: escapeHtml(c.post.author), likes: c.post.likes || 0, motivo })}</span>${c.post.desc ? `<span class="kz-desc-postdesc">“${escapeHtml(c.post.desc.length > 110 ? c.post.desc.slice(0, 110) + '…' : c.post.desc)}”</span>` : ''}</div>
+      <button type="button" class="kz-btn kz-btn-sm kz-btn-primary" data-desc-com="${escapeAttr(c.post.id)}">${kzt('auto.usar')}</button>
     </div>`;
   }).join('');
-  return `<div class="kz-desc-com"><span class="kz-label">Da Comunidade</span><div class="kz-auto-rows">${rows}</div></div>`;
+  return `<div class="kz-desc-com"><span class="kz-label">${kzt('desc.daComunidade')}</span><div class="kz-auto-rows">${rows}</div></div>`;
 }
 async function runDescribeTeam(text){
   const txt = String(text || '').trim().slice(0, 200);
@@ -3950,7 +3953,7 @@ async function runDescribeTeam(text){
   const coms = descPostsParecidos(crit, txt);
   if(crit.vazio){ state.descRes = { texto:txt, crit, vazio:true, list:[], com:coms }; render(); return; }
   crit._com = descPostsBonus(coms);
-  showToast('Montando o time…');
+  showToast(kzt('desc.montandoToast'));
   setTimeout(() => {
     const r = buildDescribedTeams(crit, 3);
     state.descRes = { texto:txt, crit, ...r, com:coms };
@@ -3963,52 +3966,52 @@ function applyDescOption(i){
   const prev = [...state.team];
   commitTeam([...o.team]);
   state.optUndo = { before:prev, after:[...o.team] };
-  state.optInfo = `Equipe montada pelo pedido “${escapeHtml(state.descRes.texto)}”: <b>${o.combos} combos</b> · equilíbrio <b>${Math.round(o.balance * 100)}%</b>`;
+  state.optInfo = kzt('desc.infoMontada', { texto: escapeHtml(state.descRes.texto), combos: o.combos, bal: Math.round(o.balance * 100) });
   render();
-  showToast('Equipe montada!');
+  showToast(kzt('auto.toastMontada'));
 }
-const DESC_EXAMPLES = ['quero um time de queimadura', 'time feminino', 'time de saiyajins de fogo', 'time de controle com atordoamento', 'time tank com escudo', 'time do Goku sem malignos', 'time pra jogar o inimigo no ar'];
+const DESC_EXAMPLES = kzt('desc.exemplos').split('|');
 function renderDescribePanel(){
   const r = state.descRes;
   let out = '';
   if(r){
     if(r.vazio){
-      out = (r.com && r.com.length ? `<p class="kz-desc-msg">Não consegui montar um time só pelo texto, mas achei times parecidos na Comunidade:</p>`
-        : `<p class="kz-desc-msg warn">Não entendi o pedido. Fale de um efeito (queimadura, sangramento, atordoamento…), gênero, raça, afinidade, papel (tank, suporte, controle, dano) ou raridade.</p>`) + renderDescComunidade(r.com);
+      out = (r.com && r.com.length ? `<p class="kz-desc-msg">${kzt('desc.naoMontou')}</p>`
+        : `<p class="kz-desc-msg warn">${kzt('desc.naoEntendi')}</p>`) + renderDescComunidade(r.com);
     } else {
       const chips = r.crit.labels.concat(r.crit.names.map(id => (getChar(id) || {}).name).filter(Boolean)).map(l => `<span class="kz-desc-chip">${escapeHtml(l)}</span>`).join('');
-      const aviso = !r.list.length ? 'Nenhum guerreiro do elenco atende a esse conjunto de filtros.'
-        : (r.hasSoft && r.relevantN < 6) ? `Só ${r.relevantN} guerreiro${r.relevantN === 1 ? '' : 's'} se encaixa${r.relevantN === 1 ? '' : 'm'} no que você pediu; completei o resto pelo equilíbrio.`
-        : (!r.hasSoft && r.hardN < 6) ? `Só existem ${r.hardN} guerreiro${r.hardN === 1 ? '' : 's'} com esses filtros, então a equipe fica incompleta.` : '';
-      out = `<div class="kz-desc-understood"><span>Entendi:</span>${chips}</div>
+      const aviso = !r.list.length ? kzt('desc.nenhumAtende')
+        : (r.hasSoft && r.relevantN < 6) ? kzt(r.relevantN === 1 ? 'desc.poucos1' : 'desc.poucosN', { n: r.relevantN })
+        : (!r.hasSoft && r.hardN < 6) ? kzt(r.hardN === 1 ? 'desc.filtros1' : 'desc.filtrosN', { n: r.hardN }) : '';
+      out = `<div class="kz-desc-understood"><span>${kzt('desc.entendi')}</span>${chips}</div>
         ${aviso ? `<p class="kz-desc-msg warn">${aviso}</p>` : ''}
         ${r.list.length ? `<div class="kz-auto-rows">${r.list.map((o, i) => renderDescOptionRow(o, i, r)).join('')}</div>` : ''}
         ${renderDescComunidade(r.com)}`;
     }
   }
-  return `<section class="kz-desc" aria-label="Descreva o time">
-    <div class="kz-desc-head"><span class="kz-label">Descreva o time</span><span class="kz-desc-sub">Escreva o que você quer e eu monto a equipe a partir dos guerreiros do site.</span></div>
+  return `<section class="kz-desc" aria-label="${kzt('desc.titulo')}">
+    <div class="kz-desc-head"><span class="kz-label">${kzt('desc.titulo')}</span><span class="kz-desc-sub">${kzt('desc.sub')}</span></div>
     <form class="kz-desc-form" id="descForm" autocomplete="off">
-      <label for="descInput" class="kz-sr">Descreva o time que você quer</label>
-      <input type="text" id="descInput" class="kz-input" maxlength="200" placeholder="Ex.: quero um time de queimadura" value="${escapeAttr(state.descText || '')}">
-      <button type="submit" class="kz-btn kz-btn-primary" id="descBtn">Montar time</button>
-      ${r ? '<button type="button" class="kz-btn" id="descClear">Limpar</button>' : ''}
+      <label for="descInput" class="kz-sr">${kzt('desc.srLabel')}</label>
+      <input type="text" id="descInput" class="kz-input" maxlength="200" placeholder="${kzt('desc.placeholder')}" value="${escapeAttr(state.descText || '')}">
+      <button type="submit" class="kz-btn kz-btn-primary" id="descBtn">${kzt('desc.montar')}</button>
+      ${r ? `<button type="button" class="kz-btn" id="descClear">${kzt('desc.limpar')}</button>` : ''}
     </form>
-    <div class="kz-desc-ex"><span>Exemplos:</span>${DESC_EXAMPLES.map(e => `<button type="button" class="kz-desc-exbtn" data-desc-ex="${escapeAttr(e)}">${escapeHtml(e)}</button>`).join('')}</div>
+    <div class="kz-desc-ex"><span>${kzt('desc.exemplosLabel')}</span>${DESC_EXAMPLES.map(e => `<button type="button" class="kz-desc-exbtn" data-desc-ex="${escapeAttr(e)}">${escapeHtml(e)}</button>`).join('')}</div>
     ${out}
   </section>`;
 }
 function renderDescOptionRow(o, i, r){
   const minis = o.team.map((id, slot) => {
     const c = id && getChar(id);
-    return c ? `<span class="kz-auto-mini" title="${escapeAttr('Casa ' + (slot + 1) + ' — ' + c.name)}">${portraitInner(c)}</span>` : '<span class="kz-auto-mini empty"></span>';
+    return c ? `<span class="kz-auto-mini" title="${escapeAttr(kzt('time.casaNome', { n: slot + 1, nome: c.name }))}">${portraitInner(c)}</span>` : '<span class="kz-auto-mini empty"></span>';
   }).join('');
   const why = o.why.map(w => { const c = getChar(w.id); return c ? `<div class="kz-desc-why"><b>${escapeHtml(c.name)}</b>${w.tags.length ? ' — ' + w.tags.map(escapeHtml).join(', ') : ''}</div>` : ''; }).join('');
   return `<div class="kz-auto-row${i === 0 ? ' top' : ''}">
     <div class="kz-auto-row-team">${minis}</div>
-    <div class="kz-auto-row-info"><b>${i === 0 ? 'Melhor opção' : 'Opção ' + (i + 1)}</b>
-      <span>${r.hasSoft ? `<b>${o.match}</b> de ${o.team.filter(Boolean).length} combinam · ` : ''}<b>${o.combos}</b> combos · equilíbrio <b>${Math.round(o.balance * 100)}%</b></span></div>
-    <button type="button" class="kz-btn kz-btn-sm kz-btn-primary" data-desc-apply="${i}">Usar</button>
+    <div class="kz-auto-row-info"><b>${i === 0 ? kzt('auto.melhor') : kzt('auto.opcao', { n: i + 1 })}</b>
+      <span>${r.hasSoft ? `${kzt('desc.combinam', { m: '<b>' + o.match + '</b>', n: o.team.filter(Boolean).length })} · ` : ''}${kzt('desc.linhaCombos', { combos: '<b>' + o.combos + '</b>', bal: '<b>' + Math.round(o.balance * 100) + '</b>' })}</span></div>
+    <button type="button" class="kz-btn kz-btn-sm kz-btn-primary" data-desc-apply="${i}">${kzt('auto.usar')}</button>
     <div class="kz-desc-whys">${why}</div>
   </div>`;
 }
@@ -4034,8 +4037,8 @@ function communityMyTeamCount(){
 function communityTeamLimitMsg(){
   const lim = communityTeamLimit();
   return lim < COMMUNITY.teamLimitSupporter
-    ? `Você já tem ${lim} times publicados (o limite é ${lim}). Exclua um pra publicar outro — ou apoie o site com R$ ${COMMUNITY.supporterMin} ou mais pra liberar até ${COMMUNITY.teamLimitSupporter}.`
-    : `Você já tem ${lim} times publicados (o limite de apoiador). Exclua um pra publicar outro.`;
+    ? kzt('com.limiteMsg1', { lim, valor: kzValorBRL(COMMUNITY.supporterMin), max: COMMUNITY.teamLimitSupporter })
+    : kzt('com.limiteMsg2', { lim });
 }
 
 function communityIdOk(id){ return typeof id === 'string' && /^[\w.:\-]{1,64}$/.test(id); }
@@ -4074,7 +4077,7 @@ function communityStarsHtml(lv){
   lv = Math.floor(Number(lv)) || 0;
   if(lv < 1 || lv > 15) return '';
   const phase = starPhase(lv), n = starFilled(lv);
-  return `<span class="kz-com-stars ${phase === 'gold' ? 'gold' : phase}" title="${STAR_PHASE_NAME[phase]} ${n} (nível ${lv}/15)"><span class="s">${'★'.repeat(n)}${'☆'.repeat(5 - n)}</span><span class="n">Nv ${lv}</span></span>`;
+  return `<span class="kz-com-stars ${phase === 'gold' ? 'gold' : phase}" title="${kzt('com.estrelasTitulo', { fase: STAR_PHASE_NAME[phase], n, lv })}"><span class="s">${'★'.repeat(n)}${'☆'.repeat(5 - n)}</span><span class="n">${kzt('com.nivelCurto', { lv })}</span></span>`;
 }
 // Sempre 6 casas, na ordem das casas (1 a 6); posição vazia é null.
 function communityNormTeam(t){
@@ -4107,7 +4110,7 @@ function communityPostFromRow(r){
     id: String(r.id), userId: r.user_id || null, kind, data,
     title: String(r.title || '').slice(0, COMMUNITY.title),
     desc: String(r.description || '').slice(0, COMMUNITY.desc),
-    author: String(r.author_name || 'Anônimo').slice(0, 40),
+    author: String(r.author_name || kzt('com.anonimo')).slice(0, 40),
     createdAt: r.created_at || '',
     likes: cnt(r.community_likes), reports: cnt(r.community_reports),
   };
@@ -4116,11 +4119,11 @@ function communityAgo(iso){
   const t = Date.parse(iso);
   if(!t) return '';
   const s = Math.max(0, (Date.now() - t) / 1000);
-  if(s < 60) return 'agora há pouco';
-  if(s < 3600) return 'há ' + Math.floor(s / 60) + ' min';
-  if(s < 86400) return 'há ' + Math.floor(s / 3600) + ' h';
-  if(s < 86400 * 30) return 'há ' + Math.floor(s / 86400) + ' d';
-  return new Date(t).toLocaleDateString('pt-BR');
+  if(s < 60) return kzt('com.agora');
+  if(s < 3600) return kzt('com.haMin', { n: Math.floor(s / 60) });
+  if(s < 86400) return kzt('com.haH', { n: Math.floor(s / 3600) });
+  if(s < 86400 * 30) return kzt('com.haD', { n: Math.floor(s / 86400) });
+  return new Date(t).toLocaleDateString(KZ_LOCALE);
 }
 
 async function refreshCommunity(){
@@ -4141,7 +4144,7 @@ async function refreshCommunity(){
     state.communityError = null;
   }catch(e){
     console.error('Não consegui carregar a Comunidade', e);
-    state.communityError = 'Não consegui carregar a Comunidade agora. Tente de novo em instantes.';
+    state.communityError = kzt('com.erroCarregar');
   }
   state.communityLoading = false;
   state.communityLoaded = true;
@@ -4188,12 +4191,12 @@ function renderCommunityTeamBody(p){
   const lvs = p.data.levels || {};
   const slots = SLOT_VISUAL_ORDER.map(i => {
     const id = p.data.team[i], c = id && getChar(id);
-    return slotCardHtml(c || null, i, { ro: true, attrs: '', draggable: false, stars: c ? communityStarsHtml(lvs[id]) : '', hint: 'Vazia' });
+    return slotCardHtml(c || null, i, { ro: true, attrs: '', draggable: false, stars: c ? communityStarsHtml(lvs[id]) : '', hint: kzt('com.vazia') });
   }).join('');
   return `${comboCountHtml(s.team)}${compositionHtml(s.team)}
     ${visualNovo() ? nvLineupHtml(p.data.team) : ''}
     <div class="kz-slots kz-com-slotsview">${slots}</div>
-    ${s.missingChars ? `<div class="kz-muted" style="font-size:12px;">${s.missingChars} guerreiro(s) dessa equipe não existem no seu site (personagem criado por quem postou).${''}</div>` : ''}`;
+    ${s.missingChars ? `<div class="kz-muted" style="font-size:12px;">${kzt('com.guerreirosAusentes', { n: s.missingChars })}${''}</div>` : ''}`;
 }
 function renderCommunityTierBody(p){
   return `<div class="kz-com-tiers">${p.data.tiers.map(t => `
@@ -4202,7 +4205,7 @@ function renderCommunityTierBody(p){
 }
 // Autor clicável: abre o popup com o perfil dele.
 function communityAuthorLink(p){
-  return `<button type="button" class="kz-com-author" data-com-profile="${escapeAttr(p.userId || '')}" title="Ver o perfil de ${escapeAttr(p.author)}">${escapeHtml(p.author)}</button>`;
+  return `<button type="button" class="kz-com-author" data-com-profile="${escapeAttr(p.userId || '')}" title="${escapeAttr(kzt('com.verPerfilDe', { nome: p.author }))}">${escapeHtml(p.author)}</button>`;
 }
 function communityDonorOf(userId){
   return userId ? (state.donors || []).find(d => d.linkedUserId === userId) || null : null;
@@ -4229,21 +4232,21 @@ function renderCommunityCardNovo(p){
     const s = team.some(Boolean) ? comboSummary(team) : null;
     const bc = s && s.best && getChar(s.best.charId);
     corpo = nvLineupHtml(p.data.team, true)
-      + (bc ? `<div class="kz-nvco-chain"><span class="kz-nvco-hit">${s.best.n + 1} hits</span>maior cadeia · ${escapeHtml(bc.name)} (${ABILITY_LABEL[s.best.key]})</div>` : '');
+      + (bc ? `<div class="kz-nvco-chain"><span class="kz-nvco-hit">${kzt('com.maiorCadeia', { n: s.best.n + 1 })}</span>${kzt('com.maiorCadeiaDe')} ${escapeHtml(bc.name)} (${ABILITY_LABEL[s.best.key]})</div>` : '');
   } else {
     corpo = `<div class="kz-nvco-tiers">${p.data.tiers.slice(0, 3).map(t => `<div class="kz-nvco-tr"><span class="r" style="--tc:${t.color}">${escapeHtml(t.label || '—')}</span><div class="row">${t.items.slice(0, 9).map(id => communityThumb(id)).join('')}${t.items.length > 9 ? `<span class="more">+${t.items.length - 9}</span>` : ''}</div></div>`).join('')}</div>`;
   }
   return `
-  <article class="kz-com-card kz-nvco" data-com-open="${escapeAttr(p.id)}" tabindex="0" role="button" aria-label="Abrir ${escapeAttr(p.title)}">
-    <div class="kz-nvco-who"><span class="av" aria-hidden="true">${escapeHtml(initials(p.author))}</span><div><span class="wn">${communityAuthorLink(p)}${donor ? ' ' + patenteBadgeHtml(donor, '', linkedProfileFor(donor)) : ''}</span><span class="ws">${escapeHtml(communityAgo(p.createdAt))}</span></div><span class="kind${p.kind === 'team' ? '' : ' tl'}">${p.kind === 'team' ? 'Time' : 'Tier list'}</span></div>
+  <article class="kz-com-card kz-nvco" data-com-open="${escapeAttr(p.id)}" tabindex="0" role="button" aria-label="${escapeAttr(kzt('com.abrirPost', { titulo: p.title }))}">
+    <div class="kz-nvco-who"><span class="av" aria-hidden="true">${escapeHtml(initials(p.author))}</span><div><span class="wn">${communityAuthorLink(p)}${donor ? ' ' + patenteBadgeHtml(donor, '', linkedProfileFor(donor)) : ''}</span><span class="ws">${escapeHtml(communityAgo(p.createdAt))}</span></div><span class="kind${p.kind === 'team' ? '' : ' tl'}">${p.kind === 'team' ? kzt('com.tipoTime') : kzt('banda.tierlist')}</span></div>
     <h3 class="kz-nvco-pt">${escapeHtml(p.title)}</h3>
     ${corpo}
     ${p.desc ? `<p class="kz-nvco-desc">${escapeHtml(p.desc)}</p>` : ''}
     <div class="kz-nvco-act">
-      <button type="button" class="kz-nvco-like${liked ? ' on' : ''}" data-com-like="${escapeAttr(p.id)}" aria-pressed="${liked}"><svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="${liked ? '#FFF4E6' : 'none'}" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10C19.5 15.4 12 20 12 20z"/></svg>${liked ? 'Curtido' : 'Curtir'}<b>${p.likes}</b></button>
+      <button type="button" class="kz-nvco-like${liked ? ' on' : ''}" data-com-like="${escapeAttr(p.id)}" aria-pressed="${liked}"><svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="${liked ? '#FFF4E6' : 'none'}" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10C19.5 15.4 12 20 12 20z"/></svg>${liked ? kzt('com.curtido') : kzt('com.curtir')}<b>${p.likes}</b></button>
       ${p.kind === 'team'
-        ? `<button type="button" class="kz-btn" data-com-load="${escapeAttr(p.id)}"><span class="kj" aria-hidden="true">連</span>Abrir no montador</button>`
-        : `<button type="button" class="kz-btn" data-com-copy="${escapeAttr(p.id)}"><span class="kj" aria-hidden="true">番</span>Copiar tier list</button>`}
+        ? `<button type="button" class="kz-btn" data-com-load="${escapeAttr(p.id)}"><span class="kj" aria-hidden="true">連</span>${kzt('com.abrirMontador')}</button>`
+        : `<button type="button" class="kz-btn" data-com-copy="${escapeAttr(p.id)}"><span class="kj" aria-hidden="true">番</span>${kzt('com.copiarTier')}</button>`}
     </div>
   </article>`;
 }
@@ -4251,9 +4254,9 @@ function communityCtaHtml(){
   return `
   <div class="kz-nvco-cta">
     <span class="kj" aria-hidden="true">社</span>
-    <h3>${nvTtl('Mostre seu time')}</h3>
-    <p>Monte no Montador de Combos ou na Tier List e publique aqui pra todo mundo ver.</p>
-    <button type="button" class="kz-btn kz-btn-primary" data-com-cta>Montar um time</button>
+    <h3>${nvTtl(kzt('com.mostreSeuTime'))}</h3>
+    <p>${kzt('com.ctaTexto')}</p>
+    <button type="button" class="kz-btn kz-btn-primary" data-com-cta>${kzt('com.montarTime')}</button>
   </div>`;
 }
 // Card da lista: só o essencial. Clicar abre o post; clicar no nome do autor abre o perfil dele.
@@ -4261,9 +4264,9 @@ function renderCommunityCard(p){
   if(visualNovo()) return renderCommunityCardNovo(p);
   const donor = communityDonorOf(p.userId);
   return `
-  <article class="kz-com-card clean" data-com-open="${escapeAttr(p.id)}" tabindex="0" role="button" aria-label="Abrir ${escapeAttr(p.title)}">
+  <article class="kz-com-card clean" data-com-open="${escapeAttr(p.id)}" tabindex="0" role="button" aria-label="${escapeAttr(kzt('com.abrirPost', { titulo: p.title }))}">
     ${renderCommunityPreview(p)}
-    <div class="kz-com-card-top"><span class="kz-com-kind ${p.kind}">${p.kind === 'team' ? '連 Time' : '番 Tier List'}</span><span class="kz-com-likes">♥ ${p.likes}</span></div>
+    <div class="kz-com-card-top"><span class="kz-com-kind ${p.kind}">${p.kind === 'team' ? kzt('com.rotuloTime') : kzt('com.rotuloTier')}</span><span class="kz-com-likes">♥ ${p.likes}</span></div>
     <h3 class="kz-com-title">${escapeHtml(p.title)}</h3>
     <div class="kz-com-card-by">${communityAuthorLink(p)}${donor ? ' ' + patenteBadgeHtml(donor, '', linkedProfileFor(donor)) : ''}<span class="kz-com-ago">${escapeHtml(communityAgo(p.createdAt))}</span></div>
   </article>`;
@@ -4277,30 +4280,30 @@ function renderCommunityActions(p){
   const reported = (state.communityReported || []).includes(p.id);
   return `
     <footer class="kz-com-foot">
-      <button type="button" class="kz-com-like${liked ? ' on' : ''}" data-com-like="${escapeAttr(p.id)}" title="${liked ? 'Tirar a curtida' : 'Curtir'}"><span class="h">♥</span><b>${p.likes}</b></button>
+      <button type="button" class="kz-com-like${liked ? ' on' : ''}" data-com-like="${escapeAttr(p.id)}" title="${liked ? kzt('com.tirarCurtida') : kzt('com.curtir')}"><span class="h">♥</span><b>${p.likes}</b></button>
       ${p.kind === 'team'
-        ? `<button type="button" class="kz-btn kz-btn-sm kz-btn-primary" data-com-load="${escapeAttr(p.id)}">Usar este time</button>`
-        : `<button type="button" class="kz-btn kz-btn-sm kz-btn-primary" data-com-copy="${escapeAttr(p.id)}">Copiar para minha Tier List</button>`}
+        ? `<button type="button" class="kz-btn kz-btn-sm kz-btn-primary" data-com-load="${escapeAttr(p.id)}">${kzt('com.usarTime')}</button>`
+        : `<button type="button" class="kz-btn kz-btn-sm kz-btn-primary" data-com-copy="${escapeAttr(p.id)}">${kzt('com.copiarParaMinha')}</button>`}
       <span class="kz-com-spacer"></span>
       ${isDonorAdmin() && p.reports ? `<span class="kz-com-reports" title="Denúncias recebidas">⚑ ${p.reports}</span>` : ''}
-      ${!mine ? `<button type="button" class="kz-com-link" data-com-report="${escapeAttr(p.id)}" ${reported ? 'disabled' : ''}>${reported ? 'Denunciado' : 'Denunciar'}</button>` : ''}
-      ${canDelete ? `<button type="button" class="kz-com-link danger" data-com-del="${escapeAttr(p.id)}">Excluir</button>` : ''}
+      ${!mine ? `<button type="button" class="kz-com-link" data-com-report="${escapeAttr(p.id)}" ${reported ? 'disabled' : ''}>${reported ? kzt('com.denunciado') : kzt('com.denunciar')}</button>` : ''}
+      ${canDelete ? `<button type="button" class="kz-com-link danger" data-com-del="${escapeAttr(p.id)}">${kzt('com.excluir')}</button>` : ''}
     </footer>`;
 }
 function renderCommunityDetail(p){
   const donor = communityDonorOf(p.userId);
   return `
   <section class="kz-page">
-    <div class="kz-com-detail-top"><button type="button" class="kz-back-btn" id="comBackBtn"><span class="arr">←</span><span>Voltar à Comunidade</span></button></div>
+    <div class="kz-com-detail-top"><button type="button" class="kz-back-btn" id="comBackBtn"><span class="arr">←</span><span>${kzt('com.voltar')}</span></button></div>
     <article class="kz-panel kz-com-detail" data-com-id="${escapeAttr(p.id)}">
       <header class="kz-com-head">
-        <span class="kz-com-kind ${p.kind}">${p.kind === 'team' ? '連 Time' : '番 Tier List'}</span>
-        <span class="kz-com-by">por ${communityAuthorLink(p)}${donor ? ' ' + patenteBadgeHtml(donor, '', linkedProfileFor(donor)) : ''}<span class="kz-com-ago">${escapeHtml(communityAgo(p.createdAt))}</span></span>
+        <span class="kz-com-kind ${p.kind}">${p.kind === 'team' ? kzt('com.rotuloTime') : kzt('com.rotuloTier')}</span>
+        <span class="kz-com-by">${kzt('com.por')} ${communityAuthorLink(p)}${donor ? ' ' + patenteBadgeHtml(donor, '', linkedProfileFor(donor)) : ''}<span class="kz-com-ago">${escapeHtml(communityAgo(p.createdAt))}</span></span>
       </header>
       <h1 class="kz-com-detail-title">${escapeHtml(p.title)}</h1>
       ${p.desc ? `<p class="kz-com-desc">${escapeHtml(p.desc)}</p>` : ''}
       ${p.kind === 'team' ? renderCommunityTeamBody(p) : renderCommunityTierBody(p)}
-      ${p.kind === 'team' && !Object.keys(p.data.levels || {}).length && state.discordUser && state.discordUser.id === p.userId ? '<div class="kz-muted" style="font-size:12.5px;">Este time foi publicado sem os níveis de estrela (versão antiga). Exclua e publique de novo pra mostrar o nível de cada guerreiro.</div>' : ''}
+      ${p.kind === 'team' && !Object.keys(p.data.levels || {}).length && state.discordUser && state.discordUser.id === p.userId ? `<div class="kz-muted" style="font-size:12.5px;">${kzt('com.semNiveis')}</div>` : ''}
       ${renderCommunityActions(p)}
     </article>
   </section>`;
@@ -4312,7 +4315,7 @@ function communityProfileModalHtml(userId){
   const prof = (state.profiles || []).find(x => x.id === userId && x.public) || null;
   const donor = communityDonorOf(userId);
   const linked = donor ? linkedProfileFor(donor) : null;
-  const name = (prof && prof.nickname) || (posts[0] && posts[0].author) || 'Jogador';
+  const name = (prof && prof.nickname) || (posts[0] && posts[0].author) || kzt('com.jogador');
   const me = state.discordUser && state.discordUser.id === userId;
   const teams = posts.filter(p => p.kind === 'team').length, tiers = posts.length - teams;
   const likes = posts.reduce((n, p) => n + p.likes, 0);
@@ -4322,22 +4325,22 @@ function communityProfileModalHtml(userId){
     <div class="modal" style="max-width:480px;">
       <div class="modal-header">
         <h2>${escapeHtml(name)}</h2>
-        <button class="kz-close-btn" id="closeComProfileBtn" aria-label="Fechar">✕</button>
+        <button class="kz-close-btn" id="closeComProfileBtn" aria-label="${kzt('comum.fechar')}">✕</button>
       </div>
       <div class="modal-body" style="align-items:center;text-align:center;">
         <span class="kz-donor-avatar" style="width:72px;height:72px;font-size:24px;">${donorAvatarInner(name)}</span>
         <div class="kz-pill-row" style="justify-content:center;">
           ${donor ? patenteBadgeHtml(donor, '', linked) : ''}
           ${donor && (donor.honras || []).length ? donor.honras.map(honraBadgeHtml).join('') : ''}
-          ${me ? '<span class="kz-com-me-tag">Esse é você</span>' : ''}
+          ${me ? `<span class="kz-com-me-tag">${kzt('com.esseEVoce')}</span>` : ''}
         </div>
-        ${prof && prof.servidor ? `<div class="kz-donate-note">Servidor: <b>${escapeHtml(prof.servidor)}</b></div>` : ''}
+        ${prof && prof.servidor ? `<div class="kz-donate-note">${kzt('com.servidor')} <b>${escapeHtml(prof.servidor)}</b></div>` : ''}
         ${prof && prof.bio ? `<div class="kz-profile-quote">"${escapeHtml(prof.bio)}"</div>` : ''}
         ${socials.length ? `<div class="kz-donate-note">${socials.map(escapeHtml).join(' · ')}</div>` : ''}
-        ${!prof ? '<div class="kz-donate-note">Esse jogador ainda não tornou o perfil público.</div>' : ''}
-        <div class="kz-com-pstats"><span><b>${teams}</b> time${teams === 1 ? '' : 's'}</span><span><b>${tiers}</b> tier list${tiers === 1 ? '' : 's'}</span><span><b>${likes}</b> curtida${likes === 1 ? '' : 's'}</span></div>
-        ${posts.length ? `<div class="kz-com-pposts"><span class="kz-label">Publicações</span>${posts.slice(0, 8).map(p => `<button type="button" class="kz-com-ppost" data-com-open="${escapeAttr(p.id)}"><span class="kz-com-kind ${p.kind}">${p.kind === 'team' ? '連' : '番'}</span><span class="t">${escapeHtml(p.title)}</span><span class="l">♥ ${p.likes}</span></button>`).join('')}</div>` : ''}
-        ${me ? '<button type="button" class="kz-btn kz-btn-sm" id="comEditProfileBtn">Editar meu perfil</button>' : ''}
+        ${!prof ? `<div class="kz-donate-note">${kzt('com.perfilNaoPublico')}</div>` : ''}
+        <div class="kz-com-pstats"><span>${kzt(teams === 1 ? 'com.time1' : 'com.timeN', { n: '<b>' + teams + '</b>' })}</span><span>${kzt(tiers === 1 ? 'com.tier1' : 'com.tierN', { n: '<b>' + tiers + '</b>' })}</span><span>${kzt(likes === 1 ? 'com.curtida1' : 'com.curtidaN', { n: '<b>' + likes + '</b>' })}</span></div>
+        ${posts.length ? `<div class="kz-com-pposts"><span class="kz-label">${kzt('com.publicacoes')}</span>${posts.slice(0, 8).map(p => `<button type="button" class="kz-com-ppost" data-com-open="${escapeAttr(p.id)}"><span class="kz-com-kind ${p.kind}">${p.kind === 'team' ? '連' : '番'}</span><span class="t">${escapeHtml(p.title)}</span><span class="l">♥ ${p.likes}</span></button>`).join('')}</div>` : ''}
+        ${me ? `<button type="button" class="kz-btn kz-btn-sm" id="comEditProfileBtn">${kzt('com.editarPerfil')}</button>` : ''}
       </div>
     </div>
   </div>`;
@@ -4358,10 +4361,10 @@ function openCommunityPost(id){ state.communityOpenPost = id; render(); window.s
 
 function renderCommunityList(){
   if(state.communityError) return `<div class="kz-panel kz-com-empty">${escapeHtml(state.communityError)}</div>`;
-  if(!state.communityLoaded) return `<div class="kz-panel kz-com-empty">Carregando a Comunidade…</div>`;
+  if(!state.communityLoaded) return `<div class="kz-panel kz-com-empty">${kzt('com.carregando')}</div>`;
   const list = communityVisiblePosts();
   if(!list.length){
-    const msg = (state.communityPosts || []).length ? 'Nada encontrado com esses filtros.' : 'Ainda não tem nada por aqui — seja o primeiro a compartilhar um time ou uma tier list!';
+    const msg = (state.communityPosts || []).length ? kzt('com.nadaFiltros') : kzt('com.vazioInicial');
     if(visualNovo()) return `<div class="kz-nvco-grid"><div class="kz-panel kz-com-empty">${msg}</div>${communityCtaHtml()}</div>`;
     return `<div class="kz-panel kz-com-empty">${msg}</div>`;
   }
@@ -4372,7 +4375,7 @@ function renderCommunityPickerGrid(c){
   const q = (c.search || '').trim().toLowerCase();
   const sel = new Set(communityNormTeam(c.team).filter(Boolean));
   const list = communityOwnedChars().filter(ch => !q || ch.name.toLowerCase().includes(q));
-  if(!list.length) return `<div class="kz-muted">Nenhum guerreiro seu com esse nome.</div>`;
+  if(!list.length) return `<div class="kz-muted">${kzt('com.nenhumGuerreiro')}</div>`;
   return list.map(ch => `<button type="button" class="kz-com-pick${sel.has(ch.id) ? ' on' : ''}" draggable="true" data-com-pick="${escapeAttr(ch.id)}" title="${escapeAttr(ch.name)}"><span class="kz-com-thumb">${portraitInner(ch)}</span><span class="nm">${escapeHtml(ch.name)}</span>${communityStarsHtml(getEntry(ch.id).level)}</button>`).join('');
 }
 function renderComposeSlots(c){
@@ -4381,26 +4384,26 @@ function renderComposeSlots(c){
     const id = team[i], ch = id && getChar(id);
     return slotCardHtml(ch || null, i, {
       sel: c.slotSel === i, attrs: `data-com-slot="${i}"`, removeAttr: `data-com-remove="${i}"`,
-      stars: ch ? communityStarsHtml(getEntry(id).level) : '', hint: c.slotSel === i ? 'Escolha na lista abaixo' : 'Clique e escolha na lista',
+      stars: ch ? communityStarsHtml(getEntry(id).level) : '', hint: c.slotSel === i ? kzt('com.escolhaLista') : kzt('com.cliqueEscolha'),
     });
   }).join('')}</div>`;
 }
 function renderCommunityTeamPart(c){
   c.team = communityNormTeam(c.team);
   if(!communityOwnedChars().length){
-    return `<div class="kz-com-nocoll">Você ainda não marcou nenhum guerreiro na <button type="button" class="kz-com-link" data-com-gocoll>Coleção</button>. Marque os que você tem (e o nível de estrela de cada um) pra montar um time e mostrar o tier de cada guerreiro.</div>`;
+    return `<div class="kz-com-nocoll">${kzt('com.semColecao', { coll: '<button type="button" class="kz-com-link" data-com-gocoll>' + kzt('nav.colecao') + '</button>' })}</div>`;
   }
   const filled = c.team.filter(Boolean).length;
   const data = communityShareData('team', c);
-  return `<div><span class="kz-label">Seu time (${filled}/6) — na ordem das casas, com o nível de estrela de cada um</span>
-      <div class="kz-muted" style="font-size:12px;margin:2px 0 8px;">Clique numa casa e depois num guerreiro da lista (ou arraste). Clicar em duas casas troca os dois de lugar.</div>
+  return `<div><span class="kz-label">${kzt('com.seuTime', { n: filled })}</span>
+      <div class="kz-muted" style="font-size:12px;margin:2px 0 8px;">${kzt('com.dicaSlots')}</div>
       ${renderComposeSlots(c)}</div>
     <div class="kz-com-pick-tools">
-      <input type="text" class="kz-input" id="comPickSearch" placeholder="Buscar na sua Coleção…" value="${escapeAttr(c.search || '')}">
-      <button type="button" class="kz-btn kz-btn-sm" id="comFillBtn" title="Copia as casas do campo da aba Combos (só os guerreiros que estão na sua Coleção)">Usar minha equipe do campo</button>
+      <input type="text" class="kz-input" id="comPickSearch" placeholder="${kzt('com.buscarColecao')}" value="${escapeAttr(c.search || '')}">
+      <button type="button" class="kz-btn kz-btn-sm" id="comFillBtn" title="${kzt('com.usarEquipeTitulo')}">${kzt('com.usarEquipe')}</button>
     </div>
     <div class="kz-com-picker" id="comPicker">${renderCommunityPickerGrid(c)}</div>
-    ${data ? '' : `<div class="kz-muted">Escolha pelo menos ${COMMUNITY.minTeam} guerreiros da sua Coleção.</div>`}`;
+    ${data ? '' : `<div class="kz-muted">${kzt('com.escolhaPeloMenos', { n: COMMUNITY.minTeam })}</div>`}`;
 }
 function renderCommunityCompose(){
   const c = state.communityCompose;
@@ -4411,26 +4414,26 @@ function renderCommunityCompose(){
   const teamFull = c.kind === 'team' && used >= lim;
   let middle;
   if(c.kind === 'team'){
-    middle = `<div><span class="kz-label">Prévia do que será publicado</span><div id="comPreview">${data ? renderCommunityTeamBody({ data }) : ''}</div></div><div class="kz-com-quota${teamFull ? ' full' : ''}">Seus times publicados: <b>${used}/${lim}</b>${lim < COMMUNITY.teamLimitSupporter ? ` — apoie o site com R$ ${COMMUNITY.supporterMin} ou mais pra liberar até ${COMMUNITY.teamLimitSupporter}.` : ' (limite de apoiador).'}${teamFull ? ' Exclua um pra publicar outro.' : ''}</div>
+    middle = `<div><span class="kz-label">${kzt('com.previa')}</span><div id="comPreview">${data ? renderCommunityTeamBody({ data }) : ''}</div></div><div class="kz-com-quota${teamFull ? ' full' : ''}">${kzt('com.cota', { n: '<b>' + used + '/' + lim + '</b>' })}${lim < COMMUNITY.teamLimitSupporter ? ' — ' + kzt('com.cotaApoie', { valor: kzValorBRL(COMMUNITY.supporterMin), max: COMMUNITY.teamLimitSupporter }) : ' ' + kzt('com.cotaLimiteApoiador')}${teamFull ? ' ' + kzt('com.cotaExclua') : ''}</div>
       <div id="comTeamPart" class="kz-com-teampart">${renderCommunityTeamPart(c)}</div>`;
   } else {
-    middle = `<div><span class="kz-label">Prévia do que será publicado</span>${data ? renderCommunityTierBody({ data }) : `<div class="kz-muted">Classifique pelo menos ${COMMUNITY.minTierItems} guerreiros na aba Tier List pra compartilhar.</div>`}</div>`;
+    middle = `<div><span class="kz-label">${kzt('com.previa')}</span>${data ? renderCommunityTierBody({ data }) : `<div class="kz-muted">${kzt('com.classifique', { n: COMMUNITY.minTierItems })}</div>`}</div>`;
   }
   return `<div class="kz-panel kz-com-compose">
     <div class="kz-com-compose-kinds">
-      <button type="button" class="kz-fchip ${c.kind === 'team' ? 'active' : ''}" data-com-kind="team">Meu time (da Coleção)</button>
-      <button type="button" class="kz-fchip ${c.kind === 'tierlist' ? 'active' : ''}" data-com-kind="tierlist">Minha Tier List</button>
+      <button type="button" class="kz-fchip ${c.kind === 'team' ? 'active' : ''}" data-com-kind="team">${kzt('com.meuTime')}</button>
+      <button type="button" class="kz-fchip ${c.kind === 'tierlist' ? 'active' : ''}" data-com-kind="tierlist">${kzt('com.minhaTier')}</button>
     </div>
-    <div><label class="field-label">Título (${COMMUNITY.title} caracteres)</label>
-      <input type="text" id="comTitleInput" maxlength="${COMMUNITY.title}" value="${escapeAttr(c.title)}" placeholder="Ex.: Time de combos pra arena"></div>
-    <div><label class="field-label">Descrição (<span id="comDescCount">${c.desc.length}</span>/${COMMUNITY.desc})</label>
-      <textarea id="comDescInput" maxlength="${COMMUNITY.desc}" rows="3" placeholder="Do que se trata o time? Ex.: burn, controle, time feminino, rush… Como usar, estratégia… (opcional)">${escapeHtml(c.desc)}</textarea>
-      <div class="field-hint" style="font-size:12px;color:var(--text-faint);margin-top:4px;">Dica: dizer do que se trata o time (efeito, papel, estilo) ajuda o site a sugerir ele para quem usa o &quot;Descreva o time&quot; na aba Combos.</div></div>
+    <div><label class="field-label">${kzt('com.titulo', { n: COMMUNITY.title })}</label>
+      <input type="text" id="comTitleInput" maxlength="${COMMUNITY.title}" value="${escapeAttr(c.title)}" placeholder="${kzt('com.tituloPlaceholder')}"></div>
+    <div><label class="field-label">${kzt('com.descricao', { n: '<span id="comDescCount">' + c.desc.length + '</span>', max: COMMUNITY.desc })}</label>
+      <textarea id="comDescInput" maxlength="${COMMUNITY.desc}" rows="3" placeholder="${kzt('com.descPlaceholder')}">${escapeHtml(c.desc)}</textarea>
+      <div class="field-hint" style="font-size:12px;color:var(--text-faint);margin-top:4px;">${kzt('com.descDica')}</div></div>
     ${middle}
     <div class="kz-com-compose-actions">
-      <button type="button" class="kz-btn kz-btn-primary" id="comPublishBtn" ${data && !teamFull ? '' : 'disabled'}>Publicar</button>
-      <button type="button" class="kz-btn" id="comCancelBtn">Cancelar</button>
-      <span class="kz-muted" style="font-size:12px;">Seu nome aparece como "${escapeHtml(communityAuthorName())}". Seja respeitoso — posts podem ser denunciados e removidos.</span>
+      <button type="button" class="kz-btn kz-btn-primary" id="comPublishBtn" ${data && !teamFull ? '' : 'disabled'}>${kzt('com.publicar')}</button>
+      <button type="button" class="kz-btn" id="comCancelBtn">${kzt('comum.cancelar')}</button>
+      <span class="kz-muted" style="font-size:12px;">${kzt('com.seuNome', { nome: escapeHtml(communityAuthorName()) })}</span>
     </div>
   </div>`;
 }
@@ -4463,7 +4466,7 @@ function placeComposePick(id){
   if(target === null || target === undefined){
     if(cur > -1){ team[cur] = null; c.team = team; refreshComposeTeamPart(); return; }
     target = team.indexOf(null);
-    if(target === -1){ showToast('Seu time já tem 6 guerreiros. Tire alguém antes.'); return; }
+    if(target === -1){ showToast(kzt('com.timeCheio')); return; }
   }
   if(cur > -1) team[cur] = team[target];
   team[target] = id;
@@ -4529,45 +4532,45 @@ function attachComposeTeamHandlers(root){
     const kept = field.map(id => (id && getChar(id) && getEntry(id).owned) ? id : null);
     const lost = field.filter(Boolean).length - kept.filter(Boolean).length;
     c.team = communityNormTeam(kept); c.slotSel = null;
-    if(lost) showToast(lost + ' guerreiro(s) do campo não estão na sua Coleção e ficaram de fora.');
-    else if(!field.some(Boolean)) showToast('Não tem ninguém em campo na aba Combos.');
+    if(lost) showToast(kzt('com.ficaramDeFora', { n: lost }));
+    else if(!field.some(Boolean)) showToast(kzt('com.ninguemEmCampo'));
     refreshComposeTeamPart();
   });
 }
 function communityAuthorName(){
   const p = state.myProfile;
   const nick = p && p.public && p.nickname ? p.nickname : '';
-  return (nick || (state.discordUser && state.discordUser.username) || 'Anônimo').slice(0, 40);
+  return (nick || (state.discordUser && state.discordUser.username) || kzt('com.anonimo')).slice(0, 40);
 }
 function renderComunidadeTab(){
   const head = `<div class="kz-page-head">
-    <div><h1 class="kz-title">Comunidade</h1>
-    <div class="kz-subtitle">Times e tier lists feitos no Zenkyo, compartilhados por quem joga. Curta, copie e inspire-se.</div></div>
+    <div><h1 class="kz-title">${kzt('nav.comunidade')}</h1>
+    <div class="kz-subtitle">${kzt('com.subtitulo')}</div></div>
   </div>`;
   if(!isSupabaseConfigured()){
-    return `<section class="kz-page">${head}<div class="kz-panel kz-com-empty">A Comunidade precisa da conta online, que ainda não está disponível neste site.</div></section>`;
+    return `<section class="kz-page">${head}<div class="kz-panel kz-com-empty">${kzt('com.precisaConta')}</div></section>`;
   }
   const openPost = state.communityOpenPost && (state.communityPosts || []).find(p => p.id === state.communityOpenPost);
   if(openPost) return renderCommunityDetail(openPost);
   const f = state.communityFilter, s = state.communitySort;
   const chip = (attr, val, cur, label) => `<button type="button" class="kz-fchip ${cur === val ? 'active' : ''}" ${attr}="${val}">${label}</button>`;
   const share = state.discordUser
-    ? `<button type="button" class="kz-btn kz-btn-primary" id="comOpenBtn">＋ Compartilhar</button>`
-    : `<button type="button" class="kz-btn kz-btn-primary" id="comLoginBtn">Entrar com Discord pra compartilhar</button>`;
+    ? `<button type="button" class="kz-btn kz-btn-primary" id="comOpenBtn">${kzt('com.compartilhar')}</button>`
+    : `<button type="button" class="kz-btn kz-btn-primary" id="comLoginBtn">${kzt('com.entrarCompartilhar')}</button>`;
   if(visualNovo()) return `
   <section class="kz-page kz-nvp kz-nvcom">
-    ${nvPageHeadHtml({ key:'comunidade', kanji:'社', tag:'Feito por quem joga', title:'Comunidade', size:112, kanjiStyle:'right:26%;top:-60px;font-size:380px',
-      sub:'Times e tier lists feitos no Zenkyo, compartilhados por quem joga. Curta, copie e inspire-se.', side: share })}
+    ${nvPageHeadHtml({ key:'comunidade', kanji:'社', tag:kzt('deco.comunidade'), title:kzt('nav.comunidade'), size:112, kanjiStyle:'right:26%;top:-60px;font-size:380px',
+      sub:kzt('com.subtitulo'), side: share })}
     <div class="kz-nv-toolbar kz-nvco-bar">
-      <div class="kz-nv-chipgrp">${chip('data-com-filter', 'all', f, 'Tudo')}${chip('data-com-filter', 'team', f, 'Times')}${chip('data-com-filter', 'tierlist', f, 'Tier Lists')}</div>
+      <div class="kz-nv-chipgrp">${chip('data-com-filter', 'all', f, kzt('com.fTudo'))}${chip('data-com-filter', 'team', f, kzt('com.fTimes'))}${chip('data-com-filter', 'tierlist', f, kzt('com.fTiers'))}</div>
       <span class="kz-nvco-sep" aria-hidden="true"></span>
-      <div class="kz-nv-chipgrp">${chip('data-com-sort', 'recent', s, 'Recentes')}${chip('data-com-sort', 'likes', s, 'Mais curtidos')}</div>
+      <div class="kz-nv-chipgrp">${chip('data-com-sort', 'recent', s, kzt('com.sRecentes'))}${chip('data-com-sort', 'likes', s, kzt('com.sCurtidos'))}</div>
       <div class="kz-nv-search sm kz-nvco-find"><div>
         <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFC21A" stroke-width="2.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>
-        <label for="comSearch" class="kz-sr">Buscar na Comunidade</label>
-        <input type="text" id="comSearch" placeholder="Título, autor ou guerreiro…" value="${escapeAttr(state.communitySearch)}" autocomplete="off">
+        <label for="comSearch" class="kz-sr">${kzt('com.buscarNaCom')}</label>
+        <input type="text" id="comSearch" placeholder="${kzt('com.buscaNovo')}" value="${escapeAttr(state.communitySearch)}" autocomplete="off">
       </div></div>
-      <button type="button" class="kz-nvco-like kz-nvco-refresh" id="comRefreshBtn" title="Recarregar" aria-label="Recarregar"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button>
+      <button type="button" class="kz-nvco-like kz-nvco-refresh" id="comRefreshBtn" title="${kzt('com.recarregar')}" aria-label="${kzt('com.recarregar')}"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button>
     </div>
     ${renderCommunityCompose()}
     <div id="comList">${renderCommunityList()}</div>
@@ -4575,12 +4578,12 @@ function renderComunidadeTab(){
   return `<section class="kz-page">${head}
     <div class="kz-com-toolbar">
       <div class="kz-com-chips">
-        ${chip('data-com-filter', 'all', f, 'Tudo')}${chip('data-com-filter', 'team', f, 'Times')}${chip('data-com-filter', 'tierlist', f, 'Tier Lists')}
+        ${chip('data-com-filter', 'all', f, kzt('com.fTudo'))}${chip('data-com-filter', 'team', f, kzt('com.fTimes'))}${chip('data-com-filter', 'tierlist', f, kzt('com.fTiers'))}
         <span class="kz-com-sep"></span>
-        ${chip('data-com-sort', 'recent', s, 'Recentes')}${chip('data-com-sort', 'likes', s, 'Mais curtidos')}
+        ${chip('data-com-sort', 'recent', s, kzt('com.sRecentes'))}${chip('data-com-sort', 'likes', s, kzt('com.sCurtidos'))}
       </div>
-      <input type="text" class="kz-input kz-com-search" id="comSearch" placeholder="Buscar por título, autor ou guerreiro…" value="${escapeAttr(state.communitySearch)}">
-      <button type="button" class="kz-btn kz-btn-sm" id="comRefreshBtn" title="Recarregar">↻</button>
+      <input type="text" class="kz-input kz-com-search" id="comSearch" placeholder="${kzt('com.buscaAntigo')}" value="${escapeAttr(state.communitySearch)}">
+      <button type="button" class="kz-btn kz-btn-sm" id="comRefreshBtn" title="${kzt('com.recarregar')}">↻</button>
       ${share}
     </div>
     ${renderCommunityCompose()}
@@ -4590,22 +4593,22 @@ function renderComunidadeTab(){
 
 function communityRequireLogin(){
   if(state.discordUser) return true;
-  showToast('Entre com Discord (topo da página) pra fazer isso.');
+  showToast(kzt('com.entreDiscord'));
   return false;
 }
 async function publishCommunityPost(){
   const c = state.communityCompose;
   if(!c || !communityRequireLogin()) return;
   const title = (c.title || '').trim(), desc = (c.desc || '').trim();
-  if(title.length < 3){ showToast('Dê um título ao post (mínimo 3 letras).'); return; }
+  if(title.length < 3){ showToast(kzt('com.tituloMinimo')); return; }
   const data = communityShareData(c.kind, c);
-  if(!data){ showToast('Não tem o que compartilhar ainda.'); return; }
+  if(!data){ showToast(kzt('com.nadaCompartilhar')); return; }
   let last = 0;
   try{ last = Number(localStorage.getItem('kiai_community_last')) || 0; }catch(e){}
-  if(Date.now() - last < COMMUNITY.cooldownMs){ showToast('Calma! Espere um minutinho antes de publicar de novo.'); return; }
+  if(Date.now() - last < COMMUNITY.cooldownMs){ showToast(kzt('com.calma')); return; }
   if(c.kind === 'team' && communityMyTeamCount() >= communityTeamLimit()){ showToast(communityTeamLimitMsg()); return; }
   if((state.communityPosts || []).filter(p => p.userId === state.discordUser.id).length >= COMMUNITY.maxPostsPerUser){
-    showToast('Você chegou no limite de ' + COMMUNITY.maxPostsPerUser + ' posts. Exclua algum pra publicar outro.'); return;
+    showToast(kzt('com.limitePosts', { n: COMMUNITY.maxPostsPerUser })); return;
   }
   try{
     const { error } = await window.__sb.client.from('community_posts').insert({
@@ -4616,13 +4619,13 @@ async function publishCommunityPost(){
     try{ localStorage.setItem('kiai_community_last', String(Date.now())); }catch(e){}
     state.communityCompose = null;
     state.communityLoaded = false;
-    showToast('Publicado na Comunidade!');
+    showToast(kzt('com.publicado'));
     render();
     await refreshCommunity();
   }catch(e){
     console.error('Não consegui publicar', e);
     // 42501 = o banco recusou pela regra de limite (ex.: lista local desatualizada)
-    showToast(e && e.code === '42501' ? (c.kind === 'team' ? communityTeamLimitMsg() : 'Você chegou no limite de posts. Exclua algum pra publicar outro.') : 'Não consegui publicar agora. Tente de novo em instantes.');
+    showToast(e && e.code === '42501' ? (c.kind === 'team' ? communityTeamLimitMsg() : kzt('com.limitePostsSemN')) : kzt('com.erroPublicar'));
   }
 }
 async function toggleCommunityLike(id){
@@ -4644,7 +4647,7 @@ async function toggleCommunityLike(id){
     console.error('Curtida falhou', e);
     apply(had);
     render();
-    showToast('Não consegui registrar a curtida.');
+    showToast(kzt('com.erroCurtida'));
   }
 }
 function deleteCommunityPost(id){
@@ -4652,17 +4655,17 @@ function deleteCommunityPost(id){
   if(!p) return;
   const me = state.discordUser && state.discordUser.id;
   if(!(me && p.userId === me) && !isDonorAdmin()) return;
-  customConfirm(`Excluir "${p.title}" da Comunidade? Isso não dá pra desfazer.`, async () => {
+  customConfirm(kzt('com.excluirConfirma', { titulo: p.title }), async () => {
     try{
       const { error } = await window.__sb.client.from('community_posts').delete().eq('id', id);
       if(error) throw error;
       state.communityPosts = state.communityPosts.filter(x => x.id !== id);
       if(state.communityOpenPost === id) state.communityOpenPost = null;
-      showToast('Post excluído.');
+      showToast(kzt('com.postExcluido'));
       render();
     }catch(e){
       console.error('Exclusão falhou', e);
-      showToast('Não consegui excluir agora.');
+      showToast(kzt('com.erroExcluir'));
     }
   });
 }
@@ -4672,24 +4675,24 @@ async function reportCommunityPost(id){
     const { error } = await window.__sb.client.from('community_reports').insert({ post_id: id, user_id: state.discordUser.id });
     if(error && !/duplicate|23505/i.test((error.code || '') + ' ' + (error.message || ''))) throw error;
     state.communityReported = [...(state.communityReported || []), id];
-    showToast(error ? 'Você já denunciou este post.' : 'Denúncia enviada. Obrigado!');
+    showToast(error ? kzt('com.jaDenunciou') : kzt('com.denunciaEnviada'));
     render();
   }catch(e){
     console.error('Denúncia falhou', e);
-    showToast('Não consegui enviar a denúncia agora.');
+    showToast(kzt('com.erroDenuncia'));
   }
 }
 function useCommunityTeam(id){
   const p = (state.communityPosts || []).find(x => x.id === id);
   if(!p || p.kind !== 'team') return;
   const team = communityTeamStats(p).team;
-  const go = () => { commitTeam([...team]); goTab('combos'); showToast('Time carregado na aba Combos'); };
-  if(state.team.some(Boolean)) customConfirm('Substituir a equipe que está no campo agora por esse time?', go); else go();
+  const go = () => { commitTeam([...team]); goTab('combos'); showToast(kzt('com.timeCarregado')); };
+  if(state.team.some(Boolean)) customConfirm(kzt('com.substituirEquipe'), go); else go();
 }
 function copyCommunityTierList(id){
   const p = (state.communityPosts || []).find(x => x.id === id);
   if(!p || p.kind !== 'tierlist') return;
-  customConfirm('Substituir a sua Tier List atual por essa? A sua organização atual será perdida.', () => {
+  customConfirm(kzt('com.substituirTier'), () => {
     state.tierList = {
       tiers: p.data.tiers.map((t, i) => ({ id: 't_c' + i, label: t.label, color: t.color, items: [...t.items] })),
       unranked: [],
@@ -4697,7 +4700,7 @@ function copyCommunityTierList(id){
     ensureTierListIntegrity();
     saveTierList();
     goTab('tierlist');
-    showToast('Tier List copiada!');
+    showToast(kzt('com.tierCopiada'));
   });
 }
 
@@ -4775,7 +4778,7 @@ function placeChar(id){
   if(target === null){
     if(cur > -1){ team[cur] = null; commitTeam(team); return; }
     target = team.indexOf(null);
-    if(target === -1){ showToast('Equipe completa (6/6). Remova alguém primeiro.'); return; }
+    if(target === -1){ showToast(kzt('cb.equipeCompleta')); return; }
   }
   if(cur > -1) team[cur] = team[target];
   team[target] = id;
@@ -4801,11 +4804,11 @@ function nvComboCountHtml(team){
   const bc = s.best && getChar(s.best.charId);
   return `
       <div class="kz-nvcb-chains">
-        <span class="kz-nv-lb">Cadeias</span>
-        <div class="kz-nvcb-big"><span class="ctr">${s.total}</span><span class="lbl"><span>Combo${s.total === 1 ? '' : 's'}</span><small>de ${m.max}</small></span></div>
-        <p class="kz-nvcb-txt">${s.starts} início${s.starts === 1 ? '' : 's'} com combo (${m.starters} de ${m.abilities} habilidades iniciam combo).</p>
-        ${bc ? `<p class="kz-nvcb-best">Maior cadeia <span class="kz-nvco-hit">${s.best.n + 1} hits</span> ${escapeHtml(bc.name)} · ${ABILITY_LABEL[s.best.key]}</p>`
-             : `<p class="kz-nvcb-best">Nenhuma habilidade ativa o Ataque Combinado de alguém ainda.</p>`}
+        <span class="kz-nv-lb">${kzt('cb.cadeias')}</span>
+        <div class="kz-nvcb-big"><span class="ctr">${s.total}</span><span class="lbl"><span>${kzt(s.total === 1 ? 'cb.combo1' : 'cb.comboN')}</span><small>${kzt('cb.de', { n: m.max })}</small></span></div>
+        <p class="kz-nvcb-txt">${kzt(s.starts === 1 ? 'cb.inicios1' : 'cb.iniciosN', { n: s.starts, a: m.starters, b: m.abilities })}</p>
+        ${bc ? `<p class="kz-nvcb-best">${kzt('cb.maiorCadeia', { hit: '<span class="kz-nvco-hit">' + kzt('com.maiorCadeia', { n: s.best.n + 1 }) + '</span>', nome: escapeHtml(bc.name), hab: ABILITY_LABEL[s.best.key] })}</p>`
+             : `<p class="kz-nvcb-best">${kzt('cb.nenhumaAtiva')}</p>`}
       </div>`;
 }
 // Composição: um medidor de 12 tracinhos por papel (cada tracinho = 0,5), equilíbrio e o que falta.
@@ -4816,14 +4819,14 @@ function nvCompositionHtml(team){
   const rows = PILLAR_ORDER.map(k=>{
     const info = ROLE_INFO[k], val = Math.round(v[k] * 10) / 10, n = Math.max(0, Math.min(12, Math.round(val * 2)));
     return `<span class="kz-nvcb-rp" style="--c:${info.rgb[0]};--t:${info.rgb[1]}"><span class="g">${info.glyph}</span>${escapeHtml(PILLARS[k].label)}</span>`
-      + `<div class="kz-nvcb-gauge" style="--c:${info.rgb[0]}" role="img" aria-label="${escapeAttr(PILLARS[k].label)} ${String(val).replace('.', ',')}">${Array.from({ length:12 }, (_, i)=>`<i${i < n ? ' class="f"' : ''}></i>`).join('')}</div>`
-      + `<b${val ? '' : ' class="zero"'}>${String(val).replace('.', ',')}</b>`;
+      + `<div class="kz-nvcb-gauge" style="--c:${info.rgb[0]}" role="img" aria-label="${escapeAttr(PILLARS[k].label)} ${String(val).replace('.', KZ_DECIMAL)}">${Array.from({ length:12 }, (_, i)=>`<i${i < n ? ' class="f"' : ''}></i>`).join('')}</div>`
+      + `<b${val ? '' : ' class="zero"'}>${String(val).replace('.', KZ_DECIMAL)}</b>`;
   }).join('');
   return `
-      <div class="kz-nvcb-comp" title="Soma dos papéis dos guerreiros em campo (principal vale 1, secundário 0,6). Alvo pra 6 guerreiros: Dano 2 · Tank 1,5 · Suporte 1 · Controle 1.">
-        <div class="hd"><span class="kz-nv-lb">Composição</span><span class="bal">Equilíbrio <b>${bal}%</b></span></div>
+      <div class="kz-nvcb-comp" title="${kzt('comp.tituloAjuda')}">
+        <div class="hd"><span class="kz-nv-lb">${kzt('comp.composicao')}</span><span class="bal">${kzt('comp.equilibrio')} <b>${bal}%</b></span></div>
         <div class="kz-nvcb-rows">${rows}</div>
-        <span class="kz-nvcb-miss${miss.length ? '' : ' ok'}">${miss.length ? 'Falta: ' + miss.map(k => PILLARS[k].label).join(', ') : 'Equipe equilibrada'}</span>
+        <span class="kz-nvcb-miss${miss.length ? '' : ' ok'}">${miss.length ? kzt('comp.faltaSemPonto', { lista: miss.map(k => PILLARS[k].label).join(', ') }) : kzt('comp.equilibrada')}</span>
       </div>`;
 }
 function nvSynergyListHtml(team){
@@ -4831,7 +4834,7 @@ function nvSynergyListHtml(team){
   if(!syn.length) return '';
   return `
       <div class="kz-nvcb-syn">
-        <span class="kz-nv-lb">Sinergias ativas (${syn.length})</span>
+        <span class="kz-nv-lb">${kzt('comp.sinergiasAtivas', { n: syn.length })}</span>
         <ul>${syn.map(a=>`<li>${synergyItemHtml(a)}</li>`).join('')}</ul>
       </div>`;
 }
@@ -4848,13 +4851,13 @@ function renderRecommendationsNovo(){
   const recs = recommendForTeam(8, rar);
   const head = `
       <div class="kz-nvcb-rechead">
-        <div><h2>${nvTtl(full ? 'Quem troca' : 'Quem encaixa')}</h2>
-        <p>Ordenado pelo quanto aumenta os encadeamentos da equipe e pelas sinergias entre as habilidades. Considera o que cada um persegue e causa e a casa onde entraria.</p></div>
-        <div class="kz-nv-chipgrp"><span class="kz-nv-lb">Sugerir</span>${[['all','Todas'],['SSR','Só SSR'],['SR','Só SR'],['R','Só R']].map(([v,l])=>`<button type="button" class="kz-fchip ${rar===v?'active':''}" data-rec-rarity="${v}">${l}</button>`).join('')}</div>
+        <div><h2>${nvTtl(full ? kzt('cb.quemTroca') : kzt('cb.quemEncaixa'))}</h2>
+        <p>${kzt('cb.ordenado')}</p></div>
+        <div class="kz-nv-chipgrp"><span class="kz-nv-lb">${kzt('cb.sugerir')}</span>${[['all',kzt('auto.todas')],['SSR',kzt('auto.soSSR')],['SR',kzt('auto.soSR')],['R',kzt('auto.soR')]].map(([v,l])=>`<button type="button" class="kz-fchip ${rar===v?'active':''}" data-rec-rarity="${v}">${l}</button>`).join('')}</div>
       </div>`;
   if(!recs.length){
-    const msg = full ? (rar !== 'all' ? `Nenhuma troca por um guerreiro ${rar} melhora os combos dessa equipe. Tente outra raridade.` : 'Nenhuma troca melhora os combos dessa equipe — ela já está bem encaixada.')
-      : (rar !== 'all' ? `Nenhum guerreiro ${rar} aumenta os combos dessa equipe. Tente outra raridade.` : 'Nenhum guerreiro aumenta os combos dessa equipe agora.');
+    const msg = full ? (rar !== 'all' ? kzt('cb.nenhumaTrocaRar', { rar }) : kzt('cb.nenhumaTroca'))
+      : (rar !== 'all' ? kzt('cb.nenhumGuerreiroRar', { rar }) : kzt('cb.nenhumGuerreiro'));
     return `<section class="kz-rec kz-nvcb-rec">${head}<div class="kz-muted">${msg}</div></section>`;
   }
   const miss = missingPillars(state.team);
@@ -4863,43 +4866,43 @@ function renderRecommendationsNovo(){
     const p = analyzeRoles(c).pillars, fill = miss.filter(k => p[k] >= 0.6);
     const best = chainsWithChar(r.team, c.id)[0];
     const chain = best ? `
-          <div class="kz-nvcb-chainbox"><span class="kz-nv-lb">Melhor cadeia · <b>${best.chain.length} hits</b></span>
+          <div class="kz-nvcb-chainbox"><span class="kz-nv-lb">${kzt('cb.melhorCadeia', { n: '<b>' + best.chain.length + '</b>' })}</span>
           <ol class="kz-nvcb-chain">${best.chain.map((s, j)=>`<li>${j ? '<span class="zap" aria-hidden="true">›</span>' : ''}<span class="hit${s.charId === c.id ? ' me' : ''}"><b>${j + 1}</b>${nvFaceHtml(s.char)}${escapeHtml(s.char.name)}${j === 0 ? ` (${ABILITY_LABEL[best.abilityKey]})` : ''}</span></li>`).join('')}</ol></div>` : '';
     return `
       <div class="kz-rec-card kz-nvcb-sug${i === 0 ? ' top' : ''}">
         <div class="art">${portraitInner(c)}</div>
         <div class="body">
-          <div class="top"><span class="nm">${escapeHtml(c.name)}</span><span class="kz-nvco-hit">${r.gain > 0 ? `+${r.gain} encadeamento${r.gain > 1 ? 's' : ''}` : 'Sinergia'}</span><span class="kz-nv-lb mut">Casa ${r.slot + 1}</span></div>
-          <div class="tags">${rolePillsHtml(c, 2, true)}${fill.length ? `<span class="kz-fill-tag">Preenche: ${fill.map(k => PILLARS[k].label).join(', ')}</span>` : ''}${effLineHtml('Persegue', c.combo.triggers)}${effLineHtml('Causa', c.combo.effects)}</div>
+          <div class="top"><span class="nm">${escapeHtml(c.name)}</span><span class="kz-nvco-hit">${r.gain > 0 ? kzt(r.gain > 1 ? 'cb.maisEncN' : 'cb.maisEnc1', { n: r.gain }) : kzt('cb.sinergia')}</span><span class="kz-nv-lb mut">${kzt('slot.casa', { n: r.slot + 1 })}</span></div>
+          <div class="tags">${rolePillsHtml(c, 2, true)}${fill.length ? `<span class="kz-fill-tag">${kzt('cb.preenche', { lista: fill.map(k => PILLARS[k].label).join(', ') })}</span>` : ''}${effLineHtml(kzt('sf.persegue'), c.combo.triggers)}${effLineHtml(kzt('sf.causa'), c.combo.effects)}</div>
           ${chain}
           ${(r.sinergias || []).slice(0, 2).map(a=>`<div class="kz-syn-line">${synergyItemHtml(a)}</div>`).join('')}
         </div>
-        <button type="button" class="kz-btn${i === 0 ? ' kz-btn-primary' : ''}" data-rec-place="${c.id}" data-rec-slot="${r.slot}">${rep ? `Trocar com ${escapeHtml(rep.name)} (Casa ${r.slot + 1})` : `Colocar na Casa ${r.slot + 1}`}</button>
+        <button type="button" class="kz-btn${i === 0 ? ' kz-btn-primary' : ''}" data-rec-place="${c.id}" data-rec-slot="${r.slot}">${rep ? kzt('cb.trocarCom', { nome: escapeHtml(rep.name), n: r.slot + 1 }) : kzt('cb.colocarNa', { n: r.slot + 1 })}</button>
       </div>`;
   }).join('');
   return `<section class="kz-rec kz-nvcb-rec">${head}<div class="kz-nvcb-sugs">${cards}</div></section>`;
 }
 function renderCombosTabNovo(){
   const filledCount = state.team.filter(Boolean).length;
-  const hint = state.slotSel !== null ? `→ Casa ${state.slotSel+1}` : `<b>${filledCount}</b>/6 em campo`;
+  const hint = state.slotSel !== null ? kzt('cb.ateCasa', { n: state.slotSel+1 }) : kzt('cb.emCampoNovo', { n: '<b>' + filledCount + '</b>' });
   const team = state.team;
   return `
   <section class="kz-page kz-nvp kz-nvcb">
-    ${nvPageHeadHtml({ key:'combos', kanji:'連', tag:'Equipe de 6', title:'Montador de Combos', size:98, kanjiStyle:'right:4%;top:-60px;font-size:380px',
-      sub:'Monte a equipe de 6 guerreiros e veja a cadeia de combo se formar automaticamente.',
-      side:`<button class="kz-btn kz-btn-primary" id="saveFormationBtn">Salvar formação</button><button class="kz-btn" id="clearTeamBtn">Limpar</button>` })}
+    ${nvPageHeadHtml({ key:'combos', kanji:'連', tag:kzt('deco.combos'), title:kzt('cb.titulo'), size:98, kanjiStyle:'right:4%;top:-60px;font-size:380px',
+      sub:kzt('cb.subtitulo'),
+      side:`<button class="kz-btn kz-btn-primary" id="saveFormationBtn">${kzt('cb.salvarFormacao')}</button><button class="kz-btn" id="clearTeamBtn">${kzt('cb.limpar')}</button>` })}
     ${state.formations.length ? `
     <div class="kz-formations">
-      <span class="kz-label">Formações salvas</span>
-      ${state.formations.map((f,i)=>`<span class="kz-formation-pill"><button class="load" data-load-formation="${i}">${escapeHtml(f.name)}</button><button class="del" data-del-formation="${i}" title="Excluir">✕</button></span>`).join('')}
+      <span class="kz-label">${kzt('cb.formacoesSalvas')}</span>
+      ${state.formations.map((f,i)=>`<span class="kz-formation-pill"><button class="load" data-load-formation="${i}">${escapeHtml(f.name)}</button><button class="del" data-del-formation="${i}" title="${kzt('com.excluir')}">✕</button></span>`).join('')}
     </div>` : ''}
     <div class="kz-combos-layout">
       <aside class="kz-panel kz-roster">
-        <div class="kz-roster-head"><span class="kz-label">Elenco</span><span class="kz-roster-hint">${hint}</span></div>
+        <div class="kz-roster-head"><span class="kz-label">${kzt('cb.elenco')}</span><span class="kz-roster-hint">${hint}</span></div>
         <div class="kz-nv-search sm"><div>
           <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFC21A" stroke-width="2.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>
-          <label for="rosterSearch" class="kz-sr">Buscar no elenco</label>
-          <input type="text" id="rosterSearch" placeholder="Buscar personagem ou habilidade…" value="${escapeAttr(state.rosterSearch)}" autocomplete="off">
+          <label for="rosterSearch" class="kz-sr">${kzt('cb.buscarElenco')}</label>
+          <input type="text" id="rosterSearch" placeholder="${kzt('coll.buscarPlaceholder')}" value="${escapeAttr(state.rosterSearch)}" autocomplete="off">
         </div></div>
         ${renderSF('roster')}
         <div class="kz-roster-grid" id="rosterList">${renderRosterList(state.rosterSearch)}</div>
@@ -4907,11 +4910,11 @@ function renderCombosTabNovo(){
       <div class="kz-combos-main">
         ${renderDescribePanel()}
         <div class="kz-nvcb-teamhead">
-          <h2>${nvTtl('Equipe')}</h2>
-          <button type="button" class="kz-btn" id="autoBuildBtn" ${filledCount === 0 || filledCount === 6 ? 'disabled' : ''} title="${filledCount === 0 ? 'Coloque ao menos 1 guerreiro em campo' : filledCount === 6 ? 'A equipe já está completa' : 'Completa a equipe a partir dos guerreiros em campo, olhando combos e papéis'}">⚡ ${state.autoOpts && state.autoOpts.base === JSON.stringify(state.team) ? 'Gerar de novo' : 'Completar equipe'}</button>
-          <button type="button" class="kz-btn kz-opt-btn" id="optimizeBtn" ${filledCount<2?'disabled':''} title="${filledCount<2?'Coloque ao menos 2 guerreiros em campo':'Reorganiza os guerreiros em campo pra render a maior quantidade de combos'}">✦ Gerar melhor ordem</button>
-          ${canUndoOptimize() ? `<button type="button" class="kz-btn" id="undoOptBtn" title="Voltar à ordem anterior">↶ Desfazer ordem</button>` : ''}
-          <button type="button" class="kz-btn kz-btn-primary kz-sim-open" id="openSimBtn"><span class="glyph">連</span><span>Ver combos</span><span class="cnt">${filledCount}/6</span></button>
+          <h2>${nvTtl(kzt('cb.equipe'))}</h2>
+          <button type="button" class="kz-btn" id="autoBuildBtn" ${filledCount === 0 || filledCount === 6 ? 'disabled' : ''} title="${filledCount === 0 ? kzt('cb.minUm') : filledCount === 6 ? kzt('cb.jaCompleta') : kzt('cb.completaAjuda')}">⚡ ${state.autoOpts && state.autoOpts.base === JSON.stringify(state.team) ? kzt('cb.gerarDeNovo') : kzt('cb.completar')}</button>
+          <button type="button" class="kz-btn kz-opt-btn" id="optimizeBtn" ${filledCount<2?'disabled':''} title="${filledCount<2?kzt('cb.minDois'):kzt('cb.otimizarAjuda')}">✦ ${kzt('cb.melhorOrdem')}</button>
+          ${canUndoOptimize() ? `<button type="button" class="kz-btn" id="undoOptBtn" title="${kzt('cb.voltarOrdem')}">↶ ${kzt('cb.desfazerOrdem')}</button>` : ''}
+          <button type="button" class="kz-btn kz-btn-primary kz-sim-open" id="openSimBtn"><span class="glyph">連</span><span>${kzt('cb.verCombos')}</span><span class="cnt">${filledCount}/6</span></button>
         </div>
         ${renderAutoBar()}
         ${nvLineupHtml(team, false, true)}
@@ -4919,7 +4922,7 @@ function renderCombosTabNovo(){
         ${state.optInfo && canUndoOptimize() ? `<div class="kz-opt-info">${state.optInfo}</div>` : ''}
         ${nvSynergyListHtml(team)}
         <div class="kz-slots">${SLOT_VISUAL_ORDER.map(renderSlot).join('')}</div>
-        <div class="kz-nvcb-legend"><span>Persegue › causa:</span>${['derrubada','empurrao','elevacao_alta','elevacao_baixa'].map(effPillHtml).join('')}</div>
+        <div class="kz-nvcb-legend"><span>${kzt('cb.persegueCausa')}</span>${['derrubada','empurrao','elevacao_alta','elevacao_baixa'].map(effPillHtml).join('')}</div>
         ${renderRecommendationsNovo()}
       </div>
     </div>
@@ -4928,40 +4931,40 @@ function renderCombosTabNovo(){
 function renderCombosTab(){
   if(visualNovo()) return renderCombosTabNovo();
   const filledCount = state.team.filter(Boolean).length;
-  const hint = state.slotSel !== null ? `→ Casa ${state.slotSel+1}` : `${filledCount}/6 em campo`;
+  const hint = state.slotSel !== null ? kzt('cb.ateCasa', { n: state.slotSel+1 }) : kzt('cb.emCampoNovo', { n: filledCount });
   return `
   <section class="kz-page">
     <div class="kz-page-head">
       <div>
-        <h1 class="kz-title">Montador de Combos</h1>
-        <div class="kz-subtitle">Monte a equipe de 6 guerreiros e veja a cadeia de combo se formar automaticamente.</div>
+        <h1 class="kz-title">${kzt('cb.titulo')}</h1>
+        <div class="kz-subtitle">${kzt('cb.subtitulo')}</div>
       </div>
       <div class="kz-head-actions">
-        <button class="kz-btn kz-btn-primary" id="saveFormationBtn">Salvar formação</button>
-        <button class="kz-btn" id="clearTeamBtn">Limpar</button>
+        <button class="kz-btn kz-btn-primary" id="saveFormationBtn">${kzt('cb.salvarFormacao')}</button>
+        <button class="kz-btn" id="clearTeamBtn">${kzt('cb.limpar')}</button>
       </div>
     </div>
     ${state.formations.length ? `
     <div class="kz-formations">
-      <span class="kz-label">Formações salvas</span>
-      ${state.formations.map((f,i)=>`<span class="kz-formation-pill"><button class="load" data-load-formation="${i}">${escapeHtml(f.name)}</button><button class="del" data-del-formation="${i}" title="Excluir">✕</button></span>`).join('')}
+      <span class="kz-label">${kzt('cb.formacoesSalvas')}</span>
+      ${state.formations.map((f,i)=>`<span class="kz-formation-pill"><button class="load" data-load-formation="${i}">${escapeHtml(f.name)}</button><button class="del" data-del-formation="${i}" title="${kzt('com.excluir')}">✕</button></span>`).join('')}
     </div>` : ''}
     <div class="kz-combos-layout">
       <aside class="kz-panel kz-roster">
-        <div class="kz-roster-head"><span class="kz-label">Elenco</span><span class="kz-roster-hint">${hint}</span></div>
-        <input type="text" class="kz-input" id="rosterSearch" placeholder="Buscar personagem ou habilidade…" value="${escapeAttr(state.rosterSearch)}">
+        <div class="kz-roster-head"><span class="kz-label">${kzt('cb.elenco')}</span><span class="kz-roster-hint">${hint}</span></div>
+        <input type="text" class="kz-input" id="rosterSearch" placeholder="${kzt('coll.buscarPlaceholder')}" value="${escapeAttr(state.rosterSearch)}">
         ${renderSF('roster')}
         <div class="kz-roster-grid" id="rosterList">${renderRosterList(state.rosterSearch)}</div>
       </aside>
       <div class="kz-combos-main">
         <div class="kz-field">
           <div class="kz-field-head">
-            <span class="kz-label">Equipe</span>
+            <span class="kz-label">${kzt('cb.equipe')}</span>
             <div class="kz-field-actions">
-              <button type="button" class="kz-btn kz-btn-primary" id="autoBuildBtn" ${filledCount === 0 || filledCount === 6 ? 'disabled' : ''} title="${filledCount === 0 ? 'Coloque ao menos 1 guerreiro em campo' : filledCount === 6 ? 'A equipe já está completa' : 'Completa a equipe a partir dos guerreiros em campo, olhando combos e papéis'}">⚡ ${state.autoOpts && state.autoOpts.base === JSON.stringify(state.team) ? 'Gerar de novo' : 'Completar equipe'}</button>
-              <button type="button" class="kz-btn kz-opt-btn" id="optimizeBtn" ${filledCount<2?'disabled':''} title="${filledCount<2?'Coloque ao menos 2 guerreiros em campo':'Reorganiza os guerreiros em campo pra render a maior quantidade de combos'}">✦ Gerar melhor ordem</button>
-              ${canUndoOptimize() ? `<button type="button" class="kz-btn" id="undoOptBtn" title="Voltar à ordem anterior">↶ Desfazer ordem</button>` : ''}
-              <button type="button" class="kz-btn kz-btn-primary kz-sim-open" id="openSimBtn"><span class="glyph">連</span><span>Ver combos</span><span class="cnt">${filledCount}/6</span></button>
+              <button type="button" class="kz-btn kz-btn-primary" id="autoBuildBtn" ${filledCount === 0 || filledCount === 6 ? 'disabled' : ''} title="${filledCount === 0 ? kzt('cb.minUm') : filledCount === 6 ? kzt('cb.jaCompleta') : kzt('cb.completaAjuda')}">⚡ ${state.autoOpts && state.autoOpts.base === JSON.stringify(state.team) ? kzt('cb.gerarDeNovo') : kzt('cb.completar')}</button>
+              <button type="button" class="kz-btn kz-opt-btn" id="optimizeBtn" ${filledCount<2?'disabled':''} title="${filledCount<2?kzt('cb.minDois'):kzt('cb.otimizarAjuda')}">✦ ${kzt('cb.melhorOrdem')}</button>
+              ${canUndoOptimize() ? `<button type="button" class="kz-btn" id="undoOptBtn" title="${kzt('cb.voltarOrdem')}">↶ ${kzt('cb.desfazerOrdem')}</button>` : ''}
+              <button type="button" class="kz-btn kz-btn-primary kz-sim-open" id="openSimBtn"><span class="glyph">連</span><span>${kzt('cb.verCombos')}</span><span class="cnt">${filledCount}/6</span></button>
             </div>
           </div>
           ${renderAutoBar()}
@@ -4983,14 +4986,14 @@ function renderRosterList(filterText){
   // quem já está em campo vem primeiro (na ordem das casas), o resto segue por raridade
   const naFormacao = state.team.map(id => filtrados.find(c => c.id === id)).filter(Boolean);
   const chars = naFormacao.concat(filtrados.filter(c => !state.team.includes(c.id)));
-  if(!chars.length) return `<div class="kz-muted" style="grid-column:1/-1;font-size:13px;">Nenhum guerreiro encontrado.</div>`;
+  if(!chars.length) return `<div class="kz-muted" style="grid-column:1/-1;font-size:13px;">${kzt('cb.nenhumEncontrado')}</div>`;
   return chars.map(c=>{
     const at = state.team.indexOf(c.id);
     return `
     <div class="kz-roster-item ${at>-1?'placed':''}" data-id="${c.id}" title="${escapeAttr(c.name + ' — ' + rolesOf(c).map(r=>ROLE_INFO[r].label).join(' / '))}" draggable="true">
       <div class="kz-roster-art">${portraitInner(c)}</div>
       <div class="kz-roster-name">${escapeHtml(c.name)}</div>
-      ${at>-1 ? `<span class="kz-roster-casa">Casa ${at+1}</span>` : ''}
+      ${at>-1 ? `<span class="kz-roster-casa">${kzt('slot.casa', { n: at+1 })}</span>` : ''}
     </div>`;
   }).join('');
 }
@@ -5001,8 +5004,8 @@ function slotEffectsHtml(c){
   const k = c.combo || {};
   const pills = arr => (arr && arr.length) ? `<span class="pills">${arr.map(effPillHtml).join('')}</span>` : '<span class="none">—</span>';
   return `<div class="kz-slot-eff">
-    <div class="col"><span class="lbl">Persegue</span>${pills(k.triggers)}</div>
-    <div class="col"><span class="lbl">Causa</span>${pills(k.effects)}</div>
+    <div class="col"><span class="lbl">${kzt('sf.persegue')}</span>${pills(k.triggers)}</div>
+    <div class="col"><span class="lbl">${kzt('sf.causa')}</span>${pills(k.effects)}</div>
   </div>`;
 }
 
@@ -5014,13 +5017,13 @@ function slotCardHtml(c, idx, o){
   const rm = o.removeAttr !== undefined ? o.removeAttr : `data-remove-slot="${idx}"`;
   const drag = o.draggable !== undefined ? o.draggable : !!c;
   return `
-  <div class="kz-slot ${c?'filled':''} ${o.sel?'selected':''} ${o.ro?'ro':''}" ${attrs} ${c && drag ? 'draggable="true"' : ''} title="Casa ${idx+1}">
-    <img class="kz-slot-ball" src="${ballSrc(idx+1)}" alt="Casa ${idx+1}" draggable="false">
+  <div class="kz-slot ${c?'filled':''} ${o.sel?'selected':''} ${o.ro?'ro':''}" ${attrs} ${c && drag ? 'draggable="true"' : ''} title="${kzt('slot.casa', { n: idx+1 })}">
+    <img class="kz-slot-ball" src="${ballSrc(idx+1)}" alt="${kzt('slot.casa', { n: idx+1 })}" draggable="false">
     ${c ? `
-    ${o.ro ? '' : `<button class="kz-slot-remove" ${rm} title="Remover">✕</button>`}
+    ${o.ro ? '' : `<button class="kz-slot-remove" ${rm} title="${kzt('cb.remover')}">✕</button>`}
     <div class="kz-slot-art">${portraitInner(c)}</div>
-    <div class="kz-slot-info">${visualNovo() ? `<span class="kz-slot-casa">Casa ${idx+1}</span>` : ''}<div class="kz-slot-name">${escapeHtml(c.name)}</div>${o.stars || ''}<div class="kz-slot-roles">${rolePillsHtml(c, 2, true)}</div></div>${slotEffectsHtml(c)}`
-    : `<span class="kz-slot-plus">${o.ro ? '' : '+'}</span><span class="kz-slot-hint">${o.hint || (o.sel ? 'Escolha no elenco' : 'Escolha um guerreiro')}</span>`}
+    <div class="kz-slot-info">${visualNovo() ? `<span class="kz-slot-casa">${kzt('slot.casa', { n: idx+1 })}</span>` : ''}<div class="kz-slot-name">${escapeHtml(c.name)}</div>${o.stars || ''}<div class="kz-slot-roles">${rolePillsHtml(c, 2, true)}</div></div>${slotEffectsHtml(c)}`
+    : `<span class="kz-slot-plus">${o.ro ? '' : '+'}</span><span class="kz-slot-hint">${o.hint || (o.sel ? kzt('cb.escolhaElenco') : kzt('cb.escolhaGuerreiro'))}</span>`}
   </div>`;
 }
 function renderSlot(idx){
@@ -5050,26 +5053,26 @@ function renderAtkSection(charId, abilityKey){
       <div class="kz-atk-art">${portraitInner(c)}</div>
       <div class="kz-atk-name">${escapeHtml(ability.name) || label}</div>
       <div class="kz-atk-kind">${label}</div>
-      ${effLineHtml('Causa', ability.effects)}
+      ${effLineHtml(kzt('sf.causa'), ability.effects)}
     </div>`;
   const contCards = continuations.map(({char:tc, triggeredBy})=>{
     const isPriority = tc.id === priorityId;
     return `
     <div class="kz-atk-card ${isPriority?'priority':''}">
-      ${isPriority ? `<span class="kz-atk-priority-tag">Prioridade</span>` : ''}
+      ${isPriority ? `<span class="kz-atk-priority-tag">${kzt('cb.prioridade')}</span>` : ''}
       <div class="kz-atk-art">${portraitInner(tc)}</div>
-      <div class="kz-atk-name">${escapeHtml(tc.combo.name) || 'Ataque Comb.'}</div>
+      <div class="kz-atk-name">${escapeHtml(tc.combo.name) || kzt('cb.ataqueComb')}</div>
       <div class="kz-atk-kind">${escapeHtml(tc.name)}</div>
-      ${effLineHtml('Persegue', [triggeredBy])}
-      ${effLineHtml('Causa', tc.combo.effects)}
+      ${effLineHtml(kzt('sf.persegue'), [triggeredBy])}
+      ${effLineHtml(kzt('sf.causa'), tc.combo.effects)}
     </div>`;
   }).join('');
   const note = !(ability.effects||[]).length
-    ? `Essa ${label.toLowerCase()} não causa efeito de combo.`
-    : (!continuations.length ? 'Nenhum aliado em campo tem o gatilho certo pra continuar daqui.' : '');
+    ? kzt('cb.naoCausa', { hab: label.toLowerCase() })
+    : (!continuations.length ? kzt('cb.semGatilho') : '');
   const chainHtml = chain.length > 1 ? `
     <div class="kz-atk-chain-wrap">
-      <div class="kz-label" style="font-size:12px;">Cadeia completa (por prioridade de casa) · ${chain.length} hits</div>
+      <div class="kz-label" style="font-size:12px;">${kzt('cb.cadeiaCompleta', { n: chain.length })}</div>
       <div class="kz-atk-chain">${chain.map((step,i)=>{
         const causes = step.ability.effects || [];
         return `
@@ -5077,16 +5080,16 @@ function renderAtkSection(charId, abilityKey){
         <div class="kz-atk-chain-step">
           <div class="kz-atk-chain-art">${portraitInner(step.char)}</div>
           <div class="kz-atk-chain-info">
-            <span class="nm">${escapeHtml(step.char.name)}${step.uso > 1 ? ` <small class="uso">${step.uso}ª ativação</small>` : ''}</span>
-            ${effLineHtml('Persegue', step.triggeredBy ? [step.triggeredBy] : null)}
-            ${effLineHtml('Causa', causes)}
+            <span class="nm">${escapeHtml(step.char.name)}${step.uso > 1 ? ` <small class="uso">${kzt('cb.ativacao', { n: step.uso })}</small>` : ''}</span>
+            ${effLineHtml(kzt('sf.persegue'), step.triggeredBy ? [step.triggeredBy] : null)}
+            ${effLineHtml(kzt('sf.causa'), causes)}
           </div>
         </div>`;
       }).join('')}</div>
     </div>` : '';
   return `
   <div class="kz-atk-section">
-    <div class="kz-label">Ataque Comb. de ${label}</div>
+    <div class="kz-label">${kzt('cb.ataqueCombDe', { hab: label })}</div>
     <div class="kz-atk-row">${startCard}${contCards}</div>
     ${note ? `<div class="kz-muted" style="font-size:13px;">${note}</div>` : ''}
     ${chainHtml}
@@ -5158,11 +5161,11 @@ function comboCountHtml(teamArg){
   if(!team.some(Boolean)) return '';
   const s = comboSummary(team);
   const m = comboMaxFor(team);
-  const tip = `Máximo possível com essa equipe: ${m.starters} habilidade${m.starters===1?'':'s'} que iniciam combo × ${m.perChain} combos por cadeia = ${m.max}. Habilidades sem efeito de combo não contam.`;
-  const startersTxt = `<b>${m.starters}</b> de ${m.abilities} habilidades iniciam combo`;
-  if(!s.total) return `<div class="kz-combo-count none" title="${escapeAttr(tip)}"><b>0</b> combos<span class="max"> / ${m.max}</span><span class="sub">${startersTxt} · nenhuma ativa o Ataque Combinado de alguém.</span></div>`;
+  const tip = kzt(m.starters===1 ? 'cb.dicaMax1' : 'cb.dicaMaxN', { a: m.starters, b: m.perChain, max: m.max });
+  const startersTxt = kzt('cb.iniciamCombo', { a: '<b>' + m.starters + '</b>', b: m.abilities });
+  if(!s.total) return `<div class="kz-combo-count none" title="${escapeAttr(tip)}"><b>0</b> ${kzt('cb.combosMinN')}<span class="max"> / ${m.max}</span><span class="sub">${startersTxt} · ${kzt('cb.nenhumaAtiva2')}</span></div>`;
   const bc = getChar(s.best.charId);
-  return `<div class="kz-combo-count" title="${escapeAttr(tip)}"><span class="big"><b>${s.total}</b> combo${s.total>1?'s':''}<span class="max"> / ${m.max}</span></span><span class="sub"><b>${s.starts}</b> início${s.starts>1?'s':''} com combo (${startersTxt}) · maior cadeia: <b>${s.best.n+1} hits</b> (${escapeHtml(bc.name)} · ${ABILITY_LABEL[s.best.key]})</span></div>`;
+  return `<div class="kz-combo-count" title="${escapeAttr(tip)}"><span class="big"><b>${s.total}</b> ${kzt(s.total>1 ? 'cb.combosMinN' : 'cb.combosMin1')}<span class="max"> / ${m.max}</span></span><span class="sub">${kzt('cb.subResumo', { inicios: kzt(s.starts>1 ? 'cb.inicioMinN' : 'cb.inicioMin1', { n: '<b>' + s.starts + '</b>' }), starters: startersTxt, hits: '<b>' + kzt('com.maiorCadeia', { n: s.best.n+1 }) + '</b>', nome: escapeHtml(bc.name), hab: ABILITY_LABEL[s.best.key] })}</span></div>`;
 }
 // Reordena SÓ quem já está em campo (as mesmas casas ocupadas) testando todas as ordens possíveis
 // — no máx. 6! = 720. Vence a que soma mais encadeamentos; empate: a cadeia mais longa; empate de novo:
@@ -5196,10 +5199,10 @@ function canUndoOptimize(){
 }
 function runOptimizeTeam(){
   const r = optimizeTeamOrder();
-  if(!r){ showToast('Coloque ao menos 2 guerreiros em campo.'); return; }
+  if(!r){ showToast(kzt('cb.toastMin2')); return; }
   if(!r.changed){
     state.optUndo = null; state.optInfo = null;
-    showToast(r.before.total ? 'A ordem atual já é a que rende mais combos.' : 'Esses guerreiros não formam combos entre si em nenhuma ordem.');
+    showToast(r.before.total ? kzt('cb.ordemJaMelhor') : kzt('cb.semCombos'));
     render();
     return;
   }
@@ -5207,10 +5210,10 @@ function runOptimizeTeam(){
   commitTeam(r.team);
   state.optUndo = { before:prev, after:[...r.team] };
   state.optInfo = r.after.total > r.before.total
-    ? `Nova ordem: <b>${r.after.total} encadeamentos</b> (antes ${r.before.total}) · maior cadeia com <b>${r.after.longest + 1} hits</b>.`
-    : `A quantidade de encadeamentos (<b>${r.after.total}</b>) já era a máxima; reorganizei pra deixar a cadeia mais longa (<b>${r.after.longest + 1} hits</b>).`;
+    ? kzt('cb.novaOrdem', { a: r.after.total, b: r.before.total, h: r.after.longest + 1 })
+    : kzt('cb.jaMaxima', { a: r.after.total, h: r.after.longest + 1 });
   render();
-  showToast('Ordem otimizada!');
+  showToast(kzt('cb.ordemOtimizada'));
 }
 function undoOptimizeTeam(){
   if(!canUndoOptimize()) return;
@@ -5273,14 +5276,14 @@ function renderRecommendations(){
   const full = filled === 6;
   const rar = state.recRarity || 'all';
   const recs = recommendForTeam(8, rar);
-  const head = `<div class="kz-rec-head"><h3>Quem encaixa na sua equipe</h3><span class="kz-muted" style="font-size:13px;">Ordenado pelo quanto aumenta os encadeamentos da equipe (soma das cadeias de Habilidade e Suprema de todos) e pelas sinergias entre as habilidades (ex.: Goku SS4 + Vegeta SS4, Malignos juntos). Considera o que cada um persegue e causa e a casa onde entraria.</span></div>
-  <div class="kz-rec-filter"><span class="kz-label">Sugerir</span>${[['all','Todas'],['SSR','Só SSR'],['SR','Só SR'],['R','Só R']].map(([v,l])=>`<button type="button" class="kz-fchip ${rar===v?'active':''}" data-rec-rarity="${v}">${l}</button>`).join('')}</div>`;
+  const head = `<div class="kz-rec-head"><h3>${kzt('cb.quemEncaixaEquipe')}</h3><span class="kz-muted" style="font-size:13px;">${kzt('cb.ordenadoAntigo')}</span></div>
+  <div class="kz-rec-filter"><span class="kz-label">${kzt('cb.sugerir')}</span>${[['all',kzt('auto.todas')],['SSR',kzt('auto.soSSR')],['SR',kzt('auto.soSR')],['R',kzt('auto.soR')]].map(([v,l])=>`<button type="button" class="kz-fchip ${rar===v?'active':''}" data-rec-rarity="${v}">${l}</button>`).join('')}</div>`;
   if(!recs.length){
-    const msg = full ? (rar !== 'all' ? `Nenhuma troca por um guerreiro ${rar} melhora os combos dessa equipe. Tente outra raridade.` : 'Nenhuma troca melhora os combos dessa equipe — ela já está bem encaixada.') : (rar !== 'all' ? `Nenhum guerreiro ${rar} do elenco aumenta os combos dessa equipe. Tente outra raridade.` : 'Nenhum guerreiro do elenco aumenta os combos dessa equipe.');
+    const msg = full ? (rar !== 'all' ? kzt('cb.nenhumaTrocaRar', { rar }) : kzt('cb.nenhumaTroca')) : (rar !== 'all' ? kzt('cb.nenhumElencoRar', { rar }) : kzt('cb.nenhumElenco'));
     return `<div class="kz-rec">${head}<div class="kz-muted">${msg}</div></div>`;
   }
   const miss = missingPillars(state.team);
-  const fillTag = c => { const p = analyzeRoles(c).pillars; const f = miss.filter(k => p[k] >= 0.6); return f.length ? `<span class="kz-fill-tag">Preenche: ${f.map(k => PILLARS[k].label).join(', ')}</span>` : ''; };
+  const fillTag = c => { const p = analyzeRoles(c).pillars; const f = miss.filter(k => p[k] >= 0.6); return f.length ? `<span class="kz-fill-tag">${kzt('cb.preenche', { lista: f.map(k => PILLARS[k].label).join(', ') })}</span>` : ''; };
   const cards = recs.map((r,i)=>{
     const c = r.char, rep = r.replacedId ? getChar(r.replacedId) : null;
     const best = chainsWithChar(r.team, c.id)[0];
@@ -5295,14 +5298,14 @@ function renderRecommendations(){
         <div class="kz-rec-art">${portraitInner(c)}</div>
         <div>
           <div class="kz-rec-name">${escapeHtml(c.name)}</div>
-          <span class="kz-rec-gain">${r.gain > 0 ? `+${r.gain} encadeamento${r.gain>1?'s':''}` : 'Sinergia'} · Casa ${r.slot+1}</span>
+          <span class="kz-rec-gain">${r.gain > 0 ? kzt(r.gain>1 ? 'cb.maisEncN' : 'cb.maisEnc1', { n: r.gain }) : kzt('cb.sinergia')} · ${kzt('slot.casa', { n: r.slot+1 })}</span>
         </div>
       </div>
       <div class="kz-rec-roles">${rolePillsHtml(c, 2, true)}${fillTag(c)}</div>
-      <div class="kz-rec-eff">${effLineHtml('Persegue', c.combo.triggers)}${effLineHtml('Causa', c.combo.effects)}</div>
-      ${chainTxt ? `<div class="kz-rec-chain">Melhor cadeia: ${chainTxt} <small>(${best.chain.length} hits)</small></div>` : ''}
+      <div class="kz-rec-eff">${effLineHtml(kzt('sf.persegue'), c.combo.triggers)}${effLineHtml(kzt('sf.causa'), c.combo.effects)}</div>
+      ${chainTxt ? `<div class="kz-rec-chain">${kzt('cb.melhorCadeiaTxt', { cadeia: chainTxt, hits: '<small>(' + kzt('com.maiorCadeia', { n: best.chain.length }) + ')</small>' })}</div>` : ''}
       ${(r.sinergias || []).slice(0, 2).map(a=>`<div class="kz-syn-line">${synergyItemHtml(a)}</div>`).join('')}
-      <button type="button" class="kz-btn kz-btn-sm" data-rec-place="${c.id}" data-rec-slot="${r.slot}">${rep ? `Trocar com ${escapeHtml(rep.name)} (Casa ${r.slot+1})` : `Colocar na Casa ${r.slot+1}`}</button>
+      <button type="button" class="kz-btn kz-btn-sm" data-rec-place="${c.id}" data-rec-slot="${r.slot}">${rep ? kzt('cb.trocarCom', { nome: escapeHtml(rep.name), n: r.slot+1 }) : kzt('cb.colocarNa', { n: r.slot+1 })}</button>
     </div>`;
   }).join('');
   return `<div class="kz-rec">${head}<div class="kz-rec-grid">${cards}</div></div>`;
@@ -5310,9 +5313,9 @@ function renderRecommendations(){
 
 function renderSimPanel(noHead){
   const teamChars = state.team.map(id=> id ? getChar(id) : null).filter(Boolean);
-  const head = noHead ? '' : `<div class="kz-sim-head"><span class="glyph">連</span><h2>Simular combo</h2></div>`;
+  const head = noHead ? '' : `<div class="kz-sim-head"><span class="glyph">連</span><h2>${kzt('cb.simular')}</h2></div>`;
   if(!teamChars.length){
-    return head + `<div class="kz-muted">Monte a equipe pra ver o que o Ataque Combinado de cada um ativa.</div>`;
+    return head + `<div class="kz-muted">${kzt('cb.monteParaVer')}</div>`;
   }
   const sel = (state.simCharId && teamChars.find(c=>c.id===state.simCharId)) ? state.simCharId : teamChars[0].id;
   return `
@@ -5360,7 +5363,7 @@ function attachCombosHandlers(){
   view.querySelectorAll('[data-rec-place]').forEach(b=>b.addEventListener('click', ()=>{
     state.slotSel = parseInt(b.dataset.recSlot, 10);
     placeChar(b.dataset.recPlace);
-    showToast('Guerreiro posicionado');
+    showToast(kzt('cb.posicionado'));
   }));
   const openSim = document.getElementById('openSimBtn');
   if(openSim) openSim.addEventListener('click', openSimModal);
@@ -5463,7 +5466,7 @@ function attachCombosHandlers(){
 
   const clearBtn = document.getElementById('clearTeamBtn');
   if(clearBtn) clearBtn.addEventListener('click', ()=>{
-    customConfirm('Limpar a equipe atual do campo de batalha?', ()=>{
+    customConfirm(kzt('cb.limparConfirma'), ()=>{
       state.slotSel = null;
       commitTeam(Array(6).fill(null));
     });
@@ -5471,12 +5474,12 @@ function attachCombosHandlers(){
 
   const saveFormBtn = document.getElementById('saveFormationBtn');
   if(saveFormBtn) saveFormBtn.addEventListener('click', ()=>{
-    if(state.team.every(t=>!t)){ showToast('Monte uma equipe antes de salvar.'); return; }
-    customPrompt('Nome desta formação:', name=>{
+    if(state.team.every(t=>!t)){ showToast(kzt('cb.monteAntes')); return; }
+    customPrompt(kzt('cb.nomeFormacao'), name=>{
       state.formations.push({name, team:[...state.team]});
       saveFormations();
       render();
-      showToast('Formação salva');
+      showToast(kzt('cb.formacaoSalva'));
     });
   });
 
@@ -5489,7 +5492,7 @@ function attachCombosHandlers(){
       state.slotSel = null;
       saveTeamState();
       render();
-      showToast('Formação carregada: ' + f.name);
+      showToast(kzt('cb.formacaoCarregada', { nome: f.name }));
     });
   });
   view.querySelectorAll('[data-del-formation]').forEach(b=>{
@@ -5497,7 +5500,7 @@ function attachCombosHandlers(){
       const i = parseInt(b.dataset.delFormation, 10);
       const f = state.formations[i];
       if(!f) return;
-      customConfirm(`Excluir a formação "${f.name}"?`, ()=>{
+      customConfirm(kzt('cb.excluirFormacao', { nome: f.name }), ()=>{
         state.formations.splice(i, 1);
         saveFormations();
         render();
@@ -5785,7 +5788,7 @@ function renderGuiasTabNovo(){
       </div>` : '';
   return `
   <section class="kz-page kz-nvp kz-nvg">
-    ${nvPageHeadHtml({ key:'guias', kanji:'書', tag:'Como o jogo funciona', title:'Guias', kanjiStyle:'right:6%;top:-60px;font-size:380px',
+    ${nvPageHeadHtml({ key:'guias', kanji:'書', tag:kzt('deco.guias'), title:'Guias', kanjiStyle:'right:6%;top:-60px;font-size:380px',
       sub:'Como cada sistema do jogo funciona, e como o site monta combos e formação.' })}
     <div class="kz-nvg-bar">
       <div class="kz-tabs" role="tablist" aria-label="Tipo de guia">
@@ -5891,10 +5894,10 @@ function sortedFavChars(){
 }
 function renderFavCardNovo(c){
   return `
-  <div class="kz-card kz-nvfav" data-id="${c.id}" title="Ver ficha completa">
+  <div class="kz-card kz-nvfav" data-id="${c.id}" title="${kzt('chars.verFichaCompleta')}">
     <div class="kz-card-art">${portraitInner(c)}</div>
     <div class="kz-card-body">
-      <div class="kz-card-name">${escapeHtml(c.name)||'(sem nome)'}</div>
+      <div class="kz-card-name">${escapeHtml(c.name)||kzt('geral.semNome')}</div>
       <div class="kz-nvfav-row">
         <span class="kz-card-meta">${nvMetaHtml(c)}</span>
         <button type="button" class="kz-nvfav-btn" data-fav="${c.id}" aria-pressed="true" aria-label="Tirar ${escapeAttr(c.name)} dos favoritos" title="Tirar dos favoritos"><svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="#FFC21A"><path d="M12 2.8l2.8 6 6.5.7-4.9 4.4 1.4 6.5L12 17l-5.8 3.4 1.4-6.5-4.9-4.4 6.5-.7z"/></svg></button>
@@ -5913,7 +5916,7 @@ function renderFavsTabNovo(){
       </button>`;
   return `
   <section class="kz-page kz-nvp">
-    ${nvPageHeadHtml({ key:'favs', kanji:'星', tagKanji:'★', tag:'Guardados por você', title:'Favoritos',
+    ${nvPageHeadHtml({ key:'favs', kanji:'星', tagKanji:'★', tag:kzt('deco.favs'), title:'Favoritos',
       after: nvCountHtml(n, n === 1 ? 'guerreiro guardado' : 'guerreiros guardados'), side: ordenar, kanjiStyle:'right:8%;top:-50px' })}
     <div class="kz-grid kz-nvfav-grid">${favChars.map(renderFavCardNovo).join('')}${mais}</div>
   </section>`;
@@ -6403,7 +6406,7 @@ function renderPerfilTab(){
     return `<section class="kz-page"><h1 class="kz-title">Perfil</h1><div class="kz-subtitle">O login com Discord ainda não foi configurado neste site.</div></section>`;
   }
   if(!state.discordUser){
-    if(visualNovo()) return `<section class="kz-page kz-nvp">${nvPageHeadHtml({ key:'perfil', kanji:'印', tag:'Sua conta', title:'Perfil', kanjiStyle:'right:8%;top:-60px;font-size:380px',
+    if(visualNovo()) return `<section class="kz-page kz-nvp">${nvPageHeadHtml({ key:'perfil', kanji:'印', tag:kzt('deco.perfil'), title:'Perfil', kanjiStyle:'right:8%;top:-60px;font-size:380px',
       sub:'Entre com Discord (topo da página) pra montar seu perfil: apelido, servidor, bio e redes.' })}</section>`;
     return `<section class="kz-page">
       <h1 class="kz-title">Perfil</h1>
@@ -6422,7 +6425,7 @@ function renderPerfilTab(){
     const redes = p.showSocials && (p.instagram||p.twitch||p.youtube) ? [p.instagram,p.twitch,p.youtube].filter(Boolean).map(escapeHtml).join(' · ') : '';
     return `
   <section class="kz-page kz-nvp kz-nvpf">
-    ${nvPageHeadHtml({ key:'perfil', kanji:'印', tag:'Sua conta', title:'Perfil', kanjiStyle:'right:8%;top:-60px;font-size:380px',
+    ${nvPageHeadHtml({ key:'perfil', kanji:'印', tag:kzt('deco.perfil'), title:'Perfil', kanjiStyle:'right:8%;top:-60px;font-size:380px',
       sub:'Monte como você aparece na Aliança Z: apelido, servidor, bio e redes. Patente e Honras vêm do seu apoio — ninguém digita isso aqui.' })}
     <div class="kz-nvpf-grid">
       <div class="kz-nvpf-form">
@@ -6736,7 +6739,7 @@ function renderDoarTabNovo(){
   const resto = list.slice(3, limite), maisRanking = list.slice(0, 10).length > 5;
   return `
   <section class="kz-page kz-nvp kz-nvd">
-    ${nvPageHeadHtml({ key:'doar', kanji:'援', tag:'Apoie o site', title:'Doar', kanjiStyle:'right:8%;top:-60px;font-size:380px',
+    ${nvPageHeadHtml({ key:'doar', kanji:'援', tag:kzt('deco.doar'), title:'Doar', kanjiStyle:'right:8%;top:-60px;font-size:380px',
       sub:'Ajude a manter o Zenkyo no ar. Personagens, Coleção, Montador e guias são de graça e continuam assim — quem apoia ganha lugar na Aliança Z. A doação vai só para o site: não compra itens nem vantagens no jogo.' })}
     <div class="kz-nvd-top">
       <div class="kz-nvd-pn kz-nvd-pix">
@@ -6925,7 +6928,7 @@ function donorProfileModalHtml(d){
     <div class="modal" style="max-width:460px;">
       <div class="modal-header">
         <h2>${escapeHtml(name)}</h2>
-        <button class="kz-close-btn" id="closeDonorProfileBtn" aria-label="Fechar">✕</button>
+        <button class="kz-close-btn" id="closeDonorProfileBtn" aria-label="${kzt('comum.fechar')}">✕</button>
       </div>
       <div class="modal-body" style="align-items:center;text-align:center;">
         <span class="kz-donor-avatar" style="width:72px;height:72px;font-size:24px;">${avatarChar ? portraitInner(avatarChar) : avatarFotoOr(prof, donorAvatarInner(name))}</span>
@@ -7315,7 +7318,7 @@ function renderModal(){
     <div class="modal">
       <div class="modal-header">
         <h2>${isNew ? 'Novo personagem' : 'Editar personagem'}</h2>
-        <button class="kz-close-btn" id="closeModalBtn" aria-label="Fechar">✕</button>
+        <button class="kz-close-btn" id="closeModalBtn" aria-label="${kzt('comum.fechar')}">✕</button>
       </div>
       <div class="modal-body">
         <div class="grid-2">
@@ -7471,7 +7474,7 @@ function renderIOModal(){
     <div class="modal" style="max-width:620px;">
       <div class="modal-header">
         <h2>Importar / Exportar</h2>
-        <button class="kz-close-btn" id="closeIOBtn" aria-label="Fechar">✕</button>
+        <button class="kz-close-btn" id="closeIOBtn" aria-label="${kzt('comum.fechar')}">✕</button>
       </div>
       <div class="modal-body">
         <p style="font-size:13px;color:var(--text-dim);line-height:1.6;margin:0;">
@@ -7545,7 +7548,7 @@ function pickerFilteredChars(q){
 }
 function renderPickerCards(q){
   const chars = pickerFilteredChars(q);
-  if(!chars.length) return `<div class="kz-empty" style="padding:30px 12px;">Nenhum guerreiro encontrado.</div>`;
+  if(!chars.length) return `<div class="kz-empty" style="padding:30px 12px;">${kzt('cb.nenhumEncontrado')}</div>`;
   return `<div class="picker-grid">${chars.map(c=>{
     const placedAt = state.team.indexOf(c.id);
     return `<div class="picker-card ${placedAt>-1?'placed':''}" data-id="${c.id}">
@@ -7563,7 +7566,7 @@ function renderPickerModal(){
     <div class="modal" style="max-width:640px;">
       <div class="modal-header">
         <h2>Casa ${idx+1}</h2>
-        <button class="kz-close-btn" id="closePickerBtn" aria-label="Fechar">✕</button>
+        <button class="kz-close-btn" id="closePickerBtn" aria-label="${kzt('comum.fechar')}">✕</button>
       </div>
       <div class="modal-body">
         <input type="text" id="pickerSearch" placeholder="Buscar guerreiro ou tag…">
@@ -7578,7 +7581,7 @@ function renderPickerModal(){
         state.pickerSlot = null;
         state.slotSel = idx;
         placeChar(card.dataset.id);
-        showToast('Guerreiro posicionado');
+        showToast(kzt('cb.posicionado'));
       });
     });
   };
@@ -7604,9 +7607,9 @@ function renderSimModal(){
   <div class="modal-overlay" id="simOverlay">
     <div class="modal kz-sim-modal" role="dialog" aria-label="Simular combo">
       <div class="modal-header">
-        <h2>Simular combo</h2>
+        <h2>${kzt('cb.simular')}</h2>
         <span class="kz-roster-hint">${n}/6 em campo</span>
-        <button class="kz-close-btn" id="closeSimBtn" aria-label="Fechar">✕</button>
+        <button class="kz-close-btn" id="closeSimBtn" aria-label="${kzt('comum.fechar')}">✕</button>
       </div>
       <div class="modal-body"><div class="kz-sim"><div id="simModalBody">${renderSimPanel(true)}</div></div></div>
     </div>

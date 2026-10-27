@@ -10,6 +10,8 @@
   const dic = { pt:{}, en:{} };
 
   g.KZ_LANG = lang;
+  g.KZ_LOCALE = lang === 'en' ? 'en-US' : 'pt-BR';   // para toLocaleString / toLocaleDateString / localeCompare
+  g.KZ_DECIMAL = lang === 'en' ? '.' : ',';          // separador decimal dos números montados à mão
   g.kzAddLang = (idioma, textos) => { Object.assign(dic[idioma] || (dic[idioma] = {}), textos); };
   g.kzt = (chave, vars) => {
     let s = dic[lang][chave];
@@ -17,6 +19,15 @@
     if(s == null) return chave;
     return vars ? s.replace(/\{(\w+)\}/g, (m, k) => (vars[k] == null ? m : String(vars[k]))) : s;
   };
+  // Termos do jogo que vêm dos dados em português (Ataque, Fogo, Saiyajin, tags...): os dados continuam em português
+  // (são chaves lógicas); só o texto mostrado muda. 'termo.<valor em português>' em js/lang/en.js; sem tradução, mostra o original.
+  g.kzTermo = v => { const s = dic[lang]['termo.' + v]; return s != null ? s : v; };
+  // Valores citados em textos (limites de apoio): o site guarda tudo em reais; em inglês mostra o equivalente em dólar pela
+  // taxa fixa KZ_USD_BRL (a mesma que a função de pagamento internacional usa). Para ajustar, mude só esta constante.
+  g.KZ_USD_BRL = 5;
+  g.kzValorBRL = n => lang === 'en'
+    ? '$' + (Math.round(n / g.KZ_USD_BRL * 100) / 100).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+    : 'R$ ' + n;
   g.kzLangTextos = dic;   // só para os testes conferirem as chaves
 
   // O botão PT/EN do cabeçalho leva para a mesma tela no outro idioma (mantém o #/rota).
