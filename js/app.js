@@ -893,11 +893,11 @@ function charTextoBusca(c){
   const chave = c.id + '|' + c.name + '|' + (c.skill && c.skill.desc || '').length + '|' + (c.supreme && c.supreme.desc || '').length;
   const hit = _buscaCache.get(chave);
   if(hit) return hit;
-  const nomes = buscaNorm([c.name, ...(c.tags || []), c.skill && c.skill.name, c.supreme && c.supreme.name, c.combo && c.combo.name,
+  const nomes = buscaNorm([c.name, kzNome(c.name), ...(c.tags || []), ...(c.tags || []).map(kzTermo), c.skill && c.skill.name, c.skill && kzTrad(c.skill.name), c.supreme && c.supreme.name, c.combo && c.combo.name,
     ...(p ? [p.habilidade && p.habilidade.base && p.habilidade.base.nome, p.suprema && p.suprema.base && p.suprema.base.nome] : []),
     ...(((c.combo && c.combo.triggers) || []).concat((c.combo && c.combo.effects) || [])).map(e => EFFECT_LABELS[e])].filter(Boolean).join(' '));
   const textos = [], vistos = new Set();
-  const add = (rot, txt) => { const t = String(txt || '').trim(); if(t.length < 8 || vistos.has(t)) return; vistos.add(t); textos.push({ rot, txt: t, norm: buscaNorm(t) }); };
+  const add = (rot, txt) => { const t = String(txt || '').trim(); if(t.length < 8 || vistos.has(t)) return; vistos.add(t); textos.push({ rot, txt: t, norm: buscaNorm(t) }); const en = kzTrad(t); if(en !== t) textos.push({ rot, txt: en, norm: buscaNorm(en) }); };
   const anda = (o, rot) => {
     if(!o || typeof o !== 'object') return;
     if(Array.isArray(o)){ o.forEach(x => anda(x, rot)); return; }
@@ -979,7 +979,7 @@ function renderSF(scope){
   const tagCounts = {};
   state.characters.forEach(c=>(c.tags||[]).forEach(t=>{ tagCounts[t] = (tagCounts[t]||0)+1; }));
   const tags = Object.keys(tagCounts).sort((a,b)=>tagCounts[b]-tagCounts[a] || a.localeCompare(b));
-  const chip = (grp, val, label, extra) => `<button class="kz-fchip ${sf[grp].includes(val)?'active':''}" data-sf="${scope}" data-grp="${grp}" data-val="${escapeAttr(val)}">${escapeHtml(label)}${extra!=null?`<span class="c">${extra}</span>`:''}</button>`;
+  const chip = (grp, val, label, extra) => `<button class="kz-fchip ${sf[grp].includes(val)?'active':''}" data-sf="${scope}" data-grp="${grp}" data-val="${escapeAttr(val)}">${escapeHtml(kzTermo(label))}${extra!=null?`<span class="c">${extra}</span>`:''}</button>`;
   const effChips = grp => SF_EFFECTS.map(e=>chip(grp, e, EFFECT_LABELS[e])).join('');
   return `
   <div class="kz-sf" data-sf-root="${scope}">
@@ -1114,14 +1114,14 @@ const RARITY_PILL = {
   R:{bg:'#5b7fa6',color:'#fff',border:'#86a8cf'},
 };
 function isLimitedChar(c){ return (c.rarity||'').includes('Limitado'); }
-function charMeta(c){ return `${rarityLabel(c.rarity)}${isLimitedChar(c)?' ★':''} · ${c.type||'—'} · ${c.affinity||'—'}`; }
+function charMeta(c){ return `${rarityLabel(c.rarity)}${isLimitedChar(c)?' ★':''} · ${kzTermo(c.type)||'—'} · ${kzTermo(c.affinity)||'—'}`; }
 function pillHtml(label, key){
   const r = PILL_RGB[key] || ['201,162,75','#e0c070'];
-  return `<span class="kz-pill" style="background:linear-gradient(rgba(${r[0]},.22),rgba(${r[0]},.22)),#0c0a14;color:${r[1]};border-color:rgba(${r[0]},.7);">${escapeHtml(label)}</span>`;
+  return `<span class="kz-pill" style="background:linear-gradient(rgba(${r[0]},.22),rgba(${r[0]},.22)),#0c0a14;color:${r[1]};border-color:rgba(${r[0]},.7);">${escapeHtml(kzTermo(label))}</span>`;
 }
 function tagPillHtml(tag){
   const r = TAG_RGB[tag] || ['201,162,75','#e0c070'];
-  return `<span class="kz-pill" style="background:linear-gradient(rgba(${r[0]},.22),rgba(${r[0]},.22)),#0c0a14;color:${r[1]};border-color:rgba(${r[0]},.6);">#${escapeHtml(tag)}</span>`;
+  return `<span class="kz-pill" style="background:linear-gradient(rgba(${r[0]},.22),rgba(${r[0]},.22)),#0c0a14;color:${r[1]};border-color:rgba(${r[0]},.6);">#${escapeHtml(kzTermo(tag))}</span>`;
 }
 function rarityPillHtml(c){
   const base = rarityLabel(c.rarity);
@@ -1222,8 +1222,8 @@ function nvDotHtml(aff){ const r = PILL_RGB[aff]; return r ? `<i class="kz-nv-do
 function nvMetaHtml(c){
   const rar = rarityLabel(c.rarity);
   return `<b class="kz-nv-rar ${rar === 'SR' ? 'sr' : rar === 'R' ? 'r' : ''}">${rar}${isLimitedChar(c) ? ' ★' : ''}</b>`
-    + `<span style="color:${NV_TYPE_COLOR[c.type] || '#E9D9C8'}">${escapeHtml(c.type || '—')}</span>`
-    + nvDotHtml(c.affinity) + `<span>${escapeHtml(c.affinity || '—')}</span>`;
+    + `<span style="color:${NV_TYPE_COLOR[c.type] || '#E9D9C8'}">${escapeHtml(kzTermo(c.type) || '—')}</span>`
+    + nvDotHtml(c.affinity) + `<span>${escapeHtml(kzTermo(c.affinity) || '—')}</span>`;
 }
 // Título em pincel: 3 camadas (contorno laranja com brilho, contorno preto, letra branca).
 function nvTtl(text, attrs){
@@ -1238,7 +1238,7 @@ function nvLineupHtml(team, small, edit){
   return `<div class="kz-nv-lineup${small ? ' sm' : ''}${edit ? ' edit' : ''}"${alvo}>${[0,1,2,3,4,5].map(i => {
     const c = team && team[i] && getChar(team[i]);
     const ed = edit ? ` data-slot="${i}"${state.slotSel === i ? ' data-sel="1"' : ''}` : '';
-    if(c) return `<span class="ln${edit ? ' filled' : ''}"${ed}${edit ? ' draggable="true"' : ''}${edit ? ` title="${escapeAttr(kzt('time.casaTitulo', { n: i + 1, nome: c.name }))}"` : ''}><img src="${faixaSrc(c)}" alt="" loading="lazy" decoding="async" draggable="false" data-onerr="cut" data-card="${portraitSrc(c)}"><b>${i+1}</b>${edit ? `<button type="button" class="ln-x" data-remove-slot="${i}" aria-label="${escapeAttr(kzt('time.tirarNome', { nome: c.name }))}" title="${kzt('time.tirar')}">×</button>` : ''}</span>`;
+    if(c) return `<span class="ln${edit ? ' filled' : ''}"${ed}${edit ? ' draggable="true"' : ''}${edit ? ` title="${escapeAttr(kzt('time.casaTitulo', { n: i + 1, nome: kzNome(c.name) }))}"` : ''}><img src="${faixaSrc(c)}" alt="" loading="lazy" decoding="async" draggable="false" data-onerr="cut" data-card="${portraitSrc(c)}"><b>${i+1}</b>${edit ? `<button type="button" class="ln-x" data-remove-slot="${i}" aria-label="${escapeAttr(kzt('time.tirarNome', { nome: kzNome(c.name) }))}" title="${kzt('time.tirar')}">×</button>` : ''}</span>`;
     return `<span class="ln empty"${ed}${edit ? ` role="button" tabindex="0" aria-label="${kzt('time.escolherCasa', { n: i + 1 })}"` : ''}><i>+</i><b>${i+1}</b></span>`;
   }).join('')}</div>`;
 }
@@ -1446,7 +1446,7 @@ function renderCharsTab(){
         ${hero ? `<img id="heroImg" src="${portraitSrc(hero)}" alt="" style="${heroStyleOf(heroFrameLive('list', hero.id))}" data-onload="show" data-onerr="hide">` : ''}
       </div></div>
       <div class="kz-hero-scrim"></div>
-      <div class="kz-hero-name" id="heroName">${hero ? escapeHtml(hero.name) : ''}</div>
+      <div class="kz-hero-name" id="heroName">${hero ? escapeHtml(kzNome(hero.name)) : ''}</div>
       <div class="kz-hero-nav">
         <button type="button" class="kz-hero-navbtn" data-hero-step="-1" title="${kzt('chars.anterior')}" aria-label="${kzt('chars.anterior')}">‹</button>
         <button type="button" class="kz-hero-navbtn" data-hero-step="1" title="${kzt('chars.proximo')}" aria-label="${kzt('chars.proximo')}">›</button>
@@ -1463,7 +1463,7 @@ function renderCharsTab(){
           ${LIST_FILTER_GROUPS.map(([label,key,vals])=>`
           <div class="kz-filter-row">
             <span class="kz-filter-label">${label}</span>
-            ${vals.map(v=>`<button class="kz-fchip ${f[key]===v?'active':''}" data-filter="${key}" data-val="${escapeAttr(v)}">${escapeHtml(v)}</button>`).join('')}
+            ${vals.map(v=>`<button class="kz-fchip ${f[key]===v?'active':''}" data-filter="${key}" data-val="${escapeAttr(v)}">${escapeHtml(kzTermo(v))}</button>`).join('')}
           </div>`).join('')}
         </div>
         ${renderSF('chars')}
@@ -1494,7 +1494,7 @@ function renderCharCard(c){
       <button class="kz-fav-btn ${fav?'on':''}" data-fav="${c.id}" title="${fav?kzt('fav.remover'):kzt('fav.favoritar')}" aria-label="${kzt('fav.favoritar')}">★</button>
     </div>
     <div class="kz-card-body">
-      <div class="kz-card-name">${escapeHtml(c.name)||kzt('geral.semNome')}</div>
+      <div class="kz-card-name">${escapeHtml(kzNome(c.name))||kzt('geral.semNome')}</div>
       <div class="kz-card-meta">${escapeHtml(charMeta(c))}</div>
     </div>
   </div>`;
@@ -1510,7 +1510,7 @@ function setHeroChar(id){
   const nm = document.getElementById('heroName');
   if(!c) return;
   if(img){ img.style.visibility = ''; img.src = portraitSrc(c); img.setAttribute('style', heroStyleOf(heroFrame('list', c.id))); }
-  if(nm) nm.textContent = c.name;
+  if(nm) nm.textContent = kzNome(c.name);
 }
 
 function attachCharCardHandlers(root){
@@ -1606,7 +1606,7 @@ function renderCharsTabNovo(chars, hero){
   const f = state.filters, total = state.characters.length;
   const slam = !nvSlamDone; nvSlamDone = true;
   const embers = NV_EMBERS.slice(0, nvEco() ? 0 : nvLite() ? 3 : NV_EMBERS.length).map(([l,b,s,d,dl])=>`<span class="kz-nv-em" style="left:${l}%;bottom:${b}px;width:${s}px;height:${s}px;animation-duration:${d}s;animation-delay:${dl}s"></span>`).join('');
-  const chipLabel = (key, v) => (key === 'affinity' ? nvDotHtml(v) : '') + escapeHtml(v);
+  const chipLabel = (key, v) => (key === 'affinity' ? nvDotHtml(v) : '') + escapeHtml(kzTermo(v));
   const bandA = `<span>${kzt('nav.combos')}</span><span class="kj">連</span><span>${kzt('banda.tierlist')}</span><span class="kj">番</span><span>${kzt('nav.colecao')}</span><span class="kj">集</span><span>${kzt('nav.guias')}</span><span class="kj">書</span><span>${kzt('nav.comunidade')}</span><span class="kj">社</span>`.repeat(4);
   const bandB = `<span class="jp">ワクワク</span><span>✦</span><span>${kzt('banda.nGuerreiros', { total })}</span><span>✦</span><span>${kzt('banda.monteCombo')}</span><span>✦</span><span>${kzt('banda.subaTier')}</span><span>✦</span><span>Zenkyo</span><span>✦</span>`.repeat(4);
   let heroSrc = '';
@@ -1634,7 +1634,7 @@ function renderCharsTabNovo(chars, hero){
       </svg>
       <div aria-hidden="true">${embers}</div>
       <span class="kz-nv-sfx" aria-hidden="true" style="right:1.5%;top:110px;font-size:54px;writing-mode:vertical-rl;transform:rotate(12deg);opacity:.85">ゴゴゴ</span>
-      ${hero ? `<div class="kz-nv-char" id="heroChar" aria-hidden="true" title="${escapeAttr(kzt('chars.verFicha', { nome: hero.name }))}">
+      ${hero ? `<div class="kz-nv-char" id="heroChar" aria-hidden="true" title="${escapeAttr(kzt('chars.verFicha', { nome: kzNome(hero.name) }))}">
         <div class="kz-nv-char-in">
           ${nvAuraImgs(heroSrc)}
           <img class="main" id="heroImg" src="${heroSrc}" alt="" data-onerr="card" data-card="${portraitSrc(hero)}">
@@ -1643,7 +1643,7 @@ function renderCharsTabNovo(chars, hero){
       </div>
       <div class="kz-nv-plate">
         <span class="kz-nv-lb">${kzt('chars.emDestaque')}</span>
-        ${nvTtl(hero.name, ` id="heroNameStack" role="button" tabindex="0" aria-label="${escapeAttr(kzt('chars.verFicha', { nome: hero.name }))}"`)}
+        ${nvTtl(kzNome(hero.name), ` id="heroNameStack" role="button" tabindex="0" aria-label="${escapeAttr(kzt('chars.verFicha', { nome: kzNome(hero.name) }))}"`)}
         <div class="kz-nv-pips" id="heroPips">${nvHeroPipsHtml(hero)}</div>
         <div class="kz-nv-plate-row">
           <span class="kz-nv-meta" id="heroMeta">${nvMetaHtml(hero)}</span>
@@ -1669,7 +1669,7 @@ function renderCharsTabNovo(chars, hero){
         </div>
         ${(()=>{   // celular (canvas): botão Filtros + raridade e tipo numa linha que rola; o resto abre no botão
           const n = ['rarity','type','affinity','element'].filter(k=>f[k]).length + sfCount(state.sf.chars);
-          const q = (key, v)=>`<button type="button" class="kz-fchip ${f[key]===v?'active':''}" data-filter="${key}" data-val="${escapeAttr(v)}" aria-pressed="${f[key]===v}">${escapeHtml(v)}</button>`;
+          const q = (key, v)=>`<button type="button" class="kz-fchip ${f[key]===v?'active':''}" data-filter="${key}" data-val="${escapeAttr(v)}" aria-pressed="${f[key]===v}">${escapeHtml(kzTermo(v))}</button>`;
           return `<div class="kz-nv-quick"><button type="button" class="kz-fchip kz-nv-ftoggle${n ? ' has' : ''}" id="nvFiltersBtn" aria-expanded="${!!state.nvFiltersOpen}">${kzt('chars.filtros')}${n ? `<span class="n">${n}</span>` : ''}</button>${['SSR','SR','R'].map(v=>q('rarity', v)).join('')}${TYPES.map(v=>q('type', v)).join('')}</div>`;
         })()}
         <div class="kz-filter-groups">
@@ -1705,10 +1705,10 @@ function renderCharCardNovo(c){
   <div class="kz-card" data-id="${c.id}" title="${kzt('chars.verFichaCompleta')}">
     <div class="kz-card-art">
       ${portraitInner(c)}
-      <button class="kz-fav-btn ${fav?'on':''}" data-fav="${c.id}" title="${fav?kzt('fav.remover'):kzt('fav.favoritar')}" aria-label="${kzt('fav.favoritar')} ${escapeAttr(c.name)}">★</button>
+      <button class="kz-fav-btn ${fav?'on':''}" data-fav="${c.id}" title="${fav?kzt('fav.remover'):kzt('fav.favoritar')}" aria-label="${kzt('fav.favoritar')} ${escapeAttr(kzNome(c.name))}">★</button>
     </div>
     <div class="kz-card-body">
-      <div class="kz-card-name">${escapeHtml(c.name)||kzt('geral.semNome')}</div>
+      <div class="kz-card-name">${escapeHtml(kzNome(c.name))||kzt('geral.semNome')}</div>
       <div class="kz-card-meta">${nvMetaHtml(c)}</div>
       ${buscaTrechoHtml(c)}
     </div>
@@ -1723,9 +1723,9 @@ function setHeroNovo(c){
   nvHeroSetSrc(box, nvArtsOf(c)[0]);
   const main = document.getElementById('heroImg');
   if(main) main.dataset.card = portraitSrc(c);
-  document.querySelectorAll('#heroNameStack > span').forEach(s=>{ s.textContent = c.name; });
-  document.getElementById('heroNameStack')?.setAttribute('aria-label', kzt('chars.verFicha', { nome: c.name }));
-  box.title = kzt('chars.verFicha', { nome: c.name });
+  document.querySelectorAll('#heroNameStack > span').forEach(s=>{ s.textContent = kzNome(c.name); });
+  document.getElementById('heroNameStack')?.setAttribute('aria-label', kzt('chars.verFicha', { nome: kzNome(c.name) }));
+  box.title = kzt('chars.verFicha', { nome: kzNome(c.name) });
   const meta = document.getElementById('heroMeta');
   if(meta) meta.innerHTML = nvMetaHtml(c);
   nvHeroStart(c);
@@ -1821,8 +1821,8 @@ function charStepButtonsHtml(currentId){
   const prev = charStepTarget(currentId, -1), next = charStepTarget(currentId, 1);
   if(!prev || !next) return '';
   return `
-  <button class="kz-step-btn prev" data-step="-1" title="${escapeAttr(prev.name)}"><span class="arr">‹</span><span class="col"><span class="lbl">${kzt('ficha.anterior')}</span><span class="nm">${escapeHtml(prev.name)}</span></span></button>
-  <button class="kz-step-btn next" data-step="1" title="${escapeAttr(next.name)}"><span class="col"><span class="lbl">${kzt('ficha.proximo')}</span><span class="nm">${escapeHtml(next.name)}</span></span><span class="arr">›</span></button>`;
+  <button class="kz-step-btn prev" data-step="-1" title="${escapeAttr(kzNome(prev.name))}"><span class="arr">‹</span><span class="col"><span class="lbl">${kzt('ficha.anterior')}</span><span class="nm">${escapeHtml(kzNome(prev.name))}</span></span></button>
+  <button class="kz-step-btn next" data-step="1" title="${escapeAttr(kzNome(next.name))}"><span class="col"><span class="lbl">${kzt('ficha.proximo')}</span><span class="nm">${escapeHtml(kzNome(next.name))}</span></span><span class="arr">›</span></button>`;
 }
 // Troca o personagem aberto mantendo a aba da ficha (Habilidades/Comida/Vínculos).
 function stepCharDetail(dir){
@@ -2104,7 +2104,7 @@ function renderCharDetailPage(charId){
         <div class="kz-detail-main">
           <div class="kz-detail-card">${portraitInner(c)}</div>
           <div class="kz-detail-info">
-            <div class="kz-name-band"><h1>${escapeHtml(c.name)||kzt('geral.semNome')}</h1></div>
+            <div class="kz-name-band"><h1>${escapeHtml(kzNome(c.name))||kzt('geral.semNome')}</h1></div>
             <div class="kz-pill-row">
               ${pillHtml(c.element, c.element)}${pillHtml(c.gender, c.gender)}${rarityPillHtml(c)}
               ${c.type ? pillHtml(c.type, c.type) : ''}${c.affinity ? pillHtml(c.affinity, c.affinity) : ''}
@@ -2141,7 +2141,8 @@ function renderCharDetailPage(charId){
 const GRUPO_TITULOS = { 'Habilidade':'hab.habilidade', 'Suprema':'hab.suprema', 'Ataque Combinado':'hab.ataqueCombinadoTitulo', 'Passiva Única':'hab.passivaUnicaTitulo', 'Passiva (Padrão)':'hab.passivaPadrao', 'Super Despertar (LR)':'hab.superDespertar', 'Passivas do Supremo':'hab.passivasSupremo' };
 function grupoTitulo(t){ return GRUPO_TITULOS[t] ? kzt(GRUPO_TITULOS[t]) : t; }
 const NVF_SEAL = { 'Habilidade':'技', 'Suprema':'極', 'Ataque Combinado':'連', 'Passiva Única':'魂', 'Passiva (Padrão)':'能', 'Super Despertar (LR)':'覚', 'Passivas do Supremo':'王' };
-const NVF_EFF_TERM = { '[Derrubada]':'derrubada', '[Empurrão]':'empurrao', '[Elevação Alta]':'elevacao_alta', '[Elevação Baixa]':'elevacao_baixa' };
+const NVF_EFF_TERM = { '[Derrubada]':'derrubada', '[Empurrão]':'empurrao', '[Elevação Alta]':'elevacao_alta', '[Elevação Baixa]':'elevacao_baixa',
+  '[Knockdown]':'derrubada', '[Knockback]':'empurrao', '[High Launch]':'elevacao_alta', '[Low Launch]':'elevacao_baixa' };
 function nvfTermsHtml(txt){
   return String(txt || '').split(/(\[[^\]]+\])/).filter(Boolean).map(t=>{
     if(t.charAt(0) !== '[') return escapeHtml(t);
@@ -2171,9 +2172,9 @@ function nvfAbilityBlock(c, g){
         <div class="kz-nvf-mv-side">${nvfIconHtml(d, NVF_SEAL[g.title] || '技')}<h2>${escapeHtml(grupoTitulo(g.title))}</h2>${efeitos}</div>
         <div class="kz-nvf-mv-main">
           ${niveis}
-          <div class="kz-nvf-mv-meta">${textStarsHtml(t.reqLevel)}<span class="lb">${escapeHtml(tipo)} · ${escapeHtml(reqLabelText(t.reqLevel))}</span>${d && d.dano ? `<span class="kz-nvf-dmg">${kzt('hab.dano', { v: escapeHtml(d.dano) })}</span>` : ''}</div>
-          <h3 class="kz-nvf-sn">${d ? (escapeHtml(d.nome) || '—') : kzt('hab.naoCapturado')}</h3>
-          <p class="kz-nvf-ds">${d ? nvfTermsHtml(d.desc) : kzt('hab.naoExtraido')}</p>
+          <div class="kz-nvf-mv-meta">${textStarsHtml(t.reqLevel)}<span class="lb">${escapeHtml(kzTermo(tipo))} · ${escapeHtml(reqLabelText(t.reqLevel))}</span>${d && d.dano ? `<span class="kz-nvf-dmg">${kzt('hab.dano', { v: escapeHtml(d.dano) })}</span>` : ''}</div>
+          <h3 class="kz-nvf-sn">${d ? (escapeHtml(kzTrad(d.nome)) || '—') : kzt('hab.naoCapturado')}</h3>
+          <p class="kz-nvf-ds">${d ? nvfTermsHtml(kzTrad(d.desc)) : kzt('hab.naoExtraido')}</p>
         </div>
       </section>`;
 }
@@ -2185,7 +2186,7 @@ function nvfAbilitiesHtml(c){
   const supHtml = sup.length ? `
       <section class="kz-nvf-mv">
         <div class="kz-nvf-mv-side">${nvfSealHtml(NVF_SEAL['Passivas do Supremo'])}<h2>${kzt('hab.passivasSupremo')}</h2></div>
-        <div class="kz-nvf-mv-main">${sup.map(ps=>`<div class="kz-nvf-sup">${SHOW_ABILITY_ICONS && ps.icone ? `<img class="ico" src="${escapeAttr(encodeURI(ps.icone))}" alt="" data-onerr="remove">` : ''}<div><h3 class="kz-nvf-sn sm">${escapeHtml(ps.nome) || '—'}</h3><p class="kz-nvf-ds">${nvfTermsHtml(ps.desc)}</p></div></div>`).join('')}</div>
+        <div class="kz-nvf-mv-main">${sup.map(ps=>`<div class="kz-nvf-sup">${SHOW_ABILITY_ICONS && ps.icone ? `<img class="ico" src="${escapeAttr(encodeURI(ps.icone))}" alt="" data-onerr="remove">` : ''}<div><h3 class="kz-nvf-sn sm">${escapeHtml(kzTrad(ps.nome)) || '—'}</h3><p class="kz-nvf-ds">${nvfTermsHtml(kzTrad(ps.desc))}</p></div></div>`).join('')}</div>
       </section>` : '';
   return unlocks.groups.map(g=> nvfAbilityBlock(c, g)).join('') + supHtml;
 }
@@ -2204,7 +2205,7 @@ function nvfRolePanel(c){
 }
 function nvfSynergyPanel(c){
   const s = synergyInfo(c);
-  const pals = s.recebe.map(n=>{ const o = state.characters.find(x=>x.name === n); return o ? `<button type="button" class="kz-nvf-pal" data-nvf-open="${escapeAttr(o.id)}">${escapeHtml(n)}</button>` : ''; }).join('');
+  const pals = s.recebe.map(n=>{ const o = state.characters.find(x=>x.name === n); return o ? `<button type="button" class="kz-nvf-pal" data-nvf-open="${escapeAttr(o.id)}">${escapeHtml(kzNome(n))}</button>` : ''; }).join('');
   return `
       <div class="kz-nvf-pn">
         <h2>${kzt('sin.titulo')}</h2>
@@ -2217,7 +2218,7 @@ function nvfSynergyPanel(c){
 function renderCharDetailNovo(c){
   const fav = isFav(c.id);
   const cur = DETAIL_TABS.find(t=>t[0]===state.charDetailTab) || DETAIL_TABS[0];
-  const cor = v=>{ const r = PILL_RGB[v]; return r ? `<b style="color:${r[1]};text-shadow:0 0 12px rgba(${r[0]},.7)">${escapeHtml(v)}</b>` : `<b>${escapeHtml(v || '—')}</b>`; };
+  const cor = v=>{ const r = PILL_RGB[v]; return r ? `<b style="color:${r[1]};text-shadow:0 0 12px rgba(${r[0]},.7)">${escapeHtml(kzTermo(v))}</b>` : `<b>${escapeHtml(kzTermo(v) || '—')}</b>`; };
   const rar = rarityLabel(c.rarity), rs = RARITY_PILL[rar] || RARITY_PILL.R;
   const hud = [
     [kzt('filtro.raridade'), `<b class="rar" style="background:${rs.bg};color:${rs.color}">${escapeHtml(rar)}${isLimitedChar(c) ? ' ★' : ''}</b>`],
@@ -2228,7 +2229,7 @@ function renderCharDetailNovo(c){
   ].filter(Boolean).map(([k, v])=>`<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
   const tags = (c.tags || []).map(t=>{ const r = TAG_RGB[t] || ['201,162,75','#e0c070']; return `<span class="kz-nvf-tg" style="--c:${r[0]};--t:${r[1]}">#${escapeHtml(t)}</span>`; }).join('');
   const papeis = rolesOf(c).slice(0, 3).map((r, i)=>{ const info = ROLE_INFO[r]; return `<div class="kz-nvf-rolebig" style="--t:${info.rgb[1]}">${nvfSealHtml(info.glyph, info.rgb)}<span><b>${escapeHtml(info.label)}</b><small>${i === 0 ? kzt('papel.papelPrincipal') : kzt('papel.papelSecundario')}</small></span></div>`; }).join('');
-  const nome = c.name || kzt('geral.semNome'), fs = nome.length > 20 ? 72 : nome.length > 13 ? 92 : 116;   // nome longo: título menor
+  const nome = kzNome(c.name) || kzt('geral.semNome'), fs = nome.length > 20 ? 72 : nome.length > 13 ? 92 : 116;   // nome longo: título menor
   const corpo = cur[0] === 'habilidades'
     ? `<div class="kz-nvf-body"><div class="kz-nvf-abs">${nvfAbilitiesHtml(c)}</div><aside class="kz-nvf-side">${nvfRolePanel(c)}${nvfSynergyPanel(c)}</aside></div>`
     : `<div class="kz-tabpanel"><div class="kz-panel-head"><span class="kz-panel-glyph">${cur[1]}</span><h2 class="kz-panel-title">${cur[2]}</h2></div>${cur[0] === 'comida' ? renderCharFoodSection(c) : renderCharBondsSection(c)}</div>`;
@@ -2308,12 +2309,12 @@ function renderDetailAbilityRow(tier){
     <div class="kz-ab-body">
       <div class="kz-ab-meta">
         ${textStarsHtml(tier.reqLevel)}
-        <span class="kz-ab-tipo" style="color:${tipoColor(tipo)};">${escapeHtml(tipo)}</span>
+        <span class="kz-ab-tipo" style="color:${tipoColor(tipo)};">${escapeHtml(kzTermo(tipo))}</span>
         <span class="kz-ab-req">${reqLabelText(tier.reqLevel)}</span>
         ${!noData && data.dano ? `<span class="kz-ab-dano">${kzt('hab.dano', { v: escapeHtml(data.dano) })}</span>` : ''}
       </div>
-      <div class="kz-ab-name">${noData ? kzt('hab.naoCapturado') : (escapeHtml(data.nome)||'—')}</div>
-      <div class="kz-ab-desc">${noData ? kzt('hab.naoExtraido') : escapeHtml(data.desc||'')}</div>
+      <div class="kz-ab-name">${noData ? kzt('hab.naoCapturado') : (escapeHtml(kzTrad(data.nome))||'—')}</div>
+      <div class="kz-ab-desc">${noData ? kzt('hab.naoExtraido') : escapeHtml(kzTrad(data.desc||''))}</div>
     </div>
   </div>`;
 }
@@ -2348,7 +2349,7 @@ function renderDetailAbilities(c){
     <div class="kz-ab-group">
       <div class="kz-ab-group-head"><span class="kz-ab-group-title">${kzt('hab.passivasSupremo')}</span></div>
       <div class="kz-supremo-grid">
-        ${sup.map(ps=>`<div class="kz-supremo-card">${(SHOW_ABILITY_ICONS && ps.icone) ? `<div class="ico"><img src="${escapeAttr(encodeURI(ps.icone))}" alt="" data-onerr="remove-parent"></div>` : ''}<div class="t"><div class="n">${escapeHtml(ps.nome)||'—'}</div><div class="d">${escapeHtml(ps.desc||'')}</div></div></div>`).join('')}
+        ${sup.map(ps=>`<div class="kz-supremo-card">${(SHOW_ABILITY_ICONS && ps.icone) ? `<div class="ico"><img src="${escapeAttr(encodeURI(ps.icone))}" alt="" data-onerr="remove-parent"></div>` : ''}<div class="t"><div class="n">${escapeHtml(kzTrad(ps.nome))||'—'}</div><div class="d">${escapeHtml(kzTrad(ps.desc||''))}</div></div></div>`).join('')}
       </div>
     </div>` : '';
   return `<div class="kz-ab-groups">${groups}${supHtml}</div>`;
@@ -2435,7 +2436,7 @@ function renderCharFoodSection(c){
   const fontes = AFFINITY_SOURCES[affinityKey(c.name)];
   const topo = foods.length ? `
   <div class="cdp-aff-block">
-    <h3 class="cdp-aff-title">${kzt('afin.presentesQue', { nome: escapeHtml(c.name) })}</h3>
+    <h3 class="cdp-aff-title">${kzt('afin.presentesQue', { nome: escapeHtml(kzNome(c.name)) })}</h3>
     <div class="cdp-food-row">${foods.map(f=>`
       <div class="cdp-food-item"${f.slug ? ' tabindex="0"' : ''}>
         <div class="cdp-food-icon ${f.exp ? affinityFoodTier(f.exp) : foodRarityClass(f.raridade)}">${f.slug ? affinityIconHtml(f.slug) : '🍽'}</div>
@@ -2445,7 +2446,7 @@ function renderCharFoodSection(c){
       </div>`).join('')}</div>
     ${outros.length ? `<div class="cdp-aff-group">${kzt('afin.mesmosPresentes')}${outros.map(n=>{ const o = state.characters.find(x=>x.name === n); return o ? `<button type="button" class="kz-link-btn" data-open-char="${escapeAttr(o.id)}">${escapeHtml(n)}</button>` : escapeHtml(n); }).join(', ')} <span>${kzt('afin.cadaUm')}</span></div>` : ''}
     ${fontes ? `<div class="cdp-aff-src"><b>${kzt('afin.ondeConseguir')}</b> ${escapeHtml(fontes)}</div>` : ''}
-  </div>` : `<div class="kz-empty-ball"><img src="${ballSrc(2)}" alt=""><div>${kzt('afin.semPresentes', { nome: escapeHtml(c.name) })}</div></div>`;
+  </div>` : `<div class="kz-empty-ball"><img src="${ballSrc(2)}" alt=""><div>${kzt('afin.semPresentes', { nome: escapeHtml(kzNome(c.name)) })}</div></div>`;
   return topo + affinityResumoHtml();
 }
 
@@ -2462,10 +2463,10 @@ function renderCharBondsSection(c){
         <div class="cdp-bond-avatar">${portraitInner({name: b.parceiro || ''})}</div>
       </div>
       <div class="cdp-bond-info">
-        ${b.bonus ? `<div class="cdp-bond-bonus">${escapeHtml(b.bonus)}</div>` : ''}
-        <div class="cdp-bond-skill">${escapeHtml(b.habilidadeNome)||'—'}${b.ativo===false ? `<span class="inactive-tag">${kzt('vinc.inativo')}</span>` : ''}</div>
-        ${b.requisito ? `<div class="cdp-bond-req">${escapeHtml(b.requisito)}</div>` : ''}
-        ${b.habilidadeDesc ? `<div class="kz-ab-desc">${escapeHtml(b.habilidadeDesc)}</div>` : ''}
+        ${b.bonus ? `<div class="cdp-bond-bonus">${escapeHtml(kzTrad(b.bonus))}</div>` : ''}
+        <div class="cdp-bond-skill">${escapeHtml(kzTrad(b.habilidadeNome))||'—'}${b.ativo===false ? `<span class="inactive-tag">${kzt('vinc.inativo')}</span>` : ''}</div>
+        ${b.requisito ? `<div class="cdp-bond-req">${escapeHtml(kzTrad(b.requisito))}</div>` : ''}
+        ${b.habilidadeDesc ? `<div class="kz-ab-desc">${escapeHtml(kzTrad(b.habilidadeDesc))}</div>` : ''}
       </div>
     </div>`).join('')}</div>`;
 }
@@ -2524,7 +2525,7 @@ const COLL_FILTER_GROUPS = [[kzt('filtro.tipo'),'collectionType',TYPES],[kzt('fi
 function renderCollectionTabNovo(){
   const chars = getFilteredCollectionChars();
   const on = !!state.collectionOnlyOwned;
-  const chip = (key, v)=>`<button type="button" class="kz-fchip ${state[key]===v?'active':''}" data-cfilter="${key}" data-val="${escapeAttr(v)}" aria-pressed="${state[key]===v}">${key === 'collectionAffinity' ? nvDotHtml(v) : ''}${escapeHtml(v)}</button>`;
+  const chip = (key, v)=>`<button type="button" class="kz-fchip ${state[key]===v?'active':''}" data-cfilter="${key}" data-val="${escapeAttr(v)}" aria-pressed="${state[key]===v}">${key === 'collectionAffinity' ? nvDotHtml(v) : ''}${escapeHtml(kzTermo(v))}</button>`;
   return `
   <section class="kz-page kz-nvp">
     ${nvPageHeadHtml({ key:'collection', kanji:'集', tag:kzt('deco.colecao'), title:kzt('nav.colecao'), kanjiStyle:'left:36%;right:auto;top:-70px;font-size:420px',
@@ -2549,7 +2550,7 @@ function renderCollectionTabNovo(){
 function renderCollectionCardNovo(c){
   const e = getEntry(c.id);
   const owned = !!e.owned, lv = e.level || 0, phase = starPhase(lv), filled = starFilled(lv), pname = STAR_PHASE_NAME[phase];
-  const nome = escapeHtml(c.name)||kzt('geral.semNome');
+  const nome = escapeHtml(kzNome(c.name))||kzt('geral.semNome');
   if(!owned) return `
   <div class="kz-coll-card kz-nvc off" data-id="${c.id}">
     <div class="kz-nvc-fr">${portraitInner(c)}<span class="kz-nvc-stamp" aria-hidden="true">封</span></div>
@@ -2574,7 +2575,7 @@ function renderCollectionCardNovo(c){
     </div>
     <div class="kz-nvc-acts">
       <button type="button" class="kz-nvc-mini" data-open-popup title="${kzt('coll.liberadasTitulo', { n: collUnlockCount(c, lv) })}">${kzt('coll.verHabilidades')} ›</button>
-      <button type="button" class="kz-nvc-rm coll-remove" data-id="${c.id}" title="${kzt('coll.removerTitulo')}" aria-label="${escapeAttr(kzt('coll.removerNome', { nome: c.name }))}">${kzt('coll.remover')}</button>
+      <button type="button" class="kz-nvc-rm coll-remove" data-id="${c.id}" title="${kzt('coll.removerTitulo')}" aria-label="${escapeAttr(kzt('coll.removerNome', { nome: kzNome(c.name) }))}">${kzt('coll.remover')}</button>
     </div>
   </div>`;
 }
@@ -2599,7 +2600,7 @@ function renderCollectionTab(){
       ${COLL_FILTER_GROUPS.map(([label,key,vals])=>`
       <div class="kz-filter-row">
         <span class="kz-filter-label">${label}</span>
-        ${vals.map(v=>`<button class="kz-fchip ${state[key]===v?'active':''}" data-cfilter="${key}" data-val="${escapeAttr(v)}">${escapeHtml(v)}</button>`).join('')}
+        ${vals.map(v=>`<button class="kz-fchip ${state[key]===v?'active':''}" data-cfilter="${key}" data-val="${escapeAttr(v)}">${escapeHtml(kzTermo(v))}</button>`).join('')}
       </div>`).join('')}
       ${renderSF('coll')}
     </div>
@@ -2640,7 +2641,7 @@ function renderCollectionCard(c){
     </div>
     <div class="kz-coll-body">
       <div>
-        <div class="kz-coll-name">${escapeHtml(c.name)||kzt('geral.semNome')}</div>
+        <div class="kz-coll-name">${escapeHtml(kzNome(c.name))||kzt('geral.semNome')}</div>
         <div class="kz-card-meta">${escapeHtml(charMeta(c))}</div>
       </div>
       ${owned ? `
@@ -2761,22 +2762,22 @@ function renderAbilityPopup(charId){
         <div class="kz-popup-row ${locked?'locked':''}">
           <div class="kz-popup-row-head">
             ${textStarsHtml(t.reqLevel)}
-            <span class="tipo" style="color:${tipoColor(tipo)};">${escapeHtml(tipo)}</span>
+            <span class="tipo" style="color:${tipoColor(tipo)};">${escapeHtml(kzTermo(tipo))}</span>
             ${locked ? `<span class="kz-locked-tag">${kzt('coll.bloqueado')}</span>` : ''}
           </div>
-          <div class="nm">${noData ? kzt('hab.naoCapturado') : (escapeHtml(data.nome)||'—')}</div>
-          <div class="ds">${noData ? kzt('hab.naoExtraido') : escapeHtml(data.desc||'')}</div>
+          <div class="nm">${noData ? kzt('hab.naoCapturado') : (escapeHtml(kzTrad(data.nome))||'—')}</div>
+          <div class="ds">${noData ? kzt('hab.naoExtraido') : escapeHtml(kzTrad(data.desc||''))}</div>
         </div>`;
       }).join('')}
     </div>`).join('') : `<div class="kz-muted">${kzt('hab.semDados')}</div>`;
 
   root.innerHTML = `
   <div class="modal-overlay" id="abilityPopupOverlay">
-    <div class="modal kz-popup" role="dialog" aria-label="${escapeAttr(kzt('coll.habilidadesDe', { nome: c.name }))}">
+    <div class="modal kz-popup" role="dialog" aria-label="${escapeAttr(kzt('coll.habilidadesDe', { nome: kzNome(c.name) }))}">
       <div class="kz-popup-head">
         <div class="kz-popup-art">${portraitInner(c)}</div>
         <div class="kz-popup-title">
-          <div class="kz-popup-name">${escapeHtml(c.name)}</div>
+          <div class="kz-popup-name">${escapeHtml(kzNome(c.name))}</div>
           <div class="kz-popup-level">${textStarsHtml(lv)}<span class="lbl">${lv ? reqLabelText(lv) : kzt('coll.semEstrelas')}</span></div>
         </div>
         <button class="kz-close-btn" id="closeAbilityPopupBtn" aria-label="${kzt('comum.fechar')}">✕</button>
@@ -2796,7 +2797,7 @@ const SHOW_ABILITY_ICONS = true;
 
 /* ======================= TIER LIST ======================= */
 function renderTierItem(c){
-  return `<div class="tier-item" draggable="true" data-id="${c.id}" title="${escapeAttr(c.name)}">${portraitInner(c)}</div>`;
+  return `<div class="tier-item" draggable="true" data-id="${c.id}" title="${escapeAttr(kzNome(c.name))}">${portraitInner(c)}</div>`;
 }
 function renderTierRow(t, i, all){
   const chars = t.items.map(getChar).filter(Boolean);
@@ -3469,7 +3470,7 @@ function synergyReport(team){
       } else if(r.todos){
         if((r.com || []).every(nm=>members.some(o=>o.name === nm))) val = r.peso;
       } else if(alvos.length) val = r.peso;
-      if(val > 0){ total += val; ativos.push({ de:m.id, nome:m.name, alvos:alvos.map(o=>o.id), txt:r.txt, val }); }
+      if(val > 0){ total += val; ativos.push({ de:m.id, nome:kzNome(m.name), alvos:alvos.map(o=>o.id), txt:r.txt, val }); }
     });
   });
   ativos.sort((a, b)=>b.val - a.val);
@@ -3505,7 +3506,7 @@ function synergyCardHtml(c){
   return `<div class="kz-role-syn">
     <span class="kz-label">${kzt('sin.titulo')}</span>
     ${proprias.length ? `<ul>${proprias.map(t=>`<li>${t}</li>`).join('')}</ul>` : ''}
-    ${unicos.length ? `<div class="rx">${kzt('sin.fortalecidoPor')}: ${unicos.slice(0, 8).map(escapeHtml).join(', ')}${unicos.length > 8 ? ` ${kzt('geral.eMais', { n: unicos.length - 8 })}` : ''}.</div>` : ''}
+    ${unicos.length ? `<div class="rx">${kzt('sin.fortalecidoPor')}: ${unicos.slice(0, 8).map(n => escapeHtml(kzNome(n))).join(', ')}${unicos.length > 8 ? ` ${kzt('geral.eMais', { n: unicos.length - 8 })}` : ''}.</div>` : ''}
   </div>`;
 }
 
@@ -3649,7 +3650,7 @@ function renderAutoOptionRow(o, i){
   const core = new Set((state.autoOpts && state.autoOpts.core) || []);
   const minis = o.team.map((id, slot) => {
     const c = id && getChar(id);
-    return c ? `<span class="kz-auto-mini${core.has(id) ? ' core' : ''}" title="${escapeAttr(kzt('time.casaNome', { n: slot + 1, nome: c.name }))}">${portraitInner(c)}</span>` : '<span class="kz-auto-mini empty"></span>';
+    return c ? `<span class="kz-auto-mini${core.has(id) ? ' core' : ''}" title="${escapeAttr(kzt('time.casaNome', { n: slot + 1, nome: kzNome(c.name) }))}">${portraitInner(c)}</span>` : '<span class="kz-auto-mini empty"></span>';
   }).join('');
   return `<div class="kz-auto-row${i === 0 ? ' top' : ''}">
     <div class="kz-auto-row-team">${minis}</div>
@@ -3916,7 +3917,7 @@ function descPostsBonus(coms){
 function renderDescComunidade(coms){
   if(!coms || !coms.length) return '';
   const rows = coms.map(c => {
-    const minis = c.team.map(id => { const ch = getChar(id); return ch ? `<span class="kz-auto-mini" title="${escapeAttr(ch.name)}">${portraitInner(ch)}</span>` : ''; }).join('');
+    const minis = c.team.map(id => { const ch = getChar(id); return ch ? `<span class="kz-auto-mini" title="${escapeAttr(kzNome(ch.name))}">${portraitInner(ch)}</span>` : ''; }).join('');
     const motivo = c.falaDe.length ? kzt('desc.motivoFala', { lista: c.falaDe.map(escapeHtml).join(', ') }) : c.palavrasHit ? kzt('desc.motivoPalavras') : kzt('desc.motivoGuerreiros');
     return `<div class="kz-auto-row">
       <div class="kz-auto-row-team">${minis}</div>
@@ -3989,9 +3990,9 @@ function renderDescribePanel(){
 function renderDescOptionRow(o, i, r){
   const minis = o.team.map((id, slot) => {
     const c = id && getChar(id);
-    return c ? `<span class="kz-auto-mini" title="${escapeAttr(kzt('time.casaNome', { n: slot + 1, nome: c.name }))}">${portraitInner(c)}</span>` : '<span class="kz-auto-mini empty"></span>';
+    return c ? `<span class="kz-auto-mini" title="${escapeAttr(kzt('time.casaNome', { n: slot + 1, nome: kzNome(c.name) }))}">${portraitInner(c)}</span>` : '<span class="kz-auto-mini empty"></span>';
   }).join('');
-  const why = o.why.map(w => { const c = getChar(w.id); return c ? `<div class="kz-desc-why"><b>${escapeHtml(c.name)}</b>${w.tags.length ? ' — ' + w.tags.map(escapeHtml).join(', ') : ''}</div>` : ''; }).join('');
+  const why = o.why.map(w => { const c = getChar(w.id); return c ? `<div class="kz-desc-why"><b>${escapeHtml(kzNome(c.name))}</b>${w.tags.length ? ' — ' + w.tags.map(escapeHtml).join(', ') : ''}</div>` : ''; }).join('');
   return `<div class="kz-auto-row${i === 0 ? ' top' : ''}">
     <div class="kz-auto-row-team">${minis}</div>
     <div class="kz-auto-row-info"><b>${i === 0 ? kzt('auto.melhor') : kzt('auto.opcao', { n: i + 1 })}</b>
@@ -4167,7 +4168,7 @@ function communityVisiblePosts(){
 function communityThumb(id, big){
   const c = getChar(id);
   if(!c) return '';
-  return `<span class="kz-com-thumb${big ? ' big' : ''}" title="${escapeAttr(c.name)}">${portraitInner(c)}</span>`;
+  return `<span class="kz-com-thumb${big ? ' big' : ''}" title="${escapeAttr(kzNome(c.name))}">${portraitInner(c)}</span>`;
 }
 // Mesmo visual do Montador de Combos: casas 4-5-6 na coluna da esquerda e 1-2-3 na da direita, cada uma com
 // retrato, nome, papéis, Persegue/Causa — e aqui também o nível de estrela de cada guerreiro.
@@ -4199,7 +4200,7 @@ function communityDonorOf(userId){
 function renderCommunityPreview(p){
   if(p.kind === 'team' && visualNovo()) return nvLineupHtml(p.data.team, true);
   if(p.kind === 'team'){
-    return `<div class="kz-com-pv-team">${p.data.team.map(id => { const c = id && getChar(id); return c ? `<span class="kz-com-thumb big" title="${escapeAttr(c.name)}">${portraitInner(c)}</span>` : `<span class="kz-com-thumb big empty"></span>`; }).join('')}</div>`;
+    return `<div class="kz-com-pv-team">${p.data.team.map(id => { const c = id && getChar(id); return c ? `<span class="kz-com-thumb big" title="${escapeAttr(kzNome(c.name))}">${portraitInner(c)}</span>` : `<span class="kz-com-thumb big empty"></span>`; }).join('')}</div>`;
   }
   const tiers = p.data.tiers;
   const top = tiers[0].items.slice(0, 6);
@@ -4217,7 +4218,7 @@ function renderCommunityCardNovo(p){
     const s = team.some(Boolean) ? comboSummary(team) : null;
     const bc = s && s.best && getChar(s.best.charId);
     corpo = nvLineupHtml(p.data.team, true)
-      + (bc ? `<div class="kz-nvco-chain"><span class="kz-nvco-hit">${kzt('com.maiorCadeia', { n: s.best.n + 1 })}</span>${kzt('com.maiorCadeiaDe')} ${escapeHtml(bc.name)} (${ABILITY_LABEL[s.best.key]})</div>` : '');
+      + (bc ? `<div class="kz-nvco-chain"><span class="kz-nvco-hit">${kzt('com.maiorCadeia', { n: s.best.n + 1 })}</span>${kzt('com.maiorCadeiaDe')} ${escapeHtml(kzNome(bc.name))} (${ABILITY_LABEL[s.best.key]})</div>` : '');
   } else {
     corpo = `<div class="kz-nvco-tiers">${p.data.tiers.slice(0, 3).map(t => `<div class="kz-nvco-tr"><span class="r" style="--tc:${t.color}">${escapeHtml(t.label || '—')}</span><div class="row">${t.items.slice(0, 9).map(id => communityThumb(id)).join('')}${t.items.length > 9 ? `<span class="more">+${t.items.length - 9}</span>` : ''}</div></div>`).join('')}</div>`;
   }
@@ -4361,7 +4362,7 @@ function renderCommunityPickerGrid(c){
   const sel = new Set(communityNormTeam(c.team).filter(Boolean));
   const list = communityOwnedChars().filter(ch => !q || ch.name.toLowerCase().includes(q));
   if(!list.length) return `<div class="kz-muted">${kzt('com.nenhumGuerreiro')}</div>`;
-  return list.map(ch => `<button type="button" class="kz-com-pick${sel.has(ch.id) ? ' on' : ''}" draggable="true" data-com-pick="${escapeAttr(ch.id)}" title="${escapeAttr(ch.name)}"><span class="kz-com-thumb">${portraitInner(ch)}</span><span class="nm">${escapeHtml(ch.name)}</span>${communityStarsHtml(getEntry(ch.id).level)}</button>`).join('');
+  return list.map(ch => `<button type="button" class="kz-com-pick${sel.has(ch.id) ? ' on' : ''}" draggable="true" data-com-pick="${escapeAttr(ch.id)}" title="${escapeAttr(kzNome(ch.name))}"><span class="kz-com-thumb">${portraitInner(ch)}</span><span class="nm">${escapeHtml(kzNome(ch.name))}</span>${communityStarsHtml(getEntry(ch.id).level)}</button>`).join('');
 }
 function renderComposeSlots(c){
   const team = communityNormTeam(c.team);
@@ -4792,7 +4793,7 @@ function nvComboCountHtml(team){
         <span class="kz-nv-lb">${kzt('cb.cadeias')}</span>
         <div class="kz-nvcb-big"><span class="ctr">${s.total}</span><span class="lbl"><span>${kzt(s.total === 1 ? 'cb.combo1' : 'cb.comboN')}</span><small>${kzt('cb.de', { n: m.max })}</small></span></div>
         <p class="kz-nvcb-txt">${kzt(s.starts === 1 ? 'cb.inicios1' : 'cb.iniciosN', { n: s.starts, a: m.starters, b: m.abilities })}</p>
-        ${bc ? `<p class="kz-nvcb-best">${kzt('cb.maiorCadeia', { hit: '<span class="kz-nvco-hit">' + kzt('com.maiorCadeia', { n: s.best.n + 1 }) + '</span>', nome: escapeHtml(bc.name), hab: ABILITY_LABEL[s.best.key] })}</p>`
+        ${bc ? `<p class="kz-nvcb-best">${kzt('cb.maiorCadeia', { hit: '<span class="kz-nvco-hit">' + kzt('com.maiorCadeia', { n: s.best.n + 1 }) + '</span>', nome: escapeHtml(kzNome(bc.name)), hab: ABILITY_LABEL[s.best.key] })}</p>`
              : `<p class="kz-nvcb-best">${kzt('cb.nenhumaAtiva')}</p>`}
       </div>`;
 }
@@ -4852,17 +4853,17 @@ function renderRecommendationsNovo(){
     const best = chainsWithChar(r.team, c.id)[0];
     const chain = best ? `
           <div class="kz-nvcb-chainbox"><span class="kz-nv-lb">${kzt('cb.melhorCadeia', { n: '<b>' + best.chain.length + '</b>' })}</span>
-          <ol class="kz-nvcb-chain">${best.chain.map((s, j)=>`<li>${j ? '<span class="zap" aria-hidden="true">›</span>' : ''}<span class="hit${s.charId === c.id ? ' me' : ''}"><b>${j + 1}</b>${nvFaceHtml(s.char)}${escapeHtml(s.char.name)}${j === 0 ? ` (${ABILITY_LABEL[best.abilityKey]})` : ''}</span></li>`).join('')}</ol></div>` : '';
+          <ol class="kz-nvcb-chain">${best.chain.map((s, j)=>`<li>${j ? '<span class="zap" aria-hidden="true">›</span>' : ''}<span class="hit${s.charId === c.id ? ' me' : ''}"><b>${j + 1}</b>${nvFaceHtml(s.char)}${escapeHtml(kzNome(s.char.name))}${j === 0 ? ` (${ABILITY_LABEL[best.abilityKey]})` : ''}</span></li>`).join('')}</ol></div>` : '';
     return `
       <div class="kz-rec-card kz-nvcb-sug${i === 0 ? ' top' : ''}">
         <div class="art">${portraitInner(c)}</div>
         <div class="body">
-          <div class="top"><span class="nm">${escapeHtml(c.name)}</span><span class="kz-nvco-hit">${r.gain > 0 ? kzt(r.gain > 1 ? 'cb.maisEncN' : 'cb.maisEnc1', { n: r.gain }) : kzt('cb.sinergia')}</span><span class="kz-nv-lb mut">${kzt('slot.casa', { n: r.slot + 1 })}</span></div>
+          <div class="top"><span class="nm">${escapeHtml(kzNome(c.name))}</span><span class="kz-nvco-hit">${r.gain > 0 ? kzt(r.gain > 1 ? 'cb.maisEncN' : 'cb.maisEnc1', { n: r.gain }) : kzt('cb.sinergia')}</span><span class="kz-nv-lb mut">${kzt('slot.casa', { n: r.slot + 1 })}</span></div>
           <div class="tags">${rolePillsHtml(c, 2, true)}${fill.length ? `<span class="kz-fill-tag">${kzt('cb.preenche', { lista: fill.map(k => PILLARS[k].label).join(', ') })}</span>` : ''}${effLineHtml(kzt('sf.persegue'), c.combo.triggers)}${effLineHtml(kzt('sf.causa'), c.combo.effects)}</div>
           ${chain}
           ${(r.sinergias || []).slice(0, 2).map(a=>`<div class="kz-syn-line">${synergyItemHtml(a)}</div>`).join('')}
         </div>
-        <button type="button" class="kz-btn${i === 0 ? ' kz-btn-primary' : ''}" data-rec-place="${c.id}" data-rec-slot="${r.slot}">${rep ? kzt('cb.trocarCom', { nome: escapeHtml(rep.name), n: r.slot + 1 }) : kzt('cb.colocarNa', { n: r.slot + 1 })}</button>
+        <button type="button" class="kz-btn${i === 0 ? ' kz-btn-primary' : ''}" data-rec-place="${c.id}" data-rec-slot="${r.slot}">${rep ? kzt('cb.trocarCom', { nome: escapeHtml(kzNome(rep.name)), n: r.slot + 1 }) : kzt('cb.colocarNa', { n: r.slot + 1 })}</button>
       </div>`;
   }).join('');
   return `<section class="kz-rec kz-nvcb-rec">${head}<div class="kz-nvcb-sugs">${cards}</div></section>`;
@@ -4975,9 +4976,9 @@ function renderRosterList(filterText){
   return chars.map(c=>{
     const at = state.team.indexOf(c.id);
     return `
-    <div class="kz-roster-item ${at>-1?'placed':''}" data-id="${c.id}" title="${escapeAttr(c.name + ' — ' + rolesOf(c).map(r=>ROLE_INFO[r].label).join(' / '))}" draggable="true">
+    <div class="kz-roster-item ${at>-1?'placed':''}" data-id="${c.id}" title="${escapeAttr(kzNome(c.name) + ' — ' + rolesOf(c).map(r=>ROLE_INFO[r].label).join(' / '))}" draggable="true">
       <div class="kz-roster-art">${portraitInner(c)}</div>
-      <div class="kz-roster-name">${escapeHtml(c.name)}</div>
+      <div class="kz-roster-name">${escapeHtml(kzNome(c.name))}</div>
       ${at>-1 ? `<span class="kz-roster-casa">${kzt('slot.casa', { n: at+1 })}</span>` : ''}
     </div>`;
   }).join('');
@@ -5007,7 +5008,7 @@ function slotCardHtml(c, idx, o){
     ${c ? `
     ${o.ro ? '' : `<button class="kz-slot-remove" ${rm} title="${kzt('cb.remover')}">✕</button>`}
     <div class="kz-slot-art">${portraitInner(c)}</div>
-    <div class="kz-slot-info">${visualNovo() ? `<span class="kz-slot-casa">${kzt('slot.casa', { n: idx+1 })}</span>` : ''}<div class="kz-slot-name">${escapeHtml(c.name)}</div>${o.stars || ''}<div class="kz-slot-roles">${rolePillsHtml(c, 2, true)}</div></div>${slotEffectsHtml(c)}`
+    <div class="kz-slot-info">${visualNovo() ? `<span class="kz-slot-casa">${kzt('slot.casa', { n: idx+1 })}</span>` : ''}<div class="kz-slot-name">${escapeHtml(kzNome(c.name))}</div>${o.stars || ''}<div class="kz-slot-roles">${rolePillsHtml(c, 2, true)}</div></div>${slotEffectsHtml(c)}`
     : `<span class="kz-slot-plus">${o.ro ? '' : '+'}</span><span class="kz-slot-hint">${o.hint || (o.sel ? kzt('cb.escolhaElenco') : kzt('cb.escolhaGuerreiro'))}</span>`}
   </div>`;
 }
@@ -5036,7 +5037,7 @@ function renderAtkSection(charId, abilityKey){
   const startCard = `
     <div class="kz-atk-card start">
       <div class="kz-atk-art">${portraitInner(c)}</div>
-      <div class="kz-atk-name">${escapeHtml(ability.name) || label}</div>
+      <div class="kz-atk-name">${escapeHtml(kzTrad(ability.name)) || label}</div>
       <div class="kz-atk-kind">${label}</div>
       ${effLineHtml(kzt('sf.causa'), ability.effects)}
     </div>`;
@@ -5046,8 +5047,8 @@ function renderAtkSection(charId, abilityKey){
     <div class="kz-atk-card ${isPriority?'priority':''}">
       ${isPriority ? `<span class="kz-atk-priority-tag">${kzt('cb.prioridade')}</span>` : ''}
       <div class="kz-atk-art">${portraitInner(tc)}</div>
-      <div class="kz-atk-name">${escapeHtml(tc.combo.name) || kzt('cb.ataqueComb')}</div>
-      <div class="kz-atk-kind">${escapeHtml(tc.name)}</div>
+      <div class="kz-atk-name">${escapeHtml(kzTrad(tc.combo.name)) || kzt('cb.ataqueComb')}</div>
+      <div class="kz-atk-kind">${escapeHtml(kzNome(tc.name))}</div>
       ${effLineHtml(kzt('sf.persegue'), [triggeredBy])}
       ${effLineHtml(kzt('sf.causa'), tc.combo.effects)}
     </div>`;
@@ -5065,7 +5066,7 @@ function renderAtkSection(charId, abilityKey){
         <div class="kz-atk-chain-step">
           <div class="kz-atk-chain-art">${portraitInner(step.char)}</div>
           <div class="kz-atk-chain-info">
-            <span class="nm">${escapeHtml(step.char.name)}${step.uso > 1 ? ` <small class="uso">${kzt('cb.ativacao', { n: step.uso })}</small>` : ''}</span>
+            <span class="nm">${escapeHtml(kzNome(step.char.name))}${step.uso > 1 ? ` <small class="uso">${kzt('cb.ativacao', { n: step.uso })}</small>` : ''}</span>
             ${effLineHtml(kzt('sf.persegue'), step.triggeredBy ? [step.triggeredBy] : null)}
             ${effLineHtml(kzt('sf.causa'), causes)}
           </div>
@@ -5150,7 +5151,7 @@ function comboCountHtml(teamArg){
   const startersTxt = kzt('cb.iniciamCombo', { a: '<b>' + m.starters + '</b>', b: m.abilities });
   if(!s.total) return `<div class="kz-combo-count none" title="${escapeAttr(tip)}"><b>0</b> ${kzt('cb.combosMinN')}<span class="max"> / ${m.max}</span><span class="sub">${startersTxt} · ${kzt('cb.nenhumaAtiva2')}</span></div>`;
   const bc = getChar(s.best.charId);
-  return `<div class="kz-combo-count" title="${escapeAttr(tip)}"><span class="big"><b>${s.total}</b> ${kzt(s.total>1 ? 'cb.combosMinN' : 'cb.combosMin1')}<span class="max"> / ${m.max}</span></span><span class="sub">${kzt('cb.subResumo', { inicios: kzt(s.starts>1 ? 'cb.inicioMinN' : 'cb.inicioMin1', { n: '<b>' + s.starts + '</b>' }), starters: startersTxt, hits: '<b>' + kzt('com.maiorCadeia', { n: s.best.n+1 }) + '</b>', nome: escapeHtml(bc.name), hab: ABILITY_LABEL[s.best.key] })}</span></div>`;
+  return `<div class="kz-combo-count" title="${escapeAttr(tip)}"><span class="big"><b>${s.total}</b> ${kzt(s.total>1 ? 'cb.combosMinN' : 'cb.combosMin1')}<span class="max"> / ${m.max}</span></span><span class="sub">${kzt('cb.subResumo', { inicios: kzt(s.starts>1 ? 'cb.inicioMinN' : 'cb.inicioMin1', { n: '<b>' + s.starts + '</b>' }), starters: startersTxt, hits: '<b>' + kzt('com.maiorCadeia', { n: s.best.n+1 }) + '</b>', nome: escapeHtml(kzNome(bc.name)), hab: ABILITY_LABEL[s.best.key] })}</span></div>`;
 }
 // Reordena SÓ quem já está em campo (as mesmas casas ocupadas) testando todas as ordens possíveis
 // — no máx. 6! = 720. Vence a que soma mais encadeamentos; empate: a cadeia mais longa; empate de novo:
@@ -5273,7 +5274,7 @@ function renderRecommendations(){
     const c = r.char, rep = r.replacedId ? getChar(r.replacedId) : null;
     const best = chainsWithChar(r.team, c.id)[0];
     const chainTxt = best ? best.chain.map((s,j)=>{
-      const nm = escapeHtml(s.char.name);
+      const nm = escapeHtml(kzNome(s.char.name));
       const tag = j === 0 ? ` <small>(${ABILITY_LABEL[best.abilityKey]})</small>` : '';
       return s.charId === c.id ? `<b>${nm}</b>${tag}` : `${nm}${tag}`;
     }).join('<span class="arr">→</span>') : '';
@@ -5282,7 +5283,7 @@ function renderRecommendations(){
       <div class="kz-rec-top">
         <div class="kz-rec-art">${portraitInner(c)}</div>
         <div>
-          <div class="kz-rec-name">${escapeHtml(c.name)}</div>
+          <div class="kz-rec-name">${escapeHtml(kzNome(c.name))}</div>
           <span class="kz-rec-gain">${r.gain > 0 ? kzt(r.gain>1 ? 'cb.maisEncN' : 'cb.maisEnc1', { n: r.gain }) : kzt('cb.sinergia')} · ${kzt('slot.casa', { n: r.slot+1 })}</span>
         </div>
       </div>
@@ -5290,7 +5291,7 @@ function renderRecommendations(){
       <div class="kz-rec-eff">${effLineHtml(kzt('sf.persegue'), c.combo.triggers)}${effLineHtml(kzt('sf.causa'), c.combo.effects)}</div>
       ${chainTxt ? `<div class="kz-rec-chain">${kzt('cb.melhorCadeiaTxt', { cadeia: chainTxt, hits: '<small>(' + kzt('com.maiorCadeia', { n: best.chain.length }) + ')</small>' })}</div>` : ''}
       ${(r.sinergias || []).slice(0, 2).map(a=>`<div class="kz-syn-line">${synergyItemHtml(a)}</div>`).join('')}
-      <button type="button" class="kz-btn kz-btn-sm" data-rec-place="${c.id}" data-rec-slot="${r.slot}">${rep ? kzt('cb.trocarCom', { nome: escapeHtml(rep.name), n: r.slot+1 }) : kzt('cb.colocarNa', { n: r.slot+1 })}</button>
+      <button type="button" class="kz-btn kz-btn-sm" data-rec-place="${c.id}" data-rec-slot="${r.slot}">${rep ? kzt('cb.trocarCom', { nome: escapeHtml(kzNome(rep.name)), n: r.slot+1 }) : kzt('cb.colocarNa', { n: r.slot+1 })}</button>
     </div>`;
   }).join('');
   return `<div class="kz-rec">${head}<div class="kz-rec-grid">${cards}</div></div>`;
@@ -5306,9 +5307,9 @@ function renderSimPanel(noHead){
   return `
   ${head}
   <div class="kz-sim-roster">${teamChars.map(c=>`
-    <button class="kz-sim-char ${c.id===sel?'active':''}" data-sim-char="${c.id}" title="${escapeAttr(c.name)}">
+    <button class="kz-sim-char ${c.id===sel?'active':''}" data-sim-char="${c.id}" title="${escapeAttr(kzNome(c.name))}">
       <span class="kz-sim-char-art">${portraitInner(c)}</span>
-      <span class="kz-sim-char-name">${escapeHtml(c.name)}</span>
+      <span class="kz-sim-char-name">${escapeHtml(kzNome(c.name))}</span>
     </button>`).join('')}</div>
   ${STARTER_KEYS.map(key=>renderAtkSection(sel, key)).join('')}`;
 }
@@ -5666,7 +5667,7 @@ function guideConjuntosHtml(b){
     const ch = state.characters.find(x=>x.name === e.nome);
     if(!ch) return `<span class="kz-cj-chip" title="${kzt('guia.aindaNaoNoSite')}"><span class="ini">${escapeHtml(initials(e.nome || ''))}</span><b>${nome}</b></span>`;
     const ico = iconeSrc(ch) || `portraits/mini/${slug(ch.name)}.webp`;
-    return `<button type="button" class="kz-cj-chip" data-guia-char="${escapeAttr(ch.id)}" title="${escapeAttr(kzt('chars.verFicha', { nome: ch.name }))}"><img src="${escapeAttr(ico)}" alt="" width="28" height="28" loading="lazy" data-onerr="hide"><b>${nome}</b></button>`;
+    return `<button type="button" class="kz-cj-chip" data-guia-char="${escapeAttr(ch.id)}" title="${escapeAttr(kzt('chars.verFicha', { nome: kzNome(ch.name) }))}"><img src="${escapeAttr(ico)}" alt="" width="28" height="28" loading="lazy" data-onerr="hide"><b>${nome}</b></button>`;
   };
   return `<div class="kz-cj">${(b.itens||[]).map(i=>{
     const ic = guideImgSrc(i.icone);
@@ -5882,10 +5883,10 @@ function renderFavCardNovo(c){
   <div class="kz-card kz-nvfav" data-id="${c.id}" title="${kzt('chars.verFichaCompleta')}">
     <div class="kz-card-art">${portraitInner(c)}</div>
     <div class="kz-card-body">
-      <div class="kz-card-name">${escapeHtml(c.name)||kzt('geral.semNome')}</div>
+      <div class="kz-card-name">${escapeHtml(kzNome(c.name))||kzt('geral.semNome')}</div>
       <div class="kz-nvfav-row">
         <span class="kz-card-meta">${nvMetaHtml(c)}</span>
-        <button type="button" class="kz-nvfav-btn" data-fav="${c.id}" aria-pressed="true" aria-label="${escapeAttr(kzt('fav.tirarNome', { nome: c.name }))}" title="${kzt('fav.tirar')}"><svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="#FFC21A"><path d="M12 2.8l2.8 6 6.5.7-4.9 4.4 1.4 6.5L12 17l-5.8 3.4 1.4-6.5-4.9-4.4 6.5-.7z"/></svg></button>
+        <button type="button" class="kz-nvfav-btn" data-fav="${c.id}" aria-pressed="true" aria-label="${escapeAttr(kzt('fav.tirarNome', { nome: kzNome(c.name) }))}" title="${kzt('fav.tirar')}"><svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="#FFC21A"><path d="M12 2.8l2.8 6 6.5.7-4.9 4.4 1.4 6.5L12 17l-5.8 3.4 1.4-6.5-4.9-4.4 6.5-.7z"/></svg></button>
       </div>
     </div>
   </div>`;
@@ -6427,7 +6428,7 @@ function renderPerfilTab(){
         </div>
         ${patenteChoiceHtml(p)}
         ${avatarPickerHtml(p, state.discordUser.avatarUrl ? `<img src="${escapeAttr(state.discordUser.avatarUrl)}" alt="" data-onerr="hide">` : donorAvatarInner(p.nickname || state.discordUser.username))}
-        ${PROFILE_CHAR_AVATAR ? `<div><label class="kz-nvpf-lb" for="perfilAvatarSelect">${kzt('perfil.avatar')}</label><select id="perfilAvatarSelect"><option value="">${kzt('perfil.fotoDiscord')}</option>${state.characters.map(c=>`<option value="${c.id}" ${c.id===p.avatarCharId?'selected':''}>${escapeHtml(c.name)}</option>`).join('')}</select></div>` : ''}
+        ${PROFILE_CHAR_AVATAR ? `<div><label class="kz-nvpf-lb" for="perfilAvatarSelect">${kzt('perfil.avatar')}</label><select id="perfilAvatarSelect"><option value="">${kzt('perfil.fotoDiscord')}</option>${state.characters.map(c=>`<option value="${c.id}" ${c.id===p.avatarCharId?'selected':''}>${escapeHtml(kzNome(c.name))}</option>`).join('')}</select></div>` : ''}
         <div class="kz-nvpf-checks">
           <label class="kz-honor-check"><input type="checkbox" id="perfilShowSocialsInput" ${p.showSocials?'checked':''}> ${kzt('perfil.mostrarRedes')}</label>
           <label class="kz-honor-check"><input type="checkbox" id="perfilPublicInput" ${p.public?'checked':''}> ${kzt('perfil.aparecer')}</label>
@@ -6493,7 +6494,7 @@ function renderPerfilTab(){
           <label class="field-label">${kzt('perfil.avatar')}</label>
           <select id="perfilAvatarSelect">
             <option value="">${kzt('perfil.fotoDiscord')}</option>
-            ${state.characters.map(c=>`<option value="${c.id}" ${c.id===p.avatarCharId?'selected':''}>${escapeHtml(c.name)}</option>`).join('')}
+            ${state.characters.map(c=>`<option value="${c.id}" ${c.id===p.avatarCharId?'selected':''}>${escapeHtml(kzNome(c.name))}</option>`).join('')}
           </select>
         </div>` : ''}
         <label class="kz-honor-check"><input type="checkbox" id="perfilShowSocialsInput" ${p.showSocials?'checked':''}> ${kzt('perfil.mostrarRedes')}</label>
@@ -7310,7 +7311,7 @@ function renderModal(){
         <div class="grid-2">
           <div>
             <label class="field-label">Nome</label>
-            <input type="text" id="f_name" value="${escapeAttr(c.name)}" placeholder="Ex: Son Goku">
+            <input type="text" id="f_name" value="${escapeAttr(kzNome(c.name))}" placeholder="Ex: Son Goku">
           </div>
           <div>
             <label class="field-label">Gênero</label>
@@ -7539,7 +7540,7 @@ function renderPickerCards(q){
     const placedAt = state.team.indexOf(c.id);
     return `<div class="picker-card ${placedAt>-1?'placed':''}" data-id="${c.id}">
       <div class="sprite">${portraitInner(c)}</div>
-      <div class="pc-name">${escapeHtml(c.name)}</div>
+      <div class="pc-name">${escapeHtml(kzNome(c.name))}</div>
       ${placedAt>-1 ? `<div class="pc-tag">${kzt('slot.casa', { n: placedAt+1 })}</div>` : ''}
     </div>`;
   }).join('')}</div>`;

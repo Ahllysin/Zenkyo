@@ -22,6 +22,14 @@
   // Termos do jogo que vêm dos dados em português (Ataque, Fogo, Saiyajin, tags...): os dados continuam em português
   // (são chaves lógicas); só o texto mostrado muda. 'termo.<valor em português>' em js/lang/en.js; sem tradução, mostra o original.
   g.kzTermo = v => { const s = dic[lang]['termo.' + v]; return s != null ? s : v; };
+  // Textos do jogo (nomes de personagens e de habilidades, descrições): a chave é o próprio texto em português, como está em
+  // dados.js. Vêm de js/dados-en.js (só em /en/) por kzAddDados({ 'texto em português': 'English text' }). Sem tradução, o
+  // português aparece (nunca some nem quebra). Os dados em si continuam em português: são chaves lógicas do código.
+  const dadosEn = {};
+  g.kzAddDados = mapa => { Object.assign(dadosEn, mapa); };
+  g.kzTrad = t => { if(lang !== 'en' || t == null) return t; const s = dadosEn[t]; return s != null ? s : t; };
+  g.kzNome = n => g.kzTrad(n);   // nome de personagem
+  g.kzDadosEn = dadosEn;         // para os testes e o relatório de cobertura
   // Valores citados em textos (limites de apoio): o site guarda tudo em reais; em inglês mostra o equivalente em dólar pela
   // taxa fixa KZ_USD_BRL (a mesma que a função de pagamento internacional usa). Para ajustar, mude só esta constante.
   g.KZ_USD_BRL = 5;

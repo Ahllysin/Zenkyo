@@ -89,7 +89,8 @@ function gerarIngles(htmlPt){
   h = h.replace(seletor, () => `<a class="kz-lang-switch" id="langSwitch" href="./" hreflang="${attr(en['idioma.outroCodigo'])}" lang="${attr(en['idioma.outroCodigo'])}" title="${attr(en['idioma.trocar'])}" aria-label="${attr(en['idioma.trocar'])}">${en['idioma.outroSigla']}</a>`);
   const ptJs = h.match(/<script src="js\/lang\/pt\.js(?:\?v=[A-Za-z0-9]+)?"><\/script>/);
   if(!ptJs) throw new Error('index.html não carrega js/lang/pt.js');
-  h = h.replace(ptJs[0], () => ptJs[0] + '\n<script src="js/lang/en.js?v=' + hashTexto('js/lang/en.js') + '"></script>');
+  // en.js (interface) e dados-en.js (nomes e descrições do jogo) só carregam em /en/
+  h = h.replace(ptJs[0], () => ptJs[0] + '\n<script src="js/lang/en.js?v=' + hashTexto('js/lang/en.js') + '"></script>\n<script src="js/lang/dados-en.js?v=' + hashTexto('js/lang/dados-en.js') + '"></script>');
 
   // Textos fixos do HTML marcados com data-i18n*: o português fica escrito no próprio index.html e o inglês entra aqui.
   //   data-i18n-attr="title:chave;aria-label:outra"  troca o valor desses atributos
