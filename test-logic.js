@@ -2342,6 +2342,25 @@ async function main(){
     assert.strictEqual(pt.kzt('meta.titulo'), 'Zenkyo — guerreiros, combos e tier list', 'página em português ignora o dicionário inglês');
   });
 
+  await test('Idioma: textos do jogo em inglês — toda chave existe nos dados, números e [termos] batem, e o que falta cai no português', () => {
+    const fs = require('fs'), vm = require('vm');
+    const dados = {};
+    ['js/lang/dados-en.js', 'js/lang/dados-en-extra.js'].forEach(f => vm.runInNewContext(fs.readFileSync(f, 'utf8'), { kzAddDados: o => Object.assign(dados, o) }));
+    const fonte = fs.readFileSync('js/dados.js', 'utf8') + fs.readFileSync('js/app.js', 'utf8');
+    const solta = [], difere = [];
+    const nums = s => (String(s).replace(/(\d),(\d)/g, '$1.$2').match(/\d+(?:\.\d+)?/g) || []).sort().join(',');
+    const cols = s => (String(s).match(/\[[^\]]+\]/g) || []).length;
+    Object.entries(dados).forEach(([pt, en]) => {
+      const bruto = JSON.stringify(pt).slice(1, -1).replace(/\\u00([0-9a-f]{2})/g, (_, h) => String.fromCharCode(parseInt(h, 16)));
+      if(!fonte.includes(pt) && !fonte.includes(bruto) && !fonte.includes(pt.replace(/'/g, "\\'"))) solta.push(pt.slice(0, 50));
+      if(nums(pt) !== nums(en) || cols(pt) !== cols(en)) difere.push(pt.slice(0, 50));
+    });
+    assert.deepStrictEqual(solta, [], 'traduções de texto que não existe mais nos dados: ' + solta.slice(0, 5).join(' | '));
+    assert.deepStrictEqual(difere, [], 'números ou [termos] diferentes do português: ' + difere.slice(0, 5).join(' | '));
+    const en = carregaIdioma('en', ['js/lang/pt.js', 'js/lang/en.js', 'js/lang/dados-en.js']);
+    assert.strictEqual(en.kzTrad('texto que ninguém traduziu'), 'texto que ninguém traduziu');
+  });
+
   await test('Idioma: toda chave do inglês existe no português (sem chave órfã ou com erro de digitação)', () => {
     const ctx = carregaIdioma('en', ['js/lang/pt.js', 'js/lang/en.js']);
     const pt = Object.keys(ctx.kzLangTextos.pt), en = Object.keys(ctx.kzLangTextos.en);

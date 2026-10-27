@@ -90,7 +90,7 @@ function gerarIngles(htmlPt){
   const ptJs = h.match(/<script src="js\/lang\/pt\.js(?:\?v=[A-Za-z0-9]+)?"><\/script>/);
   if(!ptJs) throw new Error('index.html não carrega js/lang/pt.js');
   // en.js (interface) e dados-en.js (nomes e descrições do jogo) só carregam em /en/
-  h = h.replace(ptJs[0], () => ptJs[0] + '\n<script src="js/lang/en.js?v=' + hashTexto('js/lang/en.js') + '"></script>\n<script src="js/lang/dados-en.js?v=' + hashTexto('js/lang/dados-en.js') + '"></script>');
+  h = h.replace(ptJs[0], () => ptJs[0] + '\n<script src="js/lang/en.js?v=' + hashTexto('js/lang/en.js') + '"></script>\n<script src="js/lang/dados-en.js?v=' + hashTexto('js/lang/dados-en.js') + '"></script>\n<script src="js/lang/dados-en-extra.js?v=' + hashTexto('js/lang/dados-en-extra.js') + '"></script>');
 
   // Textos fixos do HTML marcados com data-i18n*: o português fica escrito no próprio index.html e o inglês entra aqui.
   //   data-i18n-attr="title:chave;aria-label:outra"  troca o valor desses atributos
@@ -142,6 +142,9 @@ async function paginas(){
   const par = (pt, en, pri) => { const alt = [['pt-BR', SITE + pt], ['en', SITE + en]]; return [{ loc: SITE + pt, pri, alt }, { loc: SITE + en, pri, alt }]; };
   const urls = [...par('/', '/en/', '1.0'), ...par('/privacidade.html', '/en/privacy.html', '0.3'), ...par('/termos.html', '/en/terms.html', '0.3')];
   const esperadas = new Set();
+  const dadosEn = {};
+  ['js/lang/dados-en.js', 'js/lang/dados-en-extra.js'].forEach(f => vm.runInNewContext(read(f), { kzAddDados: o => Object.assign(dadosEn, o) }));
+  const enDic = dicionario('js/lang/en.js');
   chars.forEach(c => {
     const desc = [c.raridade, c.tipo && 'tipo ' + c.tipo, c.afinidade && 'afinidade ' + c.afinidade].filter(Boolean).join(' · ');
     const hab = [['Habilidade', c.skill], ['Suprema', c.supreme], ['Ataque combinado', c.combo]].filter(([, a]) => a && (a.name || a.desc))
@@ -178,14 +181,47 @@ ${hab}
 <footer>Zenkyo é um site de fã, sem vínculo com Bandai Namco, Toei Animation, Shueisha ou os criadores do jogo. Dragon Ball e as imagens pertencem aos seus donos.</footer>
 </main></body></html>
 `;
+    const urlEn = `${SITE}/p/en/${c.slug}.html`;
+    const alt = [['pt-BR', url], ['en', urlEn]];
+    const links = alt.map(([l, h]) => `<link rel="alternate" hreflang="${l}" href="${h}">`).join('\n');
     esperadas.add('p/' + c.slug + '.html');
-    gravar('p/' + c.slug + '.html', pagina);
-    urls.push({ loc: url, pri: '0.6' });
+    gravar('p/' + c.slug + '.html', pagina.replace(`<link rel="canonical" href="${url}">`, () => `<link rel="canonical" href="${url}">\n${links}`));
+    urls.push({ loc: url, pri: '0.6', alt });
+    // versão em inglês: mesmo conteúdo, com o texto do jogo vindo de js/lang/dados-en*.js (o que faltar fica em português)
+    const T = s => (s != null && dadosEn[s] != null) ? dadosEn[s] : s;
+    const termo = s => (enDic['termo.' + s] != null ? enDic['termo.' + s] : s);
+    const nomeEn = T(c.nome);
+    const descEn = [c.raridade, c.tipo && termo(c.tipo) + ' type', c.afinidade && termo(c.afinidade) + ' affinity'].filter(Boolean).join(' · ');
+    const habEn = [['Skill', c.skill], ['Supreme', c.supreme], ['Combo attack', c.combo]].filter(([, a]) => a && (a.name || a.desc))
+      .map(([r, a]) => `<h2>${r}${a.name ? ': ' + esc(T(a.name)) : ''}</h2><p>${esc(T(a.desc))}</p>`).join('\n');
+    const metaEn = `${nomeEn} (${descEn}) in Dragon Ball: skills, supreme and combo. See the full profile on Zenkyo.`;
+    const paginaEn = pagina
+      .replace('<html lang="pt-BR">', '<html lang="en">')
+      .replace(/<title>[^]*?<\/title>/, () => `<title>${esc(nomeEn)} — Zenkyo</title>`)
+      .replace(/<meta name="description" content="[^"]*">/, () => `<meta name="description" content="${esc(metaEn)}">`)
+      .replace(`<link rel="canonical" href="${url}">`, () => `<link rel="canonical" href="${urlEn}">\n${links}`)
+      .replace(/<meta property="og:title" content="[^"]*"><meta property="og:description" content="[^"]*">/, () => `<meta property="og:title" content="${esc(nomeEn)} — Zenkyo"><meta property="og:description" content="${esc(metaEn)}">`)
+      .replace(`<meta property="og:url" content="${url}">`, () => `<meta property="og:url" content="${urlEn}">`)
+      .replace(/(href|src)="\.\.\//g, '$1="../../')
+      .replace(/<body>[^]*<\/main><\/body>/, () => `<body><main>
+<p class="meta"><a href="../../en/">Zenkyo</a> › Warriors</p>
+<h1>${esc(nomeEn)}</h1>
+<p class="meta">${esc([c.raridade, termo(c.tipo), termo(c.afinidade), c.raca !== 'Nenhum' ? termo(c.raca) : '', termo(c.genero)].filter(Boolean).join(' · '))}${c.tags.length ? '<br>' + c.tags.map(t => esc(termo(t))).join(' · ') : ''}</p>
+${temRetrato ? `<img src="../../portraits/${c.slug}.webp" alt="${esc(nomeEn)}" width="260" loading="lazy">` : ''}
+${habEn}
+<a class="btn" href="../../en/#/guerreiro/${c.slug}">Open the full profile on Zenkyo</a>
+<footer>Zenkyo is a fan site, not affiliated with Bandai Namco, Toei Animation, Shueisha or the game's creators. Dragon Ball and its images belong to their owners.</footer>
+</main></body>`);
+    esperadas.add('p/en/' + c.slug + '.html');
+    gravar('p/en/' + c.slug + '.html', paginaEn);
+    urls.push({ loc: urlEn, pri: '0.6', alt });
   });
   // páginas que não existem mais (personagem removido/renomeado) saem junto
-  const pdir = path.join(ROOT, 'p');
-  if(fs.existsSync(pdir)) fs.readdirSync(pdir).filter(f => f.endsWith('.html') && !esperadas.has('p/' + f)).forEach(f => {
-    if(CHECK) problemas.push('p/' + f + ' sobrou (guerreiro não existe mais)'); else fs.unlinkSync(path.join(pdir, f));
+  [['p', ''], ['p/en', 'en/']].forEach(([d, pre]) => {
+    const pdir = path.join(ROOT, d);
+    if(fs.existsSync(pdir)) fs.readdirSync(pdir).filter(f => f.endsWith('.html') && !esperadas.has('p/' + pre + f)).forEach(f => {
+      if(CHECK) problemas.push(d + '/' + f + ' sobrou (guerreiro não existe mais)'); else fs.unlinkSync(path.join(pdir, f));
+    });
   });
   gravar('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n' +
     urls.map(u => `  <url><loc>${u.loc}</loc>${(u.alt || []).map(([l, h]) => `<xhtml:link rel="alternate" hreflang="${l}" href="${h}"/>`).join('')}<lastmod>${hoje}</lastmod><priority>${u.pri}</priority></url>`).join('\n') + '\n</urlset>\n');

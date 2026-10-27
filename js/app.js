@@ -2172,7 +2172,7 @@ function nvfAbilityBlock(c, g){
         <div class="kz-nvf-mv-side">${nvfIconHtml(d, NVF_SEAL[g.title] || '技')}<h2>${escapeHtml(grupoTitulo(g.title))}</h2>${efeitos}</div>
         <div class="kz-nvf-mv-main">
           ${niveis}
-          <div class="kz-nvf-mv-meta">${textStarsHtml(t.reqLevel)}<span class="lb">${escapeHtml(kzTermo(tipo))} · ${escapeHtml(reqLabelText(t.reqLevel))}</span>${d && d.dano ? `<span class="kz-nvf-dmg">${kzt('hab.dano', { v: escapeHtml(d.dano) })}</span>` : ''}</div>
+          <div class="kz-nvf-mv-meta">${textStarsHtml(t.reqLevel)}<span class="lb">${escapeHtml(kzTermo(tipo))} · ${escapeHtml(reqLabelText(t.reqLevel))}</span>${d && d.dano ? `<span class="kz-nvf-dmg">${kzt('hab.dano', { v: escapeHtml(kzTrad(d.dano)) })}</span>` : ''}</div>
           <h3 class="kz-nvf-sn">${d ? (escapeHtml(kzTrad(d.nome)) || '—') : kzt('hab.naoCapturado')}</h3>
           <p class="kz-nvf-ds">${d ? nvfTermsHtml(kzTrad(d.desc)) : kzt('hab.naoExtraido')}</p>
         </div>
@@ -2227,7 +2227,7 @@ function renderCharDetailNovo(c){
     c.element && [kzt('filtro.raca'), cor(c.element)],
     c.gender && [kzt('ficha.genero'), cor(c.gender)],
   ].filter(Boolean).map(([k, v])=>`<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
-  const tags = (c.tags || []).map(t=>{ const r = TAG_RGB[t] || ['201,162,75','#e0c070']; return `<span class="kz-nvf-tg" style="--c:${r[0]};--t:${r[1]}">#${escapeHtml(t)}</span>`; }).join('');
+  const tags = (c.tags || []).map(t=>{ const r = TAG_RGB[t] || ['201,162,75','#e0c070']; return `<span class="kz-nvf-tg" style="--c:${r[0]};--t:${r[1]}">#${escapeHtml(kzTermo(t))}</span>`; }).join('');
   const papeis = rolesOf(c).slice(0, 3).map((r, i)=>{ const info = ROLE_INFO[r]; return `<div class="kz-nvf-rolebig" style="--t:${info.rgb[1]}">${nvfSealHtml(info.glyph, info.rgb)}<span><b>${escapeHtml(info.label)}</b><small>${i === 0 ? kzt('papel.papelPrincipal') : kzt('papel.papelSecundario')}</small></span></div>`; }).join('');
   const nome = kzNome(c.name) || kzt('geral.semNome'), fs = nome.length > 20 ? 72 : nome.length > 13 ? 92 : 116;   // nome longo: título menor
   const corpo = cur[0] === 'habilidades'
@@ -2311,7 +2311,7 @@ function renderDetailAbilityRow(tier){
         ${textStarsHtml(tier.reqLevel)}
         <span class="kz-ab-tipo" style="color:${tipoColor(tipo)};">${escapeHtml(kzTermo(tipo))}</span>
         <span class="kz-ab-req">${reqLabelText(tier.reqLevel)}</span>
-        ${!noData && data.dano ? `<span class="kz-ab-dano">${kzt('hab.dano', { v: escapeHtml(data.dano) })}</span>` : ''}
+        ${!noData && data.dano ? `<span class="kz-ab-dano">${kzt('hab.dano', { v: escapeHtml(kzTrad(data.dano)) })}</span>` : ''}
       </div>
       <div class="kz-ab-name">${noData ? kzt('hab.naoCapturado') : (escapeHtml(kzTrad(data.nome))||'—')}</div>
       <div class="kz-ab-desc">${noData ? kzt('hab.naoExtraido') : escapeHtml(kzTrad(data.desc||''))}</div>
@@ -2373,7 +2373,7 @@ const AFFINITY_EXP = [5, 20, 60];
 // Fontes conhecidas (guia de Afinidade, só para os presentes do grupo do Goku).
 const AFFINITY_SOURCES = { 'bolinhos-de-arroz|lagosta-de-cereja|bife-na-brasa':'Teste Diário, Caminho da Serpente, Loja de Vínculo e, conforme o presente, Mercearia, Loja da Arena, Loja de Teste, Pacote Semanal e Arena Multisservidor.' };
 function affinityGiftsOf(name){
-  return (AFFINITY_CHAR_GIFTS[name] || []).map((slug, i)=>({ slug, nome: AFFINITY_GIFTS[slug] || slug, exp: AFFINITY_EXP[i] }));
+  return (AFFINITY_CHAR_GIFTS[name] || []).map((slug, i)=>({ slug, nome: kzTrad(AFFINITY_GIFTS[slug] || slug), exp: AFFINITY_EXP[i] }));
 }
 function affinityKey(name){ return (AFFINITY_CHAR_GIFTS[name] || []).join('|'); }
 // Guerreiros que aceitam exatamente os mesmos 3 presentes.
@@ -2411,7 +2411,7 @@ function affinityIconHtml(slug){ return /^[a-z0-9-]{1,60}$/.test(slug) ? `<img s
 function affinityResumoHtml(){
   const grupos = affinityGroups();
   const nomeLink = n=>{ const o = state.characters.find(x=>x.name === n); return o ? `<button type="button" class="kz-link-btn" data-open-char="${escapeAttr(o.id)}">${escapeHtml(n)}</button>` : escapeHtml(n); };
-  const linhas = grupos.map(g=>`<tr><td>${g.membros.map(nomeLink).join(', ')}</td>${g.slugs.map(s=>`<td><span class="cdp-gift-cell">${affinityIconHtml(s)}${escapeHtml(AFFINITY_GIFTS[s] || s)}</span></td>`).join('')}</tr>`).join('');
+  const linhas = grupos.map(g=>`<tr><td>${g.membros.map(nomeLink).join(', ')}</td>${g.slugs.map(s=>`<td><span class="cdp-gift-cell">${affinityIconHtml(s)}${escapeHtml(kzTrad(AFFINITY_GIFTS[s] || s))}</span></td>`).join('')}</tr>`).join('');
   return `
   <div class="cdp-aff-block">
     <h3 class="cdp-aff-title">${kzt('afin.comoFunciona')}</h3>
@@ -2440,12 +2440,12 @@ function renderCharFoodSection(c){
     <div class="cdp-food-row">${foods.map(f=>`
       <div class="cdp-food-item"${f.slug ? ' tabindex="0"' : ''}>
         <div class="cdp-food-icon ${f.exp ? affinityFoodTier(f.exp) : foodRarityClass(f.raridade)}">${f.slug ? affinityIconHtml(f.slug) : '🍽'}</div>
-        <div class="cdp-food-name">${escapeHtml(f.nome)||'—'}</div>
+        <div class="cdp-food-name">${escapeHtml(kzTrad(f.nome))||'—'}</div>
         ${f.exp ? `<div class="cdp-food-exp">+${+f.exp} EXP</div>` : ''}
         ${f.slug ? affinityPopHtml(f.slug, c.name) : ''}
       </div>`).join('')}</div>
     ${outros.length ? `<div class="cdp-aff-group">${kzt('afin.mesmosPresentes')}${outros.map(n=>{ const o = state.characters.find(x=>x.name === n); return o ? `<button type="button" class="kz-link-btn" data-open-char="${escapeAttr(o.id)}">${escapeHtml(n)}</button>` : escapeHtml(n); }).join(', ')} <span>${kzt('afin.cadaUm')}</span></div>` : ''}
-    ${fontes ? `<div class="cdp-aff-src"><b>${kzt('afin.ondeConseguir')}</b> ${escapeHtml(fontes)}</div>` : ''}
+    ${fontes ? `<div class="cdp-aff-src"><b>${kzt('afin.ondeConseguir')}</b> ${escapeHtml(kzTrad(fontes))}</div>` : ''}
   </div>` : `<div class="kz-empty-ball"><img src="${ballSrc(2)}" alt=""><div>${kzt('afin.semPresentes', { nome: escapeHtml(kzNome(c.name)) })}</div></div>`;
   return topo + affinityResumoHtml();
 }
@@ -3293,6 +3293,7 @@ function analyzeRoles(c){
     // golpe em área (todos os inimigos, fileira, coluna, "de cada inimigo"): a chance vale pra cada alvo, então não é "chance baixa"
     const aoe = /ataca (todos|uma fileira|uma coluna|toda)|todos os inimigos|de cada inimigo|fileira de inimigos|coluna de inimigos|fileira inimiga|coluna inimiga/i.test(txt);
     roleClauses(txt).forEach(raw => {
+      _roleEvSrc.set(raw, txt);
       const cl = roleMainPart(raw.toLowerCase());
       const tg = roleTarget(cl);
       const chm = cl.match(/(\d+(?:,\d+)?)% de chance/);
@@ -3346,8 +3347,15 @@ function rolePillHtml(role, small){
 function rolePillsHtml(c, max, small){
   return rolesOf(c).slice(0, max || 3).map(r => rolePillHtml(r, small)).join('');
 }
+const _roleEvSrc = new Map();
 function roleEvidence(txt){
   let s = String(txt || '').trim();
+  if(KZ_LANG !== 'pt'){
+    // o trecho é um pedaço do texto em português: mostra o texto de origem traduzido
+    const src = _roleEvSrc.get(txt);
+    const tr = src ? kzTrad(src) : null;
+    if(tr && tr !== src) s = tr.trim();
+  }
   s = s.charAt(0).toUpperCase() + s.slice(1);
   if(s.length > 150) s = s.slice(0, 150).replace(/\s+\S*$/, '') + '…';
   return s;
@@ -3483,15 +3491,14 @@ function synergyNorm(team){
 }
 function synergyItemHtml(a){
   const alvos = a.alvos.map(id=>getChar(id)).filter(Boolean);
-  const quem = alvos.length && alvos.length <= 3 ? ` <span style="opacity:.8">(${alvos.map(o=>escapeHtml(o.name)).join(', ')})</span>` : alvos.length > 3 ? ` <span style="opacity:.8">(${alvos.length} aliados)</span>` : '';
-  return `<span class="g">✦</span><b>${escapeHtml(a.nome)}</b>: ${escapeHtml(a.txt)}${quem}`;
+  const quem = alvos.length && alvos.length <= 3 ? ` <span style="opacity:.8">(${alvos.map(o=>escapeHtml(kzNome(o.name))).join(', ')})</span>` : alvos.length > 3 ? ` <span style="opacity:.8">(${alvos.length} aliados)</span>` : '';
+  return `<span class="g">✦</span><b>${escapeHtml(a.nome)}</b>: ${escapeHtml(kzTrad(a.txt))}${quem}`;
 }
 // Na ficha: o que o guerreiro faz pela equipe e quem fortalece ele.
 function synergyInfo(c){
   const proprias = (SYNERGY_RULES[c.name] || []).map(r=>{
-    if(r.grupo){ const g = SYNERGY_GROUPS[r.grupo]; const n = state.characters.filter(o=>o.id !== c.id && g.test(o)).length; return `${escapeHtml(r.txt)} <span class="rx">${kzt('sin.nGuerreiros', { n, grupo: escapeHtml(g.label) })}</span>`; }
-    if(r.prefixo) return escapeHtml(r.txt);
-    return escapeHtml(r.txt);
+    if(r.grupo){ const g = SYNERGY_GROUPS[r.grupo]; const n = state.characters.filter(o=>o.id !== c.id && g.test(o)).length; return `${escapeHtml(kzTrad(r.txt))} <span class="rx">${kzt('sin.nGuerreiros', { n, grupo: escapeHtml(g.label) })}</span>`; }
+    return escapeHtml(kzTrad(r.txt));
   });
   const recebe = [];
   state.characters.forEach(o=>{
