@@ -149,7 +149,9 @@ const STAR_SCHEDULE = Array.from({ length:15 }, (_, i) => ({ reqLevel:i + 1, sta
 // Fases das estrelas: Dourada 1-5, Azul 6-10 (UR) e LR 11-15 (estrelas coloridas; só os SSR chegam lá).
 function starPhase(lv){ return lv > 10 ? 'lr' : lv > 5 ? 'blue' : 'gold'; }
 function starFilled(lv){ return lv > 10 ? lv - 10 : lv > 5 ? lv - 5 : lv; }
-function maxStarLevel(c){ return (c && rarityLabel(c.rarity) === 'SSR') ? 15 : 10; }
+// Só chega ao LR quem é SSR e tem dados de LR (ABILITY_PROGRESSION[nome].lr); os demais param no 10.
+function temDadosLR(c){ const p = c && ABILITY_PROGRESSION[c.name]; return !!(p && Array.isArray(p.lr) && p.lr.length); }
+function maxStarLevel(c){ return (c && rarityLabel(c.rarity) === 'SSR' && temDadosLR(c)) ? 15 : 10; }
 function starLabelFor(reqLevel){ return (STAR_SCHEDULE.find(s=>s.reqLevel===reqLevel)||{}).starLabel || kzt('estrelas.nivel', { n: reqLevel }); }
 
 // Passivas "gerais" universais — mesmo nome/texto pra TODOS os personagens (não vêm do
@@ -668,7 +670,10 @@ async function saveCollection(){
 }
 
 function getEntry(charId){
-  return state.collection[charId] || { owned: false, level: 0 };
+  const e = state.collection[charId] || { owned: false, level: 0 };
+  // Nível LR salvo de personagem sem dados de LR volta para 10.
+  if(e.level > 10){ const c = getChar(charId); if(c && maxStarLevel(c) <= 10) return Object.assign({}, e, { level: 10 }); }
+  return e;
 }
 
 function toggleAcquire(charId){

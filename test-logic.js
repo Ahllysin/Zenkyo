@@ -1834,6 +1834,8 @@ async function main(){
     assert.ok(r.com12.includes('kz-com-stars lr') && r.com12.includes('Nv 12') && r.com12.includes('★★☆☆☆'));
     assert.ok(r.com15.includes('★★★★★') && r.com8.includes('blue') && r.com16 === '');
     assert.deepStrictEqual(r.lim, [15, 10, 10], 'só SSR chega ao LR (Beerus SSR; Android 17 SR e Kuririn R param no 10)');
+    const lr = evalIn(sandbox, `(() => { const ssr = state.characters.filter(c => rarityLabel(c.rarity) === 'SSR'); return { com: ssr.filter(c => maxStarLevel(c) === 15).length, certo: ssr.every(c => (maxStarLevel(c) === 15) === temDadosLR(c)), tem: ssr.filter(temDadosLR).length }; })()`);
+    assert.ok(lr.certo && lr.com === lr.tem && lr.com === 19, 'SSR sem dados de LR não chega ao 15 (só os 19 com habilidades de LR)');
   });
 
   await test('habilidades de LR: 19 guerreiros com 5 itens (★11 a ★15); entram no grupo "Super Despertar (LR)" e só liberam com o nível', () => {
