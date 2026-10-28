@@ -144,6 +144,34 @@ async function main(){
       });
       console.log(`  ${(j.guias || []).length} guias conferidos.`);
     }
+
+    // guias/guias-en.json: mesma estrutura do português (mesmos ids, tipos de bloco, caminhos de imagem, números de linha/coluna e nomes de guerreiros em ex[].nome)
+    console.log('\nGuias do jogo em inglês (guias/guias-en.json)');
+    let en = null;
+    try{ en = JSON.parse(fs.readFileSync(path.join(ROOT, 'guias', 'guias-en.json'), 'utf8')); }catch(e){ fail('guias/guias-en.json não abre: ' + e.message); }
+    if(j && en){
+      const TEXTO_FIXO = new Set(['t', 'id', 'n', 'num', 'src', 'icone', 'slug', 'apoio', 'nivel', 'frag']);
+      let textos = 0, iguais = 0;
+      const compara = (a, b, caminho, chave) => {
+        if(typeof a !== typeof b || Array.isArray(a) !== Array.isArray(b)) return fail(`guias-en.json: tipo diferente em ${caminho}`);
+        if(Array.isArray(a)){
+          if(a.length !== b.length) return fail(`guias-en.json: ${caminho} tem ${b.length} itens e o português tem ${a.length}`);
+          a.forEach((x, i) => compara(x, b[i], `${caminho}[${i}]`, chave));
+        } else if(a && typeof a === 'object'){
+          const ka = Object.keys(a).sort().join(','), kb = Object.keys(b).sort().join(',');
+          if(ka !== kb) return fail(`guias-en.json: campos diferentes em ${caminho} (${ka} ≠ ${kb})`);
+          Object.keys(a).forEach(k => compara(a[k], b[k], `${caminho}.${k}`, k));
+        } else if(typeof a === 'string'){
+          const fixo = TEXTO_FIXO.has(chave) || /\.ex\[\d+\]\.nome$/.test(caminho) || !/[A-Za-zÀ-ÿ]{2,}/.test(a);
+          if(fixo && a !== b && caminho !== '$.edicao') fail(`guias-en.json: ${caminho} devia ser igual ao português ("${a}" ≠ "${b}")`);
+          if(!fixo){ textos++; if(a === b) iguais++; if(!String(b).trim()) fail(`guias-en.json: texto vazio em ${caminho}`); }
+        }
+      };
+      compara(j, en, '$', '');
+      // quase tudo precisa ter sido traduzido; sobram iguais só nomes, siglas e números (ex.: "HP", "Goku")
+      if(textos && iguais / textos > 0.12) fail(`guias-en.json: ${iguais} de ${textos} textos ainda iguais ao português`);
+      console.log(`  mesma estrutura; ${textos - iguais} de ${textos} textos traduzidos.`);
+    }
   }
 
   console.log('\n[2/5] JSON de habilidades completas (personagens-habilidades-completas.json)');

@@ -5795,7 +5795,9 @@ async function loadGuias(){
   if(guiasData || guiasLoading || guiasError) return;
   guiasLoading = true;
   try{
-    const r = await fetch('guias/guias.json', { cache:'no-cache' });
+    // em inglês lê guias/guias-en.json (mesma estrutura e mesmos ids); se não abrir, cai para o português
+    let r = KZ_LANG === 'en' ? await fetch('guias/guias-en.json', { cache:'no-cache' }).catch(()=>null) : null;
+    if(!r || !r.ok) r = await fetch('guias/guias.json', { cache:'no-cache' });
     if(!r.ok) throw new Error('http ' + r.status);
     const j = await r.json();
     if(!j || !Array.isArray(j.guias)) throw new Error('formato inesperado');
@@ -5888,7 +5890,7 @@ function guideApoiosHtml(b){
 function guideConjuntosHtml(b){
   const chip = e=>{
     if(e.texto) return `<span class="kz-cj-chip txt"><b>${escapeHtml(e.texto)}</b></span>`;
-    const nome = escapeHtml(e.nome || '');
+    const nome = escapeHtml(kzNome(e.nome || ''));   // e.nome continua em português nos dados (é a chave do guerreiro); o nome mostrado é o do idioma
     if(e.apoio){
       const a = guideImgSrc('guias/img/assistencia/' + String(e.apoio).replace(/[^a-z0-9-]/g, '') + '-icone.webp');
       return `<span class="kz-cj-chip" title="${kzt('guia.apoioAssistencia')}">${a ? `<img src="${a}" alt="" width="28" height="28" loading="lazy" data-onerr="hide">` : ''}<b>${nome}</b></span>`;

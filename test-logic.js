@@ -244,6 +244,18 @@ async function main(){
     assert.ok(r.aviso, 'avisa que o limite gratuito acabou e que foi usada a leitura simples');
   });
 
+  await test('Guias em inglês: guias-en.json tem os mesmos guias, seções e blocos do português e o leitor usa o arquivo certo por idioma', () => {
+    const fs = require('fs'), path = require('path');
+    const pt = JSON.parse(fs.readFileSync(path.join(__dirname, 'guias', 'guias.json'), 'utf8'));
+    const en = JSON.parse(fs.readFileSync(path.join(__dirname, 'guias', 'guias-en.json'), 'utf8'));
+    assert.deepStrictEqual(en.guias.map(g => g.id), pt.guias.map(g => g.id), 'mesmos guias, na mesma ordem');
+    assert.deepStrictEqual(en.guias.map(g => (g.secoes || []).map(s => (s.blocos || []).map(b => b.t))), pt.guias.map(g => (g.secoes || []).map(s => (s.blocos || []).map(b => b.t))), 'mesmas seções e tipos de bloco');
+    assert.strictEqual(en.edicao, '10/13/2026', 'a data da edição sai no formato do inglês');
+    assert.ok(en.guias.every(g => !/[ãõç]/.test(g.titulo + g.subtitulo + g.resumo)), 'títulos, subtítulos e resumos sem português');
+    const app = fs.readFileSync(path.join(__dirname, 'js', 'app.js'), 'utf8');
+    assert.ok(/KZ_LANG === 'en' \? await fetch\('guias\/guias-en\.json'/.test(app) && /fetch\('guias\/guias\.json'/.test(app), 'em inglês carrega guias-en.json e, se falhar, o português');
+  });
+
   await test('Vínculos: todo personagem do site tem a lista, os dados são coerentes e a aba renderiza cada vínculo', () => {
     const r = evalIn(sandbox, `(() => {
       const erros = [], semDados = [];
