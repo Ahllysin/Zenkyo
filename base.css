@@ -460,6 +460,14 @@ input::placeholder,textarea::placeholder{color:var(--text-faint);}
 .cdp-bond-skill{font-size:16px;font-weight:900;color:var(--text-strong);}
 .cdp-bond-skill .inactive-tag{font-size:11px;color:var(--text-faint);font-weight:700;margin-left:8px;text-transform:uppercase;letter-spacing:.5px;}
 .cdp-bond-req{font-size:13px;color:var(--text-dim);}
+.cdp-bond-req b{color:var(--text-strong);font-weight:800;}
+.cdp-bond-total{font-size:14px;color:var(--text-dim);margin-bottom:10px;}
+.cdp-bond-total b{color:#7cd29f;font-weight:900;}
+.cdp-bond-lv{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
+.cdp-bond-lv span{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line-soft);background:rgba(255,255,255,.04);color:var(--text-dim);}
+.cdp-bond-lv span b{color:#7cd29f;font-weight:900;}
+.cdp-bond-note{font-size:12px;color:var(--text-faint);margin-top:2px;}
+.cdp-bond-weapon{display:flex;align-items:center;justify-content:center;background:rgba(255,170,70,.12);border:1px solid var(--gold);color:var(--gold);font-size:22px;font-weight:900;}
 
 /* ======================= COLEÇÃO ======================= */
 .kz-coll-counter{display:flex;align-items:center;gap:14px;padding:12px 18px;border-radius:12px;border:1.5px solid rgba(255,150,50,.5);background:var(--panel);}

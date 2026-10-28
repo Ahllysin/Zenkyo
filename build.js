@@ -38,7 +38,7 @@ function gravar(f, novo){
 const hashTexto = f => hash(Buffer.from(norm(read(f)), 'utf8'));
 
 // ---------- 1) ?v= em index.html ----------
-const VERSIONADOS = ['base.css', 'visual-novo.css', 'js/i18n.js', 'js/lang/pt.js', 'js/dados.js', 'js/app.js'];
+const VERSIONADOS = ['base.css', 'visual-novo.css', 'js/i18n.js', 'js/lang/pt.js', 'js/dados.js', 'js/vinculos.js', 'js/app.js'];
 let html = read('index.html');
 VERSIONADOS.forEach(f => {
   const esc = f.replace(/[.*+?^${}()|[\]\\\/]/g, '\\$&');

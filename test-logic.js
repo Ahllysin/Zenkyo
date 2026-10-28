@@ -167,6 +167,32 @@ async function main(){
     Object.entries(out).forEach(([k, len]) => assert.ok(len > 200, `render de "${k}" veio vazio/curto demais (${len})`));
   });
 
+  await test('Vínculos: todo personagem do site tem a lista, os dados são coerentes e a aba renderiza cada vínculo', () => {
+    const r = evalIn(sandbox, `(() => {
+      const erros = [], semDados = [];
+      state.characters.forEach(c => {
+        const v = VINCULOS[c.name];
+        if(!v || !v.lista.length){ semDados.push(c.name); return; }
+        if(!v.total || !(v.total.atq > 0) || !(v.total.pv > 0)) erros.push(c.name + ': total máximo ausente');
+        v.lista.forEach(b => {
+          if(b.tipo === 'arma'){ if(!b.item || !['ATQ','PV'].includes(b.stat) || !(b.valor > 0)) erros.push(c.name + ': vínculo de arma incompleto (' + b.nome + ')'); return; }
+          if(!['ambos','todos','sozinho'].includes(b.tipo)) erros.push(c.name + ': tipo inválido ' + b.tipo);
+          if(!['ATQ','PV'].includes(b.stat) || !Array.isArray(b.niveis) || b.niveis.length !== 3 || !(b.niveis[0] < b.niveis[1] && b.niveis[1] < b.niveis[2])) erros.push(c.name + ': níveis inválidos em ' + b.nome);
+          if(b.tipo === 'sozinho' ? b.parceiros.length : !b.parceiros.length) erros.push(c.name + ': parceiros incoerentes em ' + b.nome);
+          if(b.escalaPor && !b.parceiros.includes(b.escalaPor)) erros.push(c.name + ': quem sobe o nível não é parceiro em ' + b.nome);
+        });
+        state.charDetailTab = 'vinculos';
+        const html = renderCharDetailPage(c.id);
+        const linhas = (html.match(/class="cdp-bond-row"/g) || []).length;
+        if(linhas !== v.lista.length) erros.push(c.name + ': a aba mostra ' + linhas + ' vínculos e os dados têm ' + v.lista.length);
+      });
+      state.charDetailTab = 'habilidades';
+      return { erros, semDados };
+    })()`);
+    assert.deepStrictEqual(r.semDados, [], 'personagens sem vínculos: ' + r.semDados.join(', '));
+    assert.deepStrictEqual(r.erros, [], r.erros.slice(0, 5).join(' | '));
+  });
+
   await test('ficha mostra a progressão completa (base + MAX) e as Passivas do Supremo', () => {
     const html = evalIn(sandbox, "(() => { state.charDetailTab='habilidades'; return renderCharDetailPage(state.characters.find(c=>c.name==='Goku').id); })()");
     const raw = evalIn(sandbox, "ABILITY_PROGRESSION['Goku']");

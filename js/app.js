@@ -2450,7 +2450,56 @@ function renderCharFoodSection(c){
   return topo + affinityResumoHtml();
 }
 
+// Avatar de um parceiro de vínculo: no site (retrato), fora do site mas com ícone, ou só as iniciais.
+function bondAvatarHtml(nome){
+  const o = state.characters.find(x=>x.name === nome);
+  if(o) return `<div class="cdp-bond-avatar" title="${escapeAttr(kzNome(nome))}">${portraitInner(o)}</div>`;
+  const ico = iconeSrcNome(nome);
+  return `<div class="cdp-bond-avatar" title="${escapeAttr(kzNome(nome))}">${ico ? `<img src="${ico}" alt="" loading="lazy" decoding="async" data-onerr="hide">` : ''}<span class="avatar-fallback"${ico ? ' style="display:none;"' : ''}>${escapeHtml(initials(nome))}</span></div>`;
+}
+function bondStatLabel(s){ return s === 'PV' ? kzt('vinc.pv') : kzt('vinc.atq'); }
+function bondListaNomes(nomes){ return nomes.map(n=>`<b>${escapeHtml(kzNome(n))}</b>`).join(', '); }
+function bondRowHtml(c, b){
+  const nome = b.nome ? escapeHtml(kzTrad(b.nome)) : `<span class="inactive-tag">${kzt('vinc.semNome')}</span>`;
+  if(b.tipo === 'arma'){
+    return `<div class="cdp-bond-row">
+      <div class="cdp-bond-partner"><div class="cdp-bond-avatar">${portraitInner(c)}</div><div class="cdp-bond-avatar cdp-bond-weapon" aria-hidden="true"><span>武</span></div></div>
+      <div class="cdp-bond-info">
+        <div class="cdp-bond-skill">${nome}</div>
+        <div class="cdp-bond-req">${kzt('vinc.reqArma')}</div>
+        <div class="cdp-bond-lv"><span class="fixo">${escapeHtml(kzTrad(b.item))} · ${bondStatLabel(b.stat)} +${+b.valor}%</span></div>
+        <div class="cdp-bond-note">${kzt('vinc.fixo')}</div>
+      </div>
+    </div>`;
+  }
+  const parceiros = b.parceiros || [];
+  const req = b.tipo === 'sozinho' ? kzt('vinc.reqSozinho') : kzt('vinc.reqTer', { lista: bondListaNomes(parceiros) });
+  const niveis = b.niveis.map((v, i)=>`<span>${kzt('vinc.nv', { n: i + 1 })} <b>${bondStatLabel(b.stat)} +${+v}%</b></span>`).join('');
+  const nota = b.escalaPor ? kzt('vinc.sobeCom', { nome: escapeHtml(kzNome(b.escalaPor)) }) : kzt('vinc.semParceiro');
+  return `<div class="cdp-bond-row">
+      <div class="cdp-bond-partner"><div class="cdp-bond-avatar">${portraitInner(c)}</div>${parceiros.map(bondAvatarHtml).join('')}</div>
+      <div class="cdp-bond-info">
+        <div class="cdp-bond-skill">${nome}</div>
+        <div class="cdp-bond-req">${req}</div>
+        <div class="cdp-bond-lv">${niveis}</div>
+        <div class="cdp-bond-note">${nota}</div>
+      </div>
+    </div>`;
+}
 function renderCharBondsSection(c){
+  const v = VINCULOS[c.name];
+  if(v && v.lista && v.lista.length){
+    const guerreiros = v.lista.filter(b=>b.tipo !== 'arma'), armas = v.lista.filter(b=>b.tipo === 'arma');
+    const bloco = (titulo, lista)=> lista.length ? `<h3 class="cdp-aff-title">${titulo}</h3><div class="cdp-bond-list">${lista.map(b=>bondRowHtml(c, b)).join('')}</div>` : '';
+    return `<div class="cdp-aff-block">
+      <div class="cdp-bond-total">${kzt('vinc.totalMax', { atq: +v.total.atq, pv: +v.total.pv })}</div>
+      <details class="kz-gd"><summary><span class="tx"><b>${kzt('vinc.comoFunciona')}</b></span></summary>
+        <div class="kz-gd-body"><ul class="cdp-aff-list"><li>${kzt('vinc.c1')}</li><li>${kzt('vinc.c2')}</li><li>${kzt('vinc.c3')}</li><li>${kzt('vinc.c4')}</li></ul></div>
+      </details>
+    </div>
+    ${bloco(kzt('vinc.secGuerreiros', { n: guerreiros.length }), guerreiros)}
+    ${bloco(kzt('vinc.secArma', { n: armas.length }), armas)}`;
+  }
   const extras = CHAR_EXTRAS[c.name];
   const bonds = extras ? extras.vinculos : [];
   if(!bonds || !bonds.length){
