@@ -303,7 +303,8 @@ let state = {
   collectionOnlyOwned: false,
   collectionType: '',                // '' = todos os tipos, ou 'Ataque'/'Defesa'/'Habilidade'
   collectionAffinity: '',            // '' = todas as afinidades, ou 'Raio'/'Fogo'/'Pedra'/'Luz'
-  abilityPopupCharId: null,         // character id currently showing the ability-details popup, or null
+  soulPopup: null,                  // popup da Alma de Guerra aberto: { charId, i } ou null
+  abilityPopupCharId: null,        // character id currently showing the ability-details popup, or null
   viewingCharId: null,               // character id whose full detail page is open in the Personagens tab, or null
   charDetailTab: 'habilidades',       // aba ativa dentro da ficha do personagem: 'habilidades'|'comida'|'vinculos'
   tierList: null,                    // {tiers:[{id,label,color,items:[charId,...]}], unranked:[charId,...]} — preenchido em loadState(); só local, sem conta
@@ -1370,6 +1371,7 @@ function render(){
   else if(state.pickerSlot!==null) renderPickerModal();
   else if(state.simModalOpen) renderSimModal();
   else if(state.abilityPopupCharId) renderAbilityPopup(state.abilityPopupCharId);
+  else if(state.soulPopup) renderSoulPopup(state.soulPopup);
   else if(state.donorProfileId) renderDonorProfileModal();
   else if(state.communityProfileUser) renderCommunityProfileModal();
   else closeModalDOM();
@@ -2527,9 +2529,9 @@ function renderCharSoulsSection(c){
     <div class="cdp-soul-list">${lista.map(([nome, libera, base, max, exp], i)=>`
       <article class="cdp-soul">
         <div class="cdp-soul-head"><span class="cdp-soul-n">${i + 1}</span><h3>${escapeHtml(kzTrad(nome)) || kzt('almas.alma', { n: i + 1 })}</h3><span class="cdp-soul-lib">${kzt('almas.libera', { v: escapeHtml(libera) })}</span></div>
-        ${base && max && soulLevelText(kzTrad(base), kzTrad(max), 20) !== null
-          ? `<div class="cdp-soul-lvs"><label class="cdp-soul-lvl"><span>${kzt('almas.nivel')}</span><input type="range" class="cdp-soul-range" min="0" max="20" step="1" value="20" data-base="${escapeAttr(kzTrad(base))}" data-max="${escapeAttr(kzTrad(max))}" aria-label="${escapeAttr(kzt('almas.nivel'))}"><output>20</output></label><p class="cdp-soul-lv"><b class="cdp-soul-nv">${kzt('almas.nv', { n: 20 })}</b> <span class="cdp-soul-tx">${escapeHtml(kzTrad(max))}</span></p></div>`
-          : `${base ? `<p class="cdp-soul-lv"><b>${kzt('almas.nv1')}</b> ${escapeHtml(kzTrad(base))}</p>` : ''}${max ? `<p class="cdp-soul-lv"><b>${kzt('almas.nv20')}</b> ${escapeHtml(kzTrad(max))}</p>` : ''}`}
+        ${base ? `<p class="cdp-soul-lv"><b>${kzt('almas.nv1')}</b> ${escapeHtml(kzTrad(base))}</p>` : ''}
+        ${max ? `<p class="cdp-soul-lv"><b>${kzt('almas.nv20')}</b> ${escapeHtml(kzTrad(max))}</p>` : ''}
+        ${base && max && soulLevelText(kzTrad(base), kzTrad(max), 20) !== null ? `<button type="button" class="kz-btn kz-btn-sm cdp-soul-open" data-soul-open="${i}">${kzt('almas.verNiveis')}</button>` : ''}
         ${!base && !max ? `<p class="cdp-soul-lv mut">${kzt('almas.semEfeito')}</p>` : ''}
         ${exp ? `<p class="cdp-soul-exp">${kzt('almas.exp', { n: escapeHtml(exp) })}</p>` : ''}
       </article>`).join('')}</div>`;
@@ -2570,13 +2572,7 @@ function renderCharBondsSection(c){
 
 function attachCharDetailHandlers(){
   const view = document.getElementById('view');
-  view.querySelectorAll('.cdp-soul-range').forEach(r=> r.addEventListener('input', ()=>{
-    const n = parseInt(r.value, 10) || 0, box = r.closest('.cdp-soul-lvs');
-    const o = r.parentElement.querySelector('output'); if(o) o.textContent = n;
-    const nv = box.querySelector('.cdp-soul-nv'), tx = box.querySelector('.cdp-soul-tx');
-    if(nv) nv.textContent = kzt('almas.nv', { n });
-    if(tx) tx.textContent = n === 0 ? kzt('almas.nivel0') : (soulLevelText(r.dataset.base, r.dataset.max, n) || r.dataset.max);
-  }));
+  view.querySelectorAll('[data-soul-open]').forEach(b=> b.addEventListener('click', ()=>{ state.soulPopup = { charId: state.viewingCharId, i: parseInt(b.dataset.soulOpen, 10) }; render(); }));
   const shareBtn = document.getElementById('charShareBtn');
   if(shareBtn) shareBtn.addEventListener('click', () => copyCharLink(state.viewingCharId));
   const backBtn = document.getElementById('charDetailBackBtn');
@@ -2892,6 +2888,43 @@ function renderAbilityPopup(charId){
 
   document.getElementById('closeAbilityPopupBtn').addEventListener('click', closeAbilityPopup);
   document.getElementById('abilityPopupOverlay').addEventListener('click', e=>{ if(e.target.id==='abilityPopupOverlay') closeAbilityPopup(); });
+}
+// Popup da Alma de Guerra: tabela com o efeito de cada nível, do 0 ao 20.
+function soulPopupHtml(p){
+  const c = getChar(p.charId), alma = c && ALMAS[c.name] && ALMAS[c.name][p.i];
+  if(!alma) return '';
+  const [nome, libera, base, max, exp] = alma;
+  const b = kzTrad(base), m = kzTrad(max);
+  const linhas = [];
+  for(let n = 0; n <= 20; n++){
+    const txt = n === 0 ? kzt('almas.nivel0') : (soulLevelText(b, m, n) || '');
+    linhas.push(`<tr><th scope="row">${n}</th><td>${escapeHtml(txt)}</td></tr>`);
+  }
+  return `
+  <div class="modal-overlay" id="soulPopupOverlay">
+    <div class="modal kz-popup cdp-soul-pop" role="dialog" aria-label="${escapeAttr(kzt('almas.tabelaDe', { nome: kzNome(c.name) }))}">
+      <div class="kz-popup-head">
+        <div class="kz-popup-art">${portraitInner(c)}</div>
+        <div class="kz-popup-title">
+          <div class="kz-popup-name">${escapeHtml(kzTrad(nome)) || kzt('almas.alma', { n: p.i + 1 })}</div>
+          <div class="kz-popup-level"><span class="lbl">${escapeHtml(kzNome(c.name))} · ${kzt('almas.libera', { v: escapeHtml(libera) })}</span></div>
+        </div>
+        <button class="kz-close-btn" id="closeSoulPopupBtn" aria-label="${kzt('comum.fechar')}">✕</button>
+      </div>
+      <div class="kz-popup-body">
+        <table class="cdp-soul-table"><thead><tr><th scope="col">${kzt('almas.colNivel')}</th><th scope="col">${kzt('almas.colEfeito')}</th></tr></thead><tbody>${linhas.join('')}</tbody></table>
+        ${exp ? `<p class="cdp-soul-exp">${kzt('almas.exp', { n: escapeHtml(exp) })}</p>` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+function renderSoulPopup(p){
+  const root = document.getElementById('modalRoot'), html = soulPopupHtml(p);
+  if(!root || !html){ state.soulPopup = null; return; }
+  root.innerHTML = html;
+  const fecha = ()=>{ state.soulPopup = null; render(); };
+  document.getElementById('closeSoulPopupBtn').addEventListener('click', fecha);
+  document.getElementById('soulPopupOverlay').addEventListener('click', e=>{ if(e.target.id === 'soulPopupOverlay') fecha(); });
 }
 function openAbilityPopup(charId){ state.abilityPopupCharId = charId; render(); }
 function closeAbilityPopup(){ state.abilityPopupCharId = null; render(); }
@@ -8133,6 +8166,7 @@ document.addEventListener('keydown', e=>{
   const bodyOverlay = document.querySelector('body > .modal-overlay');
   if(bodyOverlay){ bodyOverlay.remove(); restoreFocusAfterModal(); return; }
   if(state.abilityPopupCharId !== null){ closeAbilityPopup(); return; }
+  if(state.soulPopup){ state.soulPopup = null; render(); return; }
   if(state.donorProfileId !== null){ closeDonorProfile(); return; }
   if(state.communityProfileUser){ closeCommunityProfile(); return; }
   if(state.tab === 'comunidade' && state.communityOpenPost){ state.communityOpenPost = null; render(); return; }

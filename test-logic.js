@@ -300,6 +300,13 @@ async function main(){
         const n = (renderCharDetailPage(c.id).match(/class="cdp-soul"/g) || []).length;
         if(n !== 4) erros.push(c.name + ': a aba mostra ' + n + ' almas');
       });
+      state.charDetailTab = 'almas';
+      const abre = (renderCharDetailPage(state.characters.find(c => c.name === 'Goku').id).match(/data-soul-open=/g) || []).length;
+      state.soulPopup = { charId: state.characters.find(c => c.name === 'Goku').id, i: 1 };
+      const linhas = (soulPopupHtml(state.soulPopup).match(/<tr><th scope="row">/g) || []).length;
+      state.soulPopup = null;
+      if(abre !== 4) erros.push('Goku: ' + abre + ' botões de tabela de níveis');
+      if(linhas !== 21) erros.push('o popup mostra ' + linhas + ' níveis (esperado 21, do 0 ao 20)');
       state.charDetailTab = 'habilidades';
       const goku = renderCharDetailPage(state.characters.find(c => c.name === 'Goku').id);
       return { erros, niveis: /kz-nvf-niv|kz-ab-niv/.test(goku) };

@@ -860,4 +860,8 @@ kzAddLang('pt', {
   'almas.nivel': 'Nível da alma',
   'almas.nv': 'Nv.{n}:',
   'almas.nivel0': 'Alma ainda sem nível: sem efeito.',
+  'almas.verNiveis': 'Ver tabela de níveis',
+  'almas.tabelaDe': 'Níveis da Alma de Guerra de {nome}',
+  'almas.colNivel': 'Nível',
+  'almas.colEfeito': 'Efeito',
 });

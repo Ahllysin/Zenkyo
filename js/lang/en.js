@@ -857,4 +857,8 @@ kzAddLang('en', {
   'almas.nivel': 'Soul level',
   'almas.nv': 'Lv.{n}:',
   'almas.nivel0': 'Soul not leveled yet: no effect.',
+  'almas.verNiveis': 'View level table',
+  'almas.tabelaDe': 'War Soul levels of {nome}',
+  'almas.colNivel': 'Level',
+  'almas.colEfeito': 'Effect',
 });
