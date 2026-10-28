@@ -857,6 +857,39 @@ async function main(){
     assert.ok(r.selDono && !r.selOutro, "a opção Zen'oh só aparece para a conta do dono");
   });
 
+  await test('Admin: painel da IA do montador mostra o uso e o aviso quando o limite gratuito acaba (só o dono carrega)', async () => {
+    runIn(sandbox, `window.__admIa = null; (async () => {
+      const antes = { av: supabaseAvailable, sb: window.__sb, u: state.discordUser, a: state.admin };
+      supabaseAvailable = true;
+      state.discordUser = { id: window.ADMIN_DISCORD_ID, username: 'Dono' };
+      const chamadas = [];
+      const dados = { hoje: '2026-10-28', visitantes_hoje: 3, dias: [{ dia: '2026-10-28', qtd: 18 }, { dia: '2026-10-27', qtd: 4 }], avisos: [] };
+      window.__sb = { client: { rpc: (nome) => { chamadas.push(nome); return Promise.resolve({ data: dados, error: null }); } } };
+      state.admin = { lista: [], carregando: false, erro: '', filtro: 'pagas', busca: '' };
+      await carregarIaAdmin();
+      const ok = admIaHtml(), alertaOk = state.admin.iaAlerta;
+      dados.avisos = [{ dia: '2026-10-28', motivo: 'limite_gemini_diario', criado_em: '2026-10-28T15:30:00Z' }];
+      await carregarIaAdmin();
+      const bloq = admIaHtml(), alertaBloq = state.admin.iaAlerta, tela = renderAdminTab();
+      window.__sb = { client: { rpc: () => Promise.resolve({ data: null, error: { code: '42501', message: 'acesso negado' } }) } };
+      state.admin.ia = null;
+      await carregarIaAdmin();
+      const erro = admIaHtml();
+      const out = { chamadas, ok, alertaOk, bloq, alertaBloq, temSecao: tela.includes('id="admIa"') && tela.includes('IA do montador'), erro };
+      supabaseAvailable = antes.av; window.__sb = antes.sb; state.discordUser = antes.u; state.admin = antes.a;
+      return out;
+    })().then(v => { window.__admIa = v; }, e => { window.__admIa = { erro: String(e && e.stack || e) }; });`);
+    for(let i = 0; i < 50 && !evalIn(sandbox, 'window.__admIa'); i++) await new Promise(res => setTimeout(res, 50));
+    const r = evalIn(sandbox, 'window.__admIa') || {};
+    assert.ok(!r.erro || r.chamadas, r.erro);
+    assert.deepStrictEqual(r.chamadas, ['admin_ia_status', 'admin_ia_status']);
+    assert.ok(/>18</.test(r.ok) && /Ok/.test(r.ok) && !/limite gratuito da IA acabou/.test(r.ok), 'sem aviso: mostra o uso do dia e "Ok"');
+    assert.strictEqual(r.alertaOk, false);
+    assert.ok(/limite gratuito da IA acabou hoje/.test(r.bloq) && /Atingido/.test(r.bloq), 'com aviso: alerta vermelho e "Atingido"');
+    assert.strictEqual(r.alertaBloq, true, 'o aviso liga a bolinha no menu Admin');
+    assert.ok(r.temSecao, 'a aba Admin tem a seção "IA do montador"');
+  });
+
   await test('Admin: aviso de pedidos abertos há mais de 10 min (só entre 10 min e 7 dias, sem os já pagos)', () => {
     const r = evalIn(sandbox, `(() => {
       const agora = Date.parse('2026-10-18T12:00:00Z');

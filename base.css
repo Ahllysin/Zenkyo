@@ -473,6 +473,8 @@ input::placeholder,textarea::placeholder{color:var(--text-faint);}
 .kz-ia-tag{font-size:10px;font-weight:800;letter-spacing:.08em;padding:1px 6px;border-radius:999px;border:1px solid rgba(120,170,255,.6);color:#9fc3ff;}
 .kz-ia-tag.wait{border-color:rgba(255,255,255,.3);color:#b9a998;}
 .kz-ia-nota{margin:6px 0;font-size:12px;color:#b9a998;}
+.kz-nav-btn.kz-alerta{position:relative;}
+.kz-nav-btn.kz-alerta::after{content:"";position:absolute;top:6px;right:8px;width:9px;height:9px;border-radius:50%;background:#e8552d;box-shadow:0 0 0 2px rgba(0,0,0,.6);}
 .kz-rec-fillbar{margin:8px 0;}
 .kz-rec-fillbar .warn{color:#f0a05f;font-weight:700;}
 .cdp-bond-req b{color:var(--text-strong);font-weight:800;}

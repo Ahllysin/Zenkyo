@@ -1324,7 +1324,11 @@ function render(){
     b.classList.toggle('active', b.dataset.tab === state.tab);
   });
   const navAdmin = document.getElementById('navAdminBtn');   // a aba Admin só aparece no menu para o dono
-  if(navAdmin) navAdmin.style.display = isDonorAdmin() ? '' : 'none';
+  if(navAdmin){
+    navAdmin.style.display = isDonorAdmin() ? '' : 'none';
+    navAdmin.classList.toggle('kz-alerta', !!state.admin.iaAlerta);   // bolinha de aviso: o limite gratuito da IA acabou hoje
+  }
+  if(isDonorAdmin()) verificarAvisoIa();
   // barra de abas do celular (visual novo): as 4 principais; o resto fica em "Mais", que abre o menu
   const tbFixas = ['chars','combos','tierlist','guias'];
   document.querySelectorAll('.kz-nv-tb[data-tbtab]').forEach(b=>{ const on = b.dataset.tbtab === state.tab; b.classList.toggle('on', on); if(on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
@@ -7356,6 +7360,63 @@ function admDoacoesHtml(){
                  : `<div class="kz-nva-aviso">Nenhuma doação neste filtro.</div>`}
     <p class="kz-nva-nota">Devoluções e estornos feitos no painel do Mercado Pago chegam por aviso automático e já descontam o apoio do mural. Mostra as ${a.lista.length} doações mais recentes. Pedidos que ninguém pagou são apagados sozinhos depois de 30 dias.</p>`;
 }
+/* ---------- IA do montador no Admin (só o dono): uso do dia e aviso quando o limite gratuito acaba ---------- */
+// O aviso vem da função ia-montador (tabela ia_avisos). O dono vê a bolinha no menu Admin, um aviso na tela e um toast uma vez por visita.
+const IA_MOTIVO_DIARIO = 'limite_gemini_diario';
+function iaAvisoHoje(ia){ return !!(ia && (ia.avisos || []).find(a => a.dia === ia.hoje && a.motivo === IA_MOTIVO_DIARIO)); }
+async function carregarIaAdmin(){
+  const a = state.admin;
+  if(!isSupabaseConfigured() || !window.__sb || !window.__sb.client || !state.discordUser) return null;
+  try{
+    const { data, error } = await window.__sb.client.rpc('admin_ia_status');
+    if(error) throw error;
+    a.ia = data || null; a.iaErro = '';
+  }catch(e){
+    console.error('Não consegui carregar o uso da IA', e);
+    a.iaErro = 'Não consegui carregar o uso da IA agora.';
+  }
+  a.iaAlerta = iaAvisoHoje(a.ia);
+  return a.ia;
+}
+async function verificarAvisoIa(){
+  const a = state.admin;
+  if(a.iaVerificado) return;
+  a.iaVerificado = true;
+  await carregarIaAdmin();
+  const nav = document.getElementById('navAdminBtn');
+  if(nav) nav.classList.toggle('kz-alerta', !!a.iaAlerta);
+  if(a.iaAlerta) showToast('⚠ A IA do montador atingiu o limite gratuito de hoje. Veja na aba Admin.');
+  refreshAdminIa();
+}
+function admIaHtml(){
+  const a = state.admin, ia = a.ia;
+  if(a.iaErro) return `<div class="kz-nva-aviso err">${escapeHtml(a.iaErro)} <button type="button" class="kz-link-btn" id="admIaRecarregar">Tentar de novo</button></div>`;
+  if(!ia) return `<div class="kz-nva-aviso">Carregando o uso da IA…</div>`;
+  const hoje = (ia.dias || []).find(d => d.dia === ia.hoje), chamadas = hoje ? Number(hoje.qtd) || 0 : 0;
+  const aviso = (ia.avisos || []).find(x => x.dia === ia.hoje && x.motivo === IA_MOTIVO_DIARIO);
+  const alerta = aviso
+    ? `<div class="kz-nva-aviso kz-nva-aviso-warn" role="alert">⚠ <b>O limite gratuito da IA acabou hoje</b> (aviso às ${admDataHtml(aviso.criado_em).split(' ').slice(-1)[0] || ''}). Novos pedidos usam a leitura simples até amanhã. Veja o uso no Google AI Studio e decida se vale pagar. Nada foi cobrado.</div>`
+    : '';
+  const ultimo = !aviso && (ia.avisos || []).find(x => x.motivo === IA_MOTIVO_DIARIO);
+  const nota = ultimo ? `<p class="kz-nva-nota">Último aviso de limite: ${escapeHtml(String(ultimo.dia).split('-').reverse().join('/'))}.</p>` : '';
+  const dias = (ia.dias || []).map(d => `<span class="kz-nva-ap"><b>${escapeHtml(String(d.dia).split('-').reverse().slice(0, 2).join('/'))}</b><span>${Number(d.qtd) || 0} chamadas</span></span>`).join('');
+  return `${alerta}
+    <div class="kz-nva-cards">
+      <div class="kz-nva-card"><span>Hoje</span><b>${chamadas}</b><small>chamadas à IA (cada pedido usa 2)</small></div>
+      <div class="kz-nva-card"><span>Visitantes hoje</span><b>${Number(ia.visitantes_hoje) || 0}</b><small>pessoas que usaram a IA</small></div>
+      <div class="kz-nva-card"><span>Limite gratuito</span><b>${aviso ? 'Atingido' : 'Ok'}</b><small>${aviso ? 'a IA volta amanhã' : 'sem aviso hoje'}</small></div>
+    </div>
+    ${dias ? `<div class="kz-nva-mural">${dias}</div>` : ''}
+    ${nota}
+    <p class="kz-nva-nota">Quando o plano gratuito do Gemini acaba (ou o limite diário definido na função), a IA para sozinha até o dia seguinte e o site usa a leitura simples. A chave é de um projeto sem cobrança, então nada é cobrado.</p>`;
+}
+function refreshAdminIa(){
+  const box = document.getElementById('admIa');
+  if(!box || state.tab !== 'admin') return;
+  box.innerHTML = admIaHtml();
+  const b = box.querySelector('#admIaRecarregar');
+  if(b) b.addEventListener('click', async ()=>{ state.admin.iaErro = ''; state.admin.ia = null; refreshAdminIa(); await carregarIaAdmin(); refreshAdminIa(); const nav = document.getElementById('navAdminBtn'); if(nav) nav.classList.toggle('kz-alerta', !!state.admin.iaAlerta); });
+}
 function renderAdminTab(){
   if(!isDonorAdmin()) return `<section class="kz-page"><div class="kz-empty">Esta área é só para o dono do site.</div></section>`;
   const cab = visualNovo()
@@ -7376,6 +7437,10 @@ function renderAdminTab(){
         <p class="kz-nva-nota">Use se um pagamento aprovado não apareceu no mural: o site consulta o Mercado Pago e lança o apoio (uma vez só, mesmo se você repetir). O número da operação está em Seu negócio → Atividades.</p>
         <div class="kz-nva-resp" id="admConferirResp" role="status" aria-live="polite"></div>
       </form>
+    </div>
+    <div class="kz-nva-sec">
+      <h2 class="kz-nva-h2">IA do montador</h2>
+      <div id="admIa">${admIaHtml()}</div>
     </div>
     <div class="kz-nva-sec">
       <h2 class="kz-nva-h2">Mural e apoiadores <small>${noMural} no mural</small></h2>
@@ -7485,6 +7550,8 @@ function attachAdminHandlers(){
   if(!view || state.tab !== 'admin' || !isDonorAdmin()) return;
   attachAdminConferir(view);
   attachAdminDoacoesHandlers(view);
+  refreshAdminIa();
+  if(!state.admin.ia && !state.admin.iaErro && state.admin.iaVerificado) carregarIaAdmin().then(refreshAdminIa);
   if(!state.admin.lista && !state.admin.carregando && !state.admin.erro) loadAdminDoacoes();
 }
 

@@ -5,13 +5,15 @@
 // Aberto a qualquer visitante (sem login), com limite por visitante e limite do dia. Quando o plano gratuito do Gemini acaba (429 por dia),
 // a função para de chamar a IA no resto do dia (o site usa a leitura local) e avisa o dono UMA vez (Discord, se o webhook estiver configurado).
 // Nunca gasta dinheiro: a chave é de um projeto do Google AI Studio SEM cobrança ligada.
-// Segredos (Painel do Supabase → Edge Functions → Secrets): GEMINI_API_KEY (obrigatório); IA_MODELO (padrão gemini-2.5-flash);
-//   AVISO_DISCORD_WEBHOOK (opcional); IA_LIMITE_VISITANTE (padrão 12 chamadas/dia); IA_LIMITE_GLOBAL (padrão 200 chamadas/dia); IA_SAL (qualquer texto).
+// Segredos (Painel do Supabase → Edge Functions → Secrets): GEMINI_API_KEY (obrigatório); IA_MODELO (opcional; padrão gemini-3.8-flash);
+//   AVISO_DISCORD_WEBHOOK (opcional, o aviso principal fica na aba Admin do site); IA_LIMITE_VISITANTE (padrão 12 chamadas/dia); IA_LIMITE_GLOBAL (padrão 200 chamadas/dia); IA_SAL (qualquer texto).
 // (sem o import jsr:@supabase/functions-js/edge-runtime.d.ts: ele só serve de tipos e fazia o deploy falhar quando o jsr.io demora)
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const ORIGENS = ["https://zenkyo.com.br", "https://www.zenkyo.com.br", "https://ahllysin.github.io", "http://localhost:8765", "http://127.0.0.1:8765", "http://localhost:8766"];
-const MODELO = Deno.env.get("IA_MODELO") || "gemini-2.5-flash";
+// IA_MODELO (opcional) vai na frente; os outros são reserva caso o Google aposente um modelo (resposta 404 "no longer available").
+const MODELOS = [...new Set([Deno.env.get("IA_MODELO"), "gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite", "gemini-2.5-flash-lite"].filter((m): m is string => !!m))];
+let modeloOk = "";
 const LIMITE_VISITANTE = Number(Deno.env.get("IA_LIMITE_VISITANTE") || "12");
 const LIMITE_GLOBAL = Number(Deno.env.get("IA_LIMITE_GLOBAL") || "200");
 const MOTIVO_DIARIO = "limite_gemini_diario";
@@ -156,29 +158,54 @@ Deno.serve(async (req: Request) => {
   const devolver = () => admin.rpc("ia_devolver", { p_chave: quem });
 
   let saida: any;
+  let meta = "";   // qual modelo respondeu e por onde passou (ajuda a ajustar a ordem dos modelos)
+  const inicio = Date.now();
   try {
-    const ctl = new AbortController();
-    const timer = setTimeout(() => ctl.abort(), 25000);
     const geracao: Record<string, unknown> = {
       responseMimeType: "application/json",
       responseSchema: acao === "interpretar" ? SCHEMA_INTERPRETAR : SCHEMA_EXPLICAR,
       temperature: acao === "interpretar" ? 0 : 0.4,
-      maxOutputTokens: acao === "interpretar" ? 500 : 1800,
+      maxOutputTokens: acao === "interpretar" ? 1024 : 3000,
     };
-    if (MODELO.startsWith("gemini-2.5")) geracao.thinkingConfig = { thinkingBudget: 0 };   // sem "pensar" antes: mais rápido e gasta menos da cota
-    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(MODELO)}:generateContent`, {
-      method: "POST",
-      signal: ctl.signal,
-      headers: { "x-goog-api-key": chave, "content-type": "application/json" },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: acao === "interpretar" ? SISTEMA_INTERPRETAR : SISTEMA_EXPLICAR }] },
-        contents: [{ role: "user", parts: [{ text: conteudo }] }],
-        generationConfig: geracao,
-      }),
-    });
-    clearTimeout(timer);
+    // Tenta o modelo configurado e, se o Google o aposentou (404), os de reserva. Pensar pouco = mais rápido e gasta menos da cota;
+    // se o modelo recusar essa configuração (400), tenta de novo sem ela. O modelo que funcionou fica guardado até a função reiniciar.
+    const chamar = async (modelo: string, pensarPouco: boolean) => {
+      const g: Record<string, unknown> = { ...geracao };
+      if (pensarPouco) g.thinkingConfig = modelo.startsWith("gemini-2.5") ? { thinkingBudget: 0 } : { thinkingLevel: "minimal" };
+      const ctl = new AbortController();
+      const timer = setTimeout(() => ctl.abort(), 10000);   // limite por tentativa; passou disso vai para o próximo modelo
+      try {
+        const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelo)}:generateContent`, {
+          method: "POST",
+          signal: ctl.signal,
+          headers: { "x-goog-api-key": chave, "content-type": "application/json" },
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: acao === "interpretar" ? SISTEMA_INTERPRETAR : SISTEMA_EXPLICAR }] },
+            contents: [{ role: "user", parts: [{ text: conteudo }] }],
+            generationConfig: g,
+          }),
+        });
+        const texto = await resp.text();   // lê o corpo ainda dentro do limite de tempo
+        return { status: resp.status, ok: resp.ok, texto };
+      } finally { clearTimeout(timer); }
+    };
+    // modelo aposentado (404), sobrecarregado (500/503) ou lento demais: tenta o próximo (no máximo 3 tentativas)
+    const ordem = (modeloOk ? [modeloOk, ...MODELOS.filter((m) => m !== modeloOk)] : MODELOS).slice(0, 3);
+    let r: { status: number; ok: boolean; texto: string } | null = null;
+    let ultimoErro = "";
+    for (const modelo of ordem) {
+      try {
+        r = await chamar(modelo, true);
+        if (r.status === 400) r = await chamar(modelo, false);
+      } catch (e) { r = null; ultimoErro += `${modelo}: ${(e as Error)?.message ?? e}; `; continue; }
+      if ([404, 500, 503].includes(r.status)) { ultimoErro += `${modelo}: ${r.status}; `; continue; }
+      if (r.ok) modeloOk = modelo;
+      meta = `${modelo} ${Date.now() - inicio}ms${ultimoErro ? " (antes: " + ultimoErro.trim() + ")" : ""}`;
+      break;
+    }
+    if (!r) throw new Error("sem resposta do Gemini (" + ultimoErro + ")");
     if (r.status === 429) {
-      const t = (await r.text()).slice(0, 1500);
+      const t = r.texto.slice(0, 1500);
       await devolver();
       // 429 "por dia" = o plano gratuito acabou hoje; 429 "por minuto" = só esperar um pouco.
       if (/PerDay|per day|daily/i.test(t)) {
@@ -188,8 +215,8 @@ Deno.serve(async (req: Request) => {
       }
       return responder(429, { erro: "A IA está muito ocupada agora. Usei a leitura simples.", usar_local: true, limite: "minuto" });
     }
-    if (!r.ok) throw new Error("API " + r.status + " " + (await r.text()).slice(0, 300));
-    const j = await r.json();
+    if (!r.ok) throw new Error("API " + r.status + " " + r.texto.slice(0, 300));
+    const j = JSON.parse(r.texto);
     const txt = j?.candidates?.[0]?.content?.parts?.map((p: any) => p.text ?? "").join("") ?? "";
     saida = JSON.parse(txt);
   } catch (e) {
@@ -210,7 +237,7 @@ Deno.serve(async (req: Request) => {
     const crit = { ...base(saida), principais, excluir: base(saida?.excluir), foco: FOCOS.includes(saida?.foco) ? saida.foco : "equilibrado" };
     const vazio = !(Object.entries(crit).some(([k, v]) => k !== "foco" && k !== "excluir" && Array.isArray(v) && v.length) || Object.values(crit.excluir).some((v) => v.length));
     if (vazio) await devolver();   // não entendeu o pedido: não gasta a cota
-    return responder(200, { crit, vazio });
+    return responder(200, { crit, vazio, meta });
   }
 
   const times = (Array.isArray(saida?.times) ? saida.times : []).slice(0, nTimes).map((t: any) => ({
@@ -219,5 +246,5 @@ Deno.serve(async (req: Request) => {
     pontos_fracos: (Array.isArray(t?.pontos_fracos) ? t.pontos_fracos : []).map((s: unknown) => limpa(s, 120)).filter(Boolean).slice(0, 3),
   }));
   if (times.length !== nTimes || times.some((t: any) => !t.resumo)) { await devolver(); return responder(502, { erro: "A IA respondeu fora do formato. Usei a explicação simples.", usar_local: true }); }
-  return responder(200, { times });
+  return responder(200, { times, meta });
 });
