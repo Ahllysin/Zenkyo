@@ -1637,4 +1637,5 @@ kzAddDados({
   "Melhor Domínio": "Better Mastery",
   "Quebra Poderosa": "Mighty Break",
   "Rompendo Limites": "Breaking Limits",
+  "Piccolo Laranja": "Orange Piccolo",
 });
