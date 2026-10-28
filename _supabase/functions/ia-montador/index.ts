@@ -14,6 +14,7 @@ const ORIGENS = ["https://zenkyo.com.br", "https://www.zenkyo.com.br", "https://
 // IA_MODELO (opcional) vai na frente; os outros são reserva caso o Google aposente um modelo (resposta 404 "no longer available").
 const MODELOS = [...new Set([Deno.env.get("IA_MODELO"), "gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite", "gemini-2.5-flash-lite"].filter((m): m is string => !!m))];
 let modeloOk = "";
+const esgotados = new Map<string, number>();   // modelo → até quando ficar de fora (acabou a cota do dia dele); some quando a função reinicia
 const LIMITE_VISITANTE = Number(Deno.env.get("IA_LIMITE_VISITANTE") || "12");
 const LIMITE_GLOBAL = Number(Deno.env.get("IA_LIMITE_GLOBAL") || "200");
 const MOTIVO_DIARIO = "limite_gemini_diario";
@@ -189,26 +190,37 @@ Deno.serve(async (req: Request) => {
         return { status: resp.status, ok: resp.ok, texto };
       } finally { clearTimeout(timer); }
     };
-    // modelo aposentado (404), sobrecarregado (500/503) ou lento demais: tenta o próximo (no máximo 3 tentativas)
-    const ordem = (modeloOk ? [modeloOk, ...MODELOS.filter((m) => m !== modeloOk)] : MODELOS).slice(0, 3);
+    // modelo aposentado (404), sobrecarregado (500/503), lento demais ou sem cota (429): tenta o próximo.
+    // Cada modelo tem a própria cota gratuita; por isso o limite do dia só vale quando TODOS os modelos acabaram.
+    // Modelo que já respondeu "acabou por hoje" fica de fora por um tempo (esgotados), sem gastar tentativa.
+    const agora = Date.now();
+    const candidatos = (modeloOk ? [modeloOk, ...MODELOS.filter((m) => m !== modeloOk)] : MODELOS).filter((m) => !((esgotados.get(m) ?? 0) > agora));
+    const ordem = candidatos.slice(0, 5);
     let r: { status: number; ok: boolean; texto: string } | null = null;
     let ultimoErro = "";
+    let diarios = 0;   // quantos modelos tentados responderam 429 "por dia"
     for (const modelo of ordem) {
       try {
         r = await chamar(modelo, true);
         if (r.status === 400) r = await chamar(modelo, false);
       } catch (e) { r = null; ultimoErro += `${modelo}: ${(e as Error)?.message ?? e}; `; continue; }
+      if (r.status === 429) {
+        const diario = /PerDay|per day|daily/i.test(r.texto);
+        console.warn(`ia-montador: ${modelo} 429 ${diario ? "(dia)" : "(minuto)"}: ${r.texto.slice(0, 400).replace(/\s+/g, " ")}`);
+        if (diario) { diarios++; esgotados.set(modelo, Date.now() + 30 * 60 * 1000); }
+        ultimoErro += `${modelo}: 429; `; continue;
+      }
       if ([404, 500, 503].includes(r.status)) { ultimoErro += `${modelo}: ${r.status}; `; continue; }
       if (r.ok) modeloOk = modelo;
       meta = `${modelo} ${Date.now() - inicio}ms${ultimoErro ? " (antes: " + ultimoErro.trim() + ")" : ""}`;
       break;
     }
+    if (!ordem.length) r = { status: 429, ok: false, texto: "PerDay (todos os modelos esgotados)" };   // todos já esgotados hoje
     if (!r) throw new Error("sem resposta do Gemini (" + ultimoErro + ")");
     if (r.status === 429) {
-      const t = r.texto.slice(0, 1500);
       await devolver();
-      // 429 "por dia" = o plano gratuito acabou hoje; 429 "por minuto" = só esperar um pouco.
-      if (/PerDay|per day|daily/i.test(t)) {
+      // Só vale como "acabou o dia" se todos os modelos disponíveis responderam 429 por dia.
+      if (!ordem.length || diarios === ordem.length) {
         const primeira = await admin.rpc("ia_avisar", { p_motivo: MOTIVO_DIARIO });
         if (primeira.data === true) await avisarDono("⚠️ Zenkyo: o limite GRATUITO diário da IA (Gemini) acabou. Novos pedidos usam a leitura simples até o limite voltar (amanhã). Veja no Google AI Studio quanto foi usado e decida se vale pagar. Nada foi cobrado.");
         return responder(429, { erro: "O limite gratuito da IA acabou por hoje. Usei a leitura simples.", usar_local: true, limite: "diario" });
