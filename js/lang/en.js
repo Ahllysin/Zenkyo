@@ -854,4 +854,7 @@ kzAddLang('en', {
   'almas.nv20': 'Lv.20:',
   'almas.semEfeito': 'No effect in the game data.',
   'almas.exp': '{n} War Soul EXP from Lv.0 to Lv.20',
+  'almas.nivel': 'Soul level',
+  'almas.nv': 'Lv.{n}:',
+  'almas.nivel0': 'Soul not leveled yet: no effect.',
 });

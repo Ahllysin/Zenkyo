@@ -2502,7 +2502,24 @@ function bondRowHtml(c, b){
       </div>
     </div>`;
 }
-// Alma de Guerra: as 4 almas do guerreiro (liberadas pela Ruptura), com o efeito no Nv.1 e no Nv.20 e o EXP gasto.
+// Alma de Guerra: o efeito sobe em linha reta do Nv.1 ao Nv.20; os números do texto do Nv.1 e do Nv.20 dão cada nível do meio.
+function soulLevelText(base, max, n){
+  const re = /[0-9]+(?:[.,][0-9]+)?/g;
+  const A = String(base).match(re) || [], B = String(max).match(re) || [];
+  if(!A.length || A.length !== B.length) return null;
+  if(n <= 1) return base;
+  let i = 0;
+  return String(max).replace(re, m=>{
+    const ia = A[i++];
+    const a = parseFloat(ia.replace(',', '.')), b = parseFloat(m.replace(',', '.'));
+    if(a === b) return m;
+    const dec = Math.max((ia.split(/[.,]/)[1] || '').length, (m.split(/[.,]/)[1] || '').length);
+    let s = (a + (b - a) * (Math.min(n, 20) - 1) / 19).toFixed(dec);
+    if(s.indexOf('.') >= 0) s = s.replace(/0+$/, '').replace(/[.]$/, '');
+    return m.indexOf(',') >= 0 ? s.replace('.', ',') : s;
+  });
+}
+// Alma de Guerra: as 4 almas do guerreiro (liberadas pela Ruptura), com o efeito em cada nível (0 a 20) e o EXP gasto.
 function renderCharSoulsSection(c){
   const lista = (typeof ALMAS !== 'undefined' && ALMAS[c.name]) || [];
   if(!lista.length) return `<div class="kz-empty-ball"><img src="${ballSrc(1)}" alt=""><div>${kzt('almas.semDados')}</div></div>`;
@@ -2510,8 +2527,9 @@ function renderCharSoulsSection(c){
     <div class="cdp-soul-list">${lista.map(([nome, libera, base, max, exp], i)=>`
       <article class="cdp-soul">
         <div class="cdp-soul-head"><span class="cdp-soul-n">${i + 1}</span><h3>${escapeHtml(kzTrad(nome)) || kzt('almas.alma', { n: i + 1 })}</h3><span class="cdp-soul-lib">${kzt('almas.libera', { v: escapeHtml(libera) })}</span></div>
-        ${base ? `<p class="cdp-soul-lv"><b>${kzt('almas.nv1')}</b> ${escapeHtml(kzTrad(base))}</p>` : ''}
-        ${max ? `<p class="cdp-soul-lv"><b>${kzt('almas.nv20')}</b> ${escapeHtml(kzTrad(max))}</p>` : ''}
+        ${base && max && soulLevelText(kzTrad(base), kzTrad(max), 20) !== null
+          ? `<div class="cdp-soul-lvs"><label class="cdp-soul-lvl"><span>${kzt('almas.nivel')}</span><input type="range" class="cdp-soul-range" min="0" max="20" step="1" value="20" data-base="${escapeAttr(kzTrad(base))}" data-max="${escapeAttr(kzTrad(max))}" aria-label="${escapeAttr(kzt('almas.nivel'))}"><output>20</output></label><p class="cdp-soul-lv"><b class="cdp-soul-nv">${kzt('almas.nv', { n: 20 })}</b> <span class="cdp-soul-tx">${escapeHtml(kzTrad(max))}</span></p></div>`
+          : `${base ? `<p class="cdp-soul-lv"><b>${kzt('almas.nv1')}</b> ${escapeHtml(kzTrad(base))}</p>` : ''}${max ? `<p class="cdp-soul-lv"><b>${kzt('almas.nv20')}</b> ${escapeHtml(kzTrad(max))}</p>` : ''}`}
         ${!base && !max ? `<p class="cdp-soul-lv mut">${kzt('almas.semEfeito')}</p>` : ''}
         ${exp ? `<p class="cdp-soul-exp">${kzt('almas.exp', { n: escapeHtml(exp) })}</p>` : ''}
       </article>`).join('')}</div>`;
@@ -2552,6 +2570,13 @@ function renderCharBondsSection(c){
 
 function attachCharDetailHandlers(){
   const view = document.getElementById('view');
+  view.querySelectorAll('.cdp-soul-range').forEach(r=> r.addEventListener('input', ()=>{
+    const n = parseInt(r.value, 10) || 0, box = r.closest('.cdp-soul-lvs');
+    const o = r.parentElement.querySelector('output'); if(o) o.textContent = n;
+    const nv = box.querySelector('.cdp-soul-nv'), tx = box.querySelector('.cdp-soul-tx');
+    if(nv) nv.textContent = kzt('almas.nv', { n });
+    if(tx) tx.textContent = n === 0 ? kzt('almas.nivel0') : (soulLevelText(r.dataset.base, r.dataset.max, n) || r.dataset.max);
+  }));
   const shareBtn = document.getElementById('charShareBtn');
   if(shareBtn) shareBtn.addEventListener('click', () => copyCharLink(state.viewingCharId));
   const backBtn = document.getElementById('charDetailBackBtn');

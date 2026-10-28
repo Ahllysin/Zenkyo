@@ -857,4 +857,7 @@ kzAddLang('pt', {
   'almas.nv20': 'Nv.20:',
   'almas.semEfeito': 'Sem efeito nos dados do jogo.',
   'almas.exp': '{n} de EXP de Alma de Guerra do Nv.0 ao Nv.20',
+  'almas.nivel': 'Nível da alma',
+  'almas.nv': 'Nv.{n}:',
+  'almas.nivel0': 'Alma ainda sem nível: sem efeito.',
 });

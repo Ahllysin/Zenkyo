@@ -1422,3 +1422,7 @@ a.kz-donate-cta{text-decoration:none;}
 .cdp-soul-lv.mut,.cdp-soul-exp{color:#a99b8b;font-size:13px;margin:0;}
 .kz-nvf-niv,.kz-ab-niv{margin:8px 0 0;font-size:14px;line-height:1.5;color:#c9b7a6;}
 .kz-nvf-niv b,.kz-ab-niv b{color:#ffc21a;margin-right:4px;}
+.cdp-soul-lvl{display:flex;align-items:center;gap:10px;font-size:13px;color:#c9b7a6;}
+.cdp-soul-range{flex:1 1 auto;min-width:0;accent-color:#ff6a13;}
+.cdp-soul-lvl output{min-width:22px;text-align:right;font-weight:800;color:#ffc21a;}
+.cdp-soul-lvs{display:flex;flex-direction:column;gap:8px;}
