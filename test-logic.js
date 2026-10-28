@@ -2518,7 +2518,7 @@ async function main(){
     const fs = require('fs'), vm = require('vm');
     const dados = {};
     ['js/lang/dados-en.js', 'js/lang/dados-en-extra.js'].forEach(f => vm.runInNewContext(fs.readFileSync(f, 'utf8'), { kzAddDados: o => Object.assign(dados, o) }));
-    const fonte = fs.readFileSync('js/dados.js', 'utf8') + fs.readFileSync('js/app.js', 'utf8');
+    const fonte = fs.readFileSync('js/dados.js', 'utf8') + fs.readFileSync('js/vinculos.js', 'utf8') + fs.readFileSync('js/app.js', 'utf8');
     const solta = [], difere = [];
     const nums = s => (String(s).replace(/(\d),(\d)/g, '$1.$2').match(/\d+(?:\.\d+)?/g) || []).sort().join(',');
     const cols = s => (String(s).match(/\[[^\]]+\]/g) || []).length;
