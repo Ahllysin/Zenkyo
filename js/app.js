@@ -6208,6 +6208,7 @@ function mpValorEscolhido(){
 // rótulo de valor redondo (botões e limites): "R$ 20"
 function mpRotulo(n){ return 'R$ ' + n.toLocaleString('pt-BR'); }
 // Código do perfil para colar na mensagem do Ko-fi: ZK- + os 8 primeiros caracteres do id (o banco acha o perfil por ele).
+const KOFI_AJUDA_URL = 'https://github.com/Ahllysin/Zenkyo/issues';   // mesmo contato dos termos de doação
 function kofiCodigo(id){
   const h = String(id || '').replace(/-/g, '').slice(0, 8).toUpperCase();
   return /^[0-9A-F]{8}$/.test(h) ? 'ZK-' + h : '';
@@ -6225,9 +6226,11 @@ function kofiDoacaoHtml(){
         <p class="kz-mp-pixdica">${kzt('pag.dica')}</p>
         ${codigo}
         <p class="kz-mp-dica">${kzt('pag.kofiAnonimo')}</p>
+        <div class="kz-kofi-passos"><b>${kzt('pag.kofiPassosTitulo')}</b><ol><li>${kzt('pag.kofiP1')}</li><li>${kzt('pag.kofiP2')}</li><li>${kzt('pag.kofiP3')}</li><li>${kzt('pag.kofiP4')}</li></ol></div>
         <a class="kz-donate-cta" id="kofiBtn" data-mp-checkout-cta="kofi" href="${escapeAttr(KOFI_URL)}" target="_blank" rel="noopener noreferrer"><span>気</span><span>${kzt('pag.botao')}</span></a>
         <button type="button" class="kz-fchip" id="kofiAtualizar">${kzt('pag.kofiAtualizar')}</button>
-        <div class="kz-mp-status" id="mpStatus" role="status" aria-live="polite"></div>`;
+        <div class="kz-mp-status" id="mpStatus" role="status" aria-live="polite"></div>
+        <p class="kz-mp-dica">${kzt('pag.kofiAjuda', { link: '<a href="' + KOFI_AJUDA_URL + '" target="_blank" rel="noopener noreferrer">' + kzt('pag.kofiAjudaLink') + '</a>' })}</p>`;
 }
 function mpValorValido(v){ return Number.isFinite(v) && v >= MP_VALOR_MIN && v <= MP_VALOR_MAX; }
 // Bloco de doação (mesmo conteúdo no visual novo e no antigo). O botão leva a marca data-mp-checkout-cta.

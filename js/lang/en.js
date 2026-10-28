@@ -799,5 +799,12 @@ kzAddLang('en', {
   'pag.kofiAnonimo': 'To stay anonymous, tick the private option on Ko-fi (the donation stays off the wall).',
   'pag.kofiAtualizar': 'I already donated — refresh the wall',
   'pag.kofiAtualizado': 'Wall refreshed. If you do not see it yet, wait a minute or two and refresh again.',
+  'pag.kofiPassosTitulo': 'How to get on the wall',
+  'pag.kofiP1': 'Sign in with Discord and copy your code (above). Without logging in you can still donate, but you will not get a rank.',
+  'pag.kofiP2': 'Click "Donate on Ko-fi" and choose the amount in US dollars.',
+  'pag.kofiP3': 'Paste your code in the message box before paying. Keep the donation public if you want your name on the wall.',
+  'pag.kofiP4': 'Pay by card or PayPal. Then come back here and click "I already donated" — your rank updates in a minute or two.',
+  'pag.kofiAjuda': 'Did not show up after a few minutes, or forgot the code? {link} with the Ko-fi receipt (the transaction reference) and we will add it by hand.',
+  'pag.kofiAjudaLink': 'Contact us here',
   'pag.indisponivel': 'Online donations are not available right now. Please try again later.',
 });
