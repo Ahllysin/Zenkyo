@@ -831,7 +831,7 @@ kzAddLang('en', {
   'arena.efeitosTxt': 'A per-round panel with the buffs and debuffs active on your team and on the enemies (damage, defense, control, shield, HP and more), so you can tell what is happening in the fight.',
   'arena.efeitosAlt1': '“Efeitos na luta” (Battle effects), round 1: your team and the enemies side by side.',
   'arena.eventosTit': 'Events and content',
-  'arena.eventosTxt': 'The <b>Legend</b>, <b>Limited</b> and <b>Ultimate</b> banners are unlocked. The <b>Hero Pass</b> can now also be bought with <b>Dragon Stones</b>, not only with cash. The Beta also has the <b>Universe Invasion</b> (server boss with damage goals and rewards, including a permanent avatar frame), the <b>Hall of Fame</b> and the shops (General, Arena, Alliance).',
+  'arena.eventosTxt': 'The <b>Legend</b>, <b>Limited</b> and <b>Ultimate</b> banners are unlocked. The <b>Hero Pass</b> can now also be bought with <b>Dragon Stones</b>, not only with real-money top-ups (cash). The Beta also has the <b>Universe Invasion</b> (server boss with damage goals and rewards, including a permanent avatar frame), the <b>Hall of Fame</b> and the shops (General, Arena, Alliance).',
   'arena.eventosAlt1': 'Universe Invasion.',
   'arena.eventosAlt2': 'Hero Pass: now also purchasable with Dragon Stones.',
   'arena.eventosAlt3': 'Hall of Fame.',

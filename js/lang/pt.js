@@ -834,7 +834,7 @@ kzAddLang('pt', {
   'arena.efeitosTxt': 'Painel por rodada com os bônus e penalidades ativos no seu time e nos inimigos (dano, defesa, controle, escudo, PV e outros), para entender o que está acontecendo na batalha.',
   'arena.efeitosAlt1': '“Efeitos na luta”, rodada 1: seu time e os inimigos lado a lado.',
   'arena.eventosTit': 'Eventos e conteúdo',
-  'arena.eventosTxt': 'Os banners de <b>Lendário</b>, <b>Limitado</b> e <b>Ultimate</b> estão liberados. O <b>Passe do Herói</b> agora também pode ser comprado com <b>Pedras do Dragão</b>, e não apenas com cash. A Beta traz ainda a <b>Invasão dos Universos</b> (chefe do servidor com metas de dano e recompensas, incluindo moldura de avatar permanente), o <b>Hall da Fama</b> e as lojas (Geral, Arena, Aliança).',
+  'arena.eventosTxt': 'Os banners de <b>Lendário</b>, <b>Limitado</b> e <b>Ultimate</b> estão liberados. O <b>Passe do Herói</b> agora também pode ser comprado com <b>Pedras do Dragão</b>, e não apenas com recarga real (cash). A Beta traz ainda a <b>Invasão dos Universos</b> (chefe do servidor com metas de dano e recompensas, incluindo moldura de avatar permanente), o <b>Hall da Fama</b> e as lojas (Geral, Arena, Aliança).',
   'arena.eventosAlt1': 'Invasão dos Universos.',
   'arena.eventosAlt2': 'Passe do Herói: agora também comprável com Pedras do Dragão.',
   'arena.eventosAlt3': 'Hall da Fama.',
