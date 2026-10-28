@@ -29,27 +29,31 @@ QUEM APARECE NO MURAL
 SE ALGO DER ERRADO
   Painel do Supabase → Edge Functions → mp-doacao / mp-webhook → Logs.
 
-DOAÇÕES INTERNACIONAIS PELO STRIPE (site em inglês, zenkyo.com.br/en/)
+DOAÇÕES INTERNACIONAIS PELO PAYPAL (site em inglês, zenkyo.com.br/en/)
 =======================================================================
-  - Função stripe-checkout → o botão "Donate with Stripe" de /en/ chama esta função. Ela cria a sessão do
-                             Stripe Checkout (em dólar) e devolve o link de pagamento.
-  - Função stripe-webhook  → o Stripe avisa aqui. Ela confere a assinatura, confere valor e moeda e lança o apoio
-                             na Aliança Z (checkout.session.completed); trata reembolso (charge.refunded) e
-                             contestação (charge.dispute.created). Publicar SEM verificação de JWT.
-  - Banco: migrations/20261026_stripe_doacoes.sql acrescenta colunas em mp_pagamentos (provedor, moeda,
-           valor_original, stripe_session_id). A coluna valor continua em REAIS (taxa fixa); a doação do Stripe usa
-           as mesmas funções registrar_apoio_mp e ajustar_devolucao_mp do Mercado Pago.
+  - Função paypal-checkout → o botão "Donate with PayPal" de /en/ chama esta função. Ela cria o pedido (Order) do
+                             PayPal em dólar e devolve o link de aprovação.
+  - Função paypal-retorno  → ao voltar do PayPal (?doacao=aprovada&token=...), o site chama esta função. Ela captura o
+                             pedido, confere valor e moeda e lança o apoio na Aliança Z. Publicar SEM verificação de JWT.
+  - Função paypal-webhook  → o PayPal avisa aqui. Confere a assinatura com o próprio PayPal; PAYMENT.CAPTURE.COMPLETED
+                             (reserva, se a pessoa não voltar ao site), PAYMENT.CAPTURE.REFUNDED e .REVERSED (devolução).
+                             Publicar SEM verificação de JWT.
+  - Banco: migrations/20261029_paypal_doacoes.sql acrescenta paypal_order_id em mp_pagamentos e aceita provedor
+           'paypal'. A coluna valor continua em REAIS (taxa fixa); usa as mesmas funções registrar_apoio_mp e
+           ajustar_devolucao_mp do Mercado Pago.
   SEGREDOS (Painel do Supabase → Edge Functions → Secrets):
-    STRIPE_SECRET_KEY      Stripe → Developers → API keys → Secret key (sk_test_... para testar, sk_live_... de verdade).
-    STRIPE_WEBHOOK_SECRET  Stripe → Developers → Webhooks → o endpoint abaixo → "Signing secret" (whsec_...).
+    PAYPAL_CLIENT_ID       developer.paypal.com → Apps & Credentials → Client ID (aba Sandbox para testar, Live de verdade).
+    PAYPAL_CLIENT_SECRET   o Secret do mesmo app.
+    PAYPAL_WEBHOOK_ID      id do webhook cadastrado no mesmo app (endereço abaixo).
+    PAYPAL_ENV             "sandbox" para testar; não definir (ou outro valor) = de verdade.
     USD_BRL                (opcional) taxa fixa; padrão 5. Precisa ser igual a KZ_USD_BRL em js/i18n.js.
     SITE_URL_EN            (opcional) padrão https://zenkyo.com.br/en/
-  ENDEREÇO DO WEBHOOK (cadastrar no Stripe; eventos: checkout.session.completed, checkout.session.async_payment_succeeded,
-  charge.refunded, charge.dispute.created):
-    https://luyuprliobxtxnppdohw.supabase.co/functions/v1/stripe-webhook
-  Teste: com chaves de teste, cartão 4242 4242 4242 4242 (qualquer data futura e CVC). Reembolsar no painel do Stripe
-  desconta do mural.
-
+  ENDEREÇO DO WEBHOOK (cadastrar no app do PayPal; eventos: Payment capture completed, Payment capture refunded,
+  Payment capture reversed):
+    https://luyuprliobxtxnppdohw.supabase.co/functions/v1/paypal-webhook
+  PARA LIGAR: depois de publicar as 3 funções e aplicar a migração, trocar PAG_EN_ATIVO para true em js/app.js
+  (hoje false: a aba Doar de /en/ mostra "em breve").
+  Teste: contas de teste do Sandbox (developer.paypal.com → Sandbox → Accounts), com PAYPAL_ENV=sandbox.
 IA DO MONTADOR DE TIME (Descreva o time; Gemini, plano gratuito)
 ================================================================
   - Função ia-montador → duas ações: "interpretar" (pedido → filtros e guerreiro principal) e "explicar" (explica os times que o

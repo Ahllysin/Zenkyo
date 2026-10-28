@@ -1142,8 +1142,8 @@ function textStarsHtml(req){
   let s = '';
   for(let i=0;i<5;i++){
     s += i < n
-      ? (phase === 'lr' ? '<span class="kz-rb">★</span>' : `<span style="color:${phase==='blue'?'#4fb8ff':'#ffc93a'};text-shadow:0 0 6px ${phase==='blue'?'rgba(79,184,255,.6)':'rgba(255,190,50,.6)'};">★</span>`)
-      : `<span style="color:#5a6078;">☆</span>`;
+      ? (phase === 'lr' ? '<span class="kz-sv kz-rb lr"></span>' : `<span class="kz-sv ${phase}"></span>`)
+      : '<span class="kz-sv"></span>';
   }
   return `<span class="kz-stars">${s}</span>`;
 }
@@ -2618,7 +2618,7 @@ function renderCollectionCardNovo(c){
     <div class="kz-nvc-nm">${nome}</div>
     <button type="button" class="kz-btn kz-nvc-acq coll-acquire" data-id="${c.id}">${kzt('coll.adquirir')}</button>
   </div>`;
-  const stars = [1,2,3,4,5].map(i=>`<button type="button" class="kz-star-btn ${i<=filled?phase:''}" data-star="${i}" title="${pname} ${i}" aria-label="${pname} ${i}">★</button>`).join('');
+  const stars = [1,2,3,4,5].map(i=>`<button type="button" class="kz-star-btn ${i<=filled?phase:''}" data-star="${i}" title="${pname} ${i}" aria-label="${pname} ${i}">${i<=filled?'★':'☆'}</button>`).join('');
   const canLR = maxStarLevel(c) > 10;
   const extra = [
     lv === 5 ? `<button type="button" class="kz-awaken-btn" data-awaken>${kzt('coll.despertar')}</button>` : '',
@@ -6183,13 +6183,16 @@ function attachFavsHandlers(){
 // Pago (Pix, cartão ou saldo) e volta com ?doacao=aprovada|pendente|recusada. Quem lança o apoio na Aliança Z é o
 // webhook "mp-webhook", depois de conferir o pagamento no próprio Mercado Pago — a volta para o site só mostra o aviso.
 // Logado com Discord: soma no apoiador ligado ao perfil. Sem login: com nome entra no mural; anônimo fica fora dele.
-// Em inglês a doação é em dólar pelo Stripe Checkout (função "stripe-checkout"); os valores continuam guardados em reais
-// (taxa fixa KZ_USD_BRL) para a patente e o mural funcionarem igual nos dois idiomas.
+// Em inglês a doação é em dólar pelo PayPal (função "paypal-checkout" cria o pedido; ao voltar, "paypal-retorno" captura e
+// lança o apoio; "paypal-webhook" cuida de reembolsos). Os valores continuam guardados em reais (taxa fixa KZ_USD_BRL)
+// para a patente e o mural funcionarem igual nos dois idiomas.
 const PAG_USD = KZ_LANG === 'en';
-// A doação em inglês ainda não tem provedor de pagamento: a aba mostra um aviso no lugar do formulário.
-const PAG_EM_BREVE = PAG_USD;
-const PAG_FUNCAO = PAG_USD ? 'stripe-checkout' : 'mp-doacao';
-const PAG_HOST = PAG_USD ? /^https:\/\/checkout\.stripe\.com\//i : /^https:\/\/([a-z0-9-]+\.)*mercadopago\.com(\.br)?\//i;
+// Chave da doação em inglês: fica false até as chaves do PayPal estarem nos Secrets do Supabase (veja _supabase/LEIA-ME.txt).
+// Enquanto for false, a aba mostra um aviso no lugar do formulário.
+const PAG_EN_ATIVO = false;
+const PAG_EM_BREVE = PAG_USD && !PAG_EN_ATIVO;
+const PAG_FUNCAO = PAG_USD ? 'paypal-checkout' : 'mp-doacao';
+const PAG_HOST = PAG_USD ? /^https:\/\/(www\.)?(sandbox\.)?paypal\.com\//i : /^https:\/\/([a-z0-9-]+\.)*mercadopago\.com(\.br)?\//i;
 const MP_VALORES = PAG_USD ? [10, 25, 50, 100] : [10, 20, 50, 100];
 const MP_VALOR_MIN = 5, MP_VALOR_MAX = 5000;
 const MP_RETORNOS = {
@@ -6230,22 +6233,24 @@ function mpDoacaoHtml(){
         <p class="kz-mp-total">${kzt('pag.total')} <strong id="mpTotal">${ok ? formatBRL(v) : '—'}</strong></p>
         ${quem}
         <label class="kz-honor-check kz-mp-anon"><input type="checkbox" id="mpAnonimo"${d.anonimo ? ' checked' : ''}> ${kzt('pag.anonimo')}</label>
-        <button type="button" class="kz-donate-cta" id="mpDoarBtn" data-mp-checkout-cta="${PAG_USD ? 'stripe-checkout' : 'checkout-pro'}" aria-label="${escapeAttr(kzt('pag.botao'))}"${carregando ? ' disabled aria-busy="true"' : ''}><span>気</span><span>${carregando ? kzt('pag.botaoAbrindo') : kzt('pag.botao')}</span></button>
+        <button type="button" class="kz-donate-cta" id="mpDoarBtn" data-mp-checkout-cta="${PAG_USD ? 'paypal-checkout' : 'checkout-pro'}" aria-label="${escapeAttr(kzt('pag.botao'))}"${carregando ? ' disabled aria-busy="true"' : ''}><span>気</span><span>${carregando ? kzt('pag.botaoAbrindo') : kzt('pag.botao')}</span></button>
         <div class="kz-mp-status${d.estado === 'erro' ? ' err' : ''}" id="mpStatus" role="status" aria-live="polite">${d.estado === 'erro' ? escapeHtml(d.msg) : ''}</div>`;
 }
 // Ao voltar do Mercado Pago: abre a aba Doar com o aviso e limpa o endereço (o registro de verdade vem do webhook).
 function applyDoacaoRetorno(){
-  let r = null, pid = '';
+  let r = null, pid = '', pedido = '';
   try{
     const q = new URLSearchParams(location.search);
     r = q.get('doacao');
     pid = String(q.get('payment_id') || q.get('collection_id') || '').replace(/\D/g, '');   // o Mercado Pago devolve o número do pagamento
+    pedido = String(q.get('token') || '').replace(/[^A-Za-z0-9]/g, '');                      // o PayPal devolve o pedido em "token"
   }catch(e){}
   if(!r || !MP_RETORNOS[r]) return;
   state.tab = 'doar';
   state.mpRetorno = r;
   try{ history.replaceState(null, '', location.pathname + location.hash); }catch(e){}
-  if(pid.length >= 6) confirmarRetornoMP(pid);
+  if(PAG_USD){ if(r === 'aprovada' && pedido.length >= 10) confirmarRetornoPayPal(pedido); }
+  else if(pid.length >= 6) confirmarRetornoMP(pid);
   if(r === 'aprovada' && typeof setTimeout === 'function'){
     [5000, 15000].forEach(ms=> setTimeout(()=>{ Promise.resolve(refreshDonorsRemote()).then(()=>{ if(state.tab === 'doar') render(); }).catch(()=>{}); }, ms));
   }
@@ -6258,6 +6263,23 @@ async function confirmarRetornoMP(pid){
       const { data, error } = await window.__sb.client.functions.invoke('mp-retorno', { body: { pagamento: pid } });
       if(error) throw error;
       if(data && data.status === 'approved'){ await refreshDonorsRemote(); if(state.tab === 'doar') render(); }
+    }catch(e){ console.error('Não consegui confirmar o pagamento na volta', e); }
+  };
+  if(window.__sb && window.__sb.client) return rodar();
+  window.addEventListener('supabase-ready', rodar, { once:true });
+}
+// Volta do PayPal: a pessoa aprovou, mas o dinheiro só sai quando a função paypal-retorno captura o pedido (e confere valor e moeda).
+// O aviso já mostrado na tela é provisório: se a captura falhar ou ficar pendente, ele muda.
+async function confirmarRetornoPayPal(pedido){
+  const rodar = async ()=>{
+    try{
+      const { data, error } = await window.__sb.client.functions.invoke('paypal-retorno', { body: { pedido } });
+      if(error) throw error;
+      const st = data && data.status;
+      if(st === 'approved'){ await refreshDonorsRemote(); }
+      else if(st === 'pending') state.mpRetorno = 'pendente';
+      else if(st === 'rejected') state.mpRetorno = 'recusada';
+      if(state.tab === 'doar') render();
     }catch(e){ console.error('Não consegui confirmar o pagamento na volta', e); }
   };
   if(window.__sb && window.__sb.client) return rodar();
