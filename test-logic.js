@@ -2437,6 +2437,29 @@ async function main(){
     assert.ok(!/livepix/i.test(csp), 'CSP sem o quadro da LivePix');
   });
 
+  await test('Doar em inglês pelo Ko-fi: código do perfil, botão para o Ko-fi, sem PayPal e função/migração do webhook no lugar', () => {
+    const fs = require('fs'), path = require('path');
+    assert.strictEqual(evalIn(sandbox, "kofiCodigo('1a2b3c4d-0000-4000-8000-000000000000')"), 'ZK-1A2B3C4D');
+    assert.strictEqual(evalIn(sandbox, "kofiCodigo('')"), '');
+    assert.strictEqual(evalIn(sandbox, "kofiCodigo('zzzzzzzz-1')"), '', 'id que não é hexadecimal não gera código');
+    const html = evalIn(sandbox, `(() => { const antes = state.discordUser; state.discordUser = { id: '1a2b3c4d-0000-4000-8000-000000000000' };
+      const logado = kofiDoacaoHtml(); state.discordUser = null; const visitante = kofiDoacaoHtml(); state.discordUser = antes; return { logado, visitante }; })()`);
+    assert.ok(html.logado.includes('ZK-1A2B3C4D') && html.logado.includes('id="kofiCopiar"'), 'logado vê o código e o botão de copiar');
+    assert.ok(!html.visitante.includes('kofiCopiar') && /kofiAtualizar/.test(html.visitante), 'visitante não tem código, mas vê o botão de atualizar o mural');
+    assert.ok(/id="kofiBtn"[^>]*target="_blank"[^>]*rel="noopener noreferrer"/.test(html.logado), 'o botão abre o Ko-fi em outra aba, sem passar o opener');
+    const app = fs.readFileSync(path.join(__dirname, 'js/app.js'), 'utf8');
+    assert.ok(!/paypal/i.test(app), 'sem caminho do PayPal no site');
+    const url = (app.match(/const KOFI_URL = '([^']*)'/) || [])[1];
+    assert.ok(url === '' || new RegExp('^https:[/][/]ko-fi[.]com[/][A-Za-z0-9_.-]+[/]?$').test(url), 'KOFI_URL vazio (em breve) ou o endereço da página do Ko-fi');
+    const fn = fs.readdirSync(path.join(__dirname, '_supabase/functions'));
+    assert.ok(fn.includes('kofi-webhook') && !fn.some(n => /paypal|stripe/.test(n)), 'só a função do Ko-fi para doação internacional');
+    const web = fs.readFileSync(path.join(__dirname, '_supabase/functions/kofi-webhook/index.ts'), 'utf8');
+    assert.ok(/verification_token/.test(web) && /KOFI_VERIFICATION_TOKEN/.test(web) && /registrar_apoio_kofi/.test(web) && web.includes('ZK-'), 'webhook confere o token e usa a função do banco');
+    const mig = fs.readFileSync(path.join(__dirname, '_supabase/migrations/20261030_kofi_doacoes.sql'), 'utf8');
+    assert.ok(mig.includes('create or replace function public.registrar_apoio_kofi') && mig.includes("'kofi'") && mig.includes('registrar_apoio_mp(ref, p_txn, p_valor)'), 'migração com a função do Ko-fi que reaproveita registrar_apoio_mp');
+    assert.ok(!fs.readdirSync(path.join(__dirname, '_supabase/migrations')).some(n => /paypal/.test(n)), 'migração do PayPal removida');
+  });
+
   await test('Aba Admin: só o dono vê, totais descontam devoluções, filtros e busca, anônimo sem nome', () => {
     const r = evalIn(sandbox, `(() => {
       const antes = { av: supabaseAvailable, sb: window.__sb, u: state.discordUser, a: state.admin };

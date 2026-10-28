@@ -128,9 +128,6 @@ function gerarIngles(htmlPt){
     if(!re.test(dentro)) throw new Error('data-i18n-tail: o fim do elemento não é o texto da chave ' + k);
     return dentro.replace(re, () => escHtml(en[k]));
   });
-  // Doação em inglês ainda não existe: os botões ficam escondidos (continuam no HTML para o JS não quebrar).
-  // Para ligar de novo, apague esta linha e volte PAG_EM_BREVE para false em js/app.js.
-  h = h.replace(/(<button class="kz-header-donate-btn" id="headerDonateBtn")/, '$1 style="display:none"').replace(/(<button class="kz-nav-btn" data-tab="doar")/, '$1 style="display:none"');
   return h;
 }
 

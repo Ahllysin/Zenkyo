@@ -29,31 +29,31 @@ QUEM APARECE NO MURAL
 SE ALGO DER ERRADO
   Painel do Supabase → Edge Functions → mp-doacao / mp-webhook → Logs.
 
-DOAÇÕES INTERNACIONAIS PELO PAYPAL (site em inglês, zenkyo.com.br/en/)
+DOAÇÕES INTERNACIONAIS PELO KO-FI (site em inglês, zenkyo.com.br/en/)
 =======================================================================
-  - Função paypal-checkout → o botão "Donate with PayPal" de /en/ chama esta função. Ela cria o pedido (Order) do
-                             PayPal em dólar e devolve o link de aprovação.
-  - Função paypal-retorno  → ao voltar do PayPal (?doacao=aprovada&token=...), o site chama esta função. Ela captura o
-                             pedido, confere valor e moeda e lança o apoio na Aliança Z. Publicar SEM verificação de JWT.
-  - Função paypal-webhook  → o PayPal avisa aqui. Confere a assinatura com o próprio PayPal; PAYMENT.CAPTURE.COMPLETED
-                             (reserva, se a pessoa não voltar ao site), PAYMENT.CAPTURE.REFUNDED e .REVERSED (devolução).
-                             Publicar SEM verificação de JWT.
-  - Banco: migrations/20261029_paypal_doacoes.sql acrescenta paypal_order_id em mp_pagamentos e aceita provedor
-           'paypal'. A coluna valor continua em REAIS (taxa fixa); usa as mesmas funções registrar_apoio_mp e
-           ajustar_devolucao_mp do Mercado Pago.
+  Em dólar, sem CNPJ: a pessoa doa na página do Ko-fi (cartão ou PayPal) e o Ko-fi repassa para a conta do dono.
+  O Ko-fi não deixa o site criar o pagamento nem voltar para cá, então o apoio entra por um aviso (webhook).
+  - Função kofi-webhook → o Ko-fi avisa aqui a cada doação (tipos Donation e Subscription). Confere o verification_token do
+                          aviso com o segredo KOFI_VERIFICATION_TOKEN e chama registrar_apoio_kofi. Publicar SEM verificação de JWT.
+  - Banco: migrations/20261030_kofi_doacoes.sql → provedor 'kofi' em mp_pagamentos e a função registrar_apoio_kofi, que acha o
+           perfil pelo código e reaproveita registrar_apoio_mp (patente sobe sozinha). A coluna valor continua em REAIS
+           (dólar x taxa fixa); valor_original guarda o dólar; mp_payment_id guarda o kofi_transaction_id (não lança duas vezes).
+  - Site: KOFI_URL em js/app.js (hoje vazio: /en/ mostra "em breve"). Ponha o endereço da página, ex.: https://ko-fi.com/seunome
+  COMO O APOIO CHEGA NO PERFIL
+    Logado com Discord, o site mostra o código ZK-XXXXXXXX (os 8 primeiros caracteres do id do perfil). A pessoa cola o código na
+    MENSAGEM da doação no Ko-fi; o webhook lê a mensagem, acha o perfil e soma no apoiador (patente automática).
+    Sem código: entra no mural pelo nome digitado no Ko-fi, como apoiador novo (sem patente de perfil).
+    Doação marcada como privada no Ko-fi: fica registrada, mas fora do mural.
   SEGREDOS (Painel do Supabase → Edge Functions → Secrets):
-    PAYPAL_CLIENT_ID       developer.paypal.com → Apps & Credentials → Client ID (aba Sandbox para testar, Live de verdade).
-    PAYPAL_CLIENT_SECRET   o Secret do mesmo app.
-    PAYPAL_WEBHOOK_ID      id do webhook cadastrado no mesmo app (endereço abaixo).
-    PAYPAL_ENV             "sandbox" para testar; não definir (ou outro valor) = de verdade.
-    USD_BRL                (opcional) taxa fixa; padrão 5. Precisa ser igual a KZ_USD_BRL em js/i18n.js.
-    SITE_URL_EN            (opcional) padrão https://zenkyo.com.br/en/
-  ENDEREÇO DO WEBHOOK (cadastrar no app do PayPal; eventos: Payment capture completed, Payment capture refunded,
-  Payment capture reversed):
-    https://luyuprliobxtxnppdohw.supabase.co/functions/v1/paypal-webhook
-  PARA LIGAR: depois de publicar as 3 funções e aplicar a migração, trocar PAG_EN_ATIVO para true em js/app.js
-  (hoje false: a aba Doar de /en/ mostra "em breve").
-  Teste: contas de teste do Sandbox (developer.paypal.com → Sandbox → Accounts), com PAYPAL_ENV=sandbox.
+    KOFI_VERIFICATION_TOKEN   Ko-fi → Settings → API → Webhooks → "Verification Token".
+    USD_BRL                   (opcional) taxa fixa; padrão 5. Precisa ser igual a KZ_USD_BRL em js/i18n.js.
+  ENDEREÇO DO WEBHOOK (colar em Ko-fi → Settings → API → Webhooks → Webhook URL):
+    https://luyuprliobxtxnppdohw.supabase.co/functions/v1/kofi-webhook
+  LIMITES: só dólar (deixe a página do Ko-fi em USD; outras moedas são ignoradas e aparecem nos logs); o Ko-fi NÃO avisa
+  reembolso (ajuste à mão na aba Admin); doações de loja e comissões não entram. Mínimo US$ 1 (= R$ 5 pela taxa fixa).
+  Teste: o botão de teste do painel do Ko-fi (se houver) pode lançar uma doação de exemplo no mural; confira e remova na aba Admin.
+  O teste de verdade é doar US$ 1 com o código do perfil.
+  Logs: Painel do Supabase → Edge Functions → kofi-webhook → Logs.
 IA DO MONTADOR DE TIME (Descreva o time; Gemini, plano gratuito)
 ================================================================
   - Função ia-montador → duas ações: "interpretar" (pedido → filtros e guerreiro principal) e "explicar" (explica os times que o

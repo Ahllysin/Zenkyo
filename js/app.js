@@ -6183,36 +6183,56 @@ function attachFavsHandlers(){
 // Pago (Pix, cartão ou saldo) e volta com ?doacao=aprovada|pendente|recusada. Quem lança o apoio na Aliança Z é o
 // webhook "mp-webhook", depois de conferir o pagamento no próprio Mercado Pago — a volta para o site só mostra o aviso.
 // Logado com Discord: soma no apoiador ligado ao perfil. Sem login: com nome entra no mural; anônimo fica fora dele.
-// Em inglês a doação é em dólar pelo PayPal (função "paypal-checkout" cria o pedido; ao voltar, "paypal-retorno" captura e
-// lança o apoio; "paypal-webhook" cuida de reembolsos). Os valores continuam guardados em reais (taxa fixa KZ_USD_BRL)
-// para a patente e o mural funcionarem igual nos dois idiomas.
+// Em inglês a doação é em dólar pelo Ko-fi (que repassa para a conta do dono). O Ko-fi não deixa o site criar o pagamento
+// nem voltar para cá: a pessoa doa na página do Ko-fi e cola na mensagem o código ZK-XXXXXXXX do perfil dela; quem lança o
+// apoio é o webhook "kofi-webhook" (Supabase), que lê o código e soma no apoiador (a patente sobe sozinha). Sem código, entra
+// no mural pelo nome digitado no Ko-fi. Os valores ficam guardados em reais (taxa fixa KZ_USD_BRL), igual nos dois idiomas.
 const PAG_USD = KZ_LANG === 'en';
-// Chave da doação em inglês: fica false até as chaves do PayPal estarem nos Secrets do Supabase (veja _supabase/LEIA-ME.txt).
-// Enquanto for false, a aba mostra um aviso no lugar do formulário.
-const PAG_EN_ATIVO = false;
-const PAG_EM_BREVE = PAG_USD && !PAG_EN_ATIVO;
-const PAG_FUNCAO = PAG_USD ? 'paypal-checkout' : 'mp-doacao';
-const PAG_HOST = PAG_USD ? /^https:\/\/(www\.)?(sandbox\.)?paypal\.com\//i : /^https:\/\/([a-z0-9-]+\.)*mercadopago\.com(\.br)?\//i;
-const MP_VALORES = PAG_USD ? [10, 25, 50, 100] : [10, 20, 50, 100];
+// Endereço da página do Ko-fi do dono, ex.: 'https://ko-fi.com/seunome'. Vazio = a aba de /en/ mostra "em breve".
+const KOFI_URL = 'https://ko-fi.com/ahllysin';
+const PAG_EM_BREVE = PAG_USD && !/^https:\/\/ko-fi\.com\/[A-Za-z0-9_.-]+\/?$/.test(KOFI_URL);
+const PAG_HOST = /^https:\/\/([a-z0-9-]+\.)*mercadopago\.com(\.br)?\//i;
+const MP_VALORES = [10, 20, 50, 100];
 const MP_VALOR_MIN = 5, MP_VALOR_MAX = 5000;
 const MP_RETORNOS = {
   aprovada: ['ok', kzt('pag.retornoAprovada')],
   pendente: ['wait', kzt('pag.retornoPendente')],
   recusada: ['err', kzt('pag.retornoRecusada')],
 };
-// o que a pessoa digita em "outro valor" está na moeda do site (R$ em português, US$ em inglês); aqui sempre sai em reais
 function mpValorEscolhido(){
   const d = state.mpDoacao;
   if(!d.outro) return d.valor;
-  const v = Number(String(d.outroValor || '').replace(',', '.')) * (PAG_USD ? KZ_USD_BRL : 1);
+  const v = Number(String(d.outroValor || '').replace(',', '.'));
   return Number.isFinite(v) ? Math.round(v * 100) / 100 : NaN;
 }
-// rótulo de valor redondo (botões e limites): "R$ 20" em português, "$20" em inglês
-function mpRotulo(n){ return PAG_USD ? formatBRL(n) : 'R$ ' + n.toLocaleString('pt-BR'); }
+// rótulo de valor redondo (botões e limites): "R$ 20"
+function mpRotulo(n){ return 'R$ ' + n.toLocaleString('pt-BR'); }
+// Código do perfil para colar na mensagem do Ko-fi: ZK- + os 8 primeiros caracteres do id (o banco acha o perfil por ele).
+function kofiCodigo(id){
+  const h = String(id || '').replace(/-/g, '').slice(0, 8).toUpperCase();
+  return /^[0-9A-F]{8}$/.test(h) ? 'ZK-' + h : '';
+}
+// Bloco de doação do site em inglês: botão para o Ko-fi + o código do perfil (logado) ou o aviso de como entrar no mural.
+function kofiDoacaoHtml(){
+  if(PAG_EM_BREVE) return `<p class="kz-mp-metodos">${kzt('pag.emBreve')}</p>`;
+  const cod = state.discordUser ? kofiCodigo(state.discordUser.id) : '';
+  const codigo = cod
+    ? `<div class="kz-kofi-codigo"><span>${kzt('pag.kofiSeuCodigo')}</span><code id="kofiCodigo">${cod}</code><button type="button" class="kz-fchip" id="kofiCopiar">${kzt('pag.kofiCopiar')}</button></div>
+        <p class="kz-mp-dica">${kzt('pag.kofiCole')}</p>`
+    : `<p class="kz-mp-dica">${kzt('pag.kofiSemLogin')}</p>`;
+  return `
+        <p class="kz-mp-metodos">${kzt('pag.metodos')}</p>
+        <p class="kz-mp-pixdica">${kzt('pag.dica')}</p>
+        ${codigo}
+        <p class="kz-mp-dica">${kzt('pag.kofiAnonimo')}</p>
+        <a class="kz-donate-cta" id="kofiBtn" data-mp-checkout-cta="kofi" href="${escapeAttr(KOFI_URL)}" target="_blank" rel="noopener noreferrer"><span>気</span><span>${kzt('pag.botao')}</span></a>
+        <button type="button" class="kz-fchip" id="kofiAtualizar">${kzt('pag.kofiAtualizar')}</button>
+        <div class="kz-mp-status" id="mpStatus" role="status" aria-live="polite"></div>`;
+}
 function mpValorValido(v){ return Number.isFinite(v) && v >= MP_VALOR_MIN && v <= MP_VALOR_MAX; }
 // Bloco de doação (mesmo conteúdo no visual novo e no antigo). O botão leva a marca data-mp-checkout-cta.
 function mpDoacaoHtml(){
-  if(PAG_EM_BREVE) return `<p class="kz-mp-metodos">${kzt('pag.emBreve')}</p>`;
+  if(PAG_USD) return kofiDoacaoHtml();
   const d = state.mpDoacao, v = mpValorEscolhido(), ok = mpValorValido(v);
   const ret = state.mpRetorno && MP_RETORNOS[state.mpRetorno];
   const quem = state.discordUser
@@ -6220,7 +6240,6 @@ function mpDoacaoHtml(){
     : `<label class="kz-mp-campo"><span>${kzt('pag.seuNome')}</span><input type="text" id="mpNome" maxlength="40" autocomplete="nickname" placeholder="${escapeAttr(kzt('pag.seuNomePh'))}" value="${escapeAttr(d.nome)}"${d.anonimo ? ' disabled' : ''}></label>
         <p class="kz-mp-dica">${kzt('pag.semNome')}</p>`;
   const carregando = d.estado === 'carregando';
-  const k = PAG_USD ? 1 / KZ_USD_BRL : 1;   // limites do campo "outro valor" na moeda do site
   return `
         ${ret ? `<div class="kz-mp-retorno ${ret[0]}" role="status">${escapeHtml(ret[1])}</div>` : ''}
         <p class="kz-mp-metodos">${kzt('pag.metodos')}</p>
@@ -6229,28 +6248,26 @@ function mpDoacaoHtml(){
           ${MP_VALORES.map(x=>{ const on = !d.outro && d.valor === x; return `<button type="button" class="kz-fchip${on ? ' active' : ''}" data-mp-valor="${x}" aria-pressed="${on}">${mpRotulo(x)}</button>`; }).join('')}
           <button type="button" class="kz-fchip${d.outro ? ' active' : ''}" data-mp-outro aria-pressed="${d.outro}">${kzt('pag.outroValor')}</button>
         </div>
-        ${d.outro ? `<label class="kz-mp-campo"><span>${kzt('pag.outroLabel', { min: mpRotulo(MP_VALOR_MIN), max: mpRotulo(MP_VALOR_MAX) })}</span><input type="number" id="mpOutroValor" inputmode="decimal" min="${MP_VALOR_MIN * k}" max="${MP_VALOR_MAX * k}" step="1" placeholder="${escapeAttr(kzt('pag.outroPh'))}" value="${escapeAttr(d.outroValor)}"></label>` : ''}
+        ${d.outro ? `<label class="kz-mp-campo"><span>${kzt('pag.outroLabel', { min: mpRotulo(MP_VALOR_MIN), max: mpRotulo(MP_VALOR_MAX) })}</span><input type="number" id="mpOutroValor" inputmode="decimal" min="${MP_VALOR_MIN}" max="${MP_VALOR_MAX}" step="1" placeholder="${escapeAttr(kzt('pag.outroPh'))}" value="${escapeAttr(d.outroValor)}"></label>` : ''}
         <p class="kz-mp-total">${kzt('pag.total')} <strong id="mpTotal">${ok ? formatBRL(v) : '—'}</strong></p>
         ${quem}
         <label class="kz-honor-check kz-mp-anon"><input type="checkbox" id="mpAnonimo"${d.anonimo ? ' checked' : ''}> ${kzt('pag.anonimo')}</label>
-        <button type="button" class="kz-donate-cta" id="mpDoarBtn" data-mp-checkout-cta="${PAG_USD ? 'paypal-checkout' : 'checkout-pro'}" aria-label="${escapeAttr(kzt('pag.botao'))}"${carregando ? ' disabled aria-busy="true"' : ''}><span>気</span><span>${carregando ? kzt('pag.botaoAbrindo') : kzt('pag.botao')}</span></button>
+        <button type="button" class="kz-donate-cta" id="mpDoarBtn" data-mp-checkout-cta="checkout-pro" aria-label="${escapeAttr(kzt('pag.botao'))}"${carregando ? ' disabled aria-busy="true"' : ''}><span>気</span><span>${carregando ? kzt('pag.botaoAbrindo') : kzt('pag.botao')}</span></button>
         <div class="kz-mp-status${d.estado === 'erro' ? ' err' : ''}" id="mpStatus" role="status" aria-live="polite">${d.estado === 'erro' ? escapeHtml(d.msg) : ''}</div>`;
 }
 // Ao voltar do Mercado Pago: abre a aba Doar com o aviso e limpa o endereço (o registro de verdade vem do webhook).
 function applyDoacaoRetorno(){
-  let r = null, pid = '', pedido = '';
+  let r = null, pid = '';
   try{
     const q = new URLSearchParams(location.search);
     r = q.get('doacao');
     pid = String(q.get('payment_id') || q.get('collection_id') || '').replace(/\D/g, '');   // o Mercado Pago devolve o número do pagamento
-    pedido = String(q.get('token') || '').replace(/[^A-Za-z0-9]/g, '');                      // o PayPal devolve o pedido em "token"
   }catch(e){}
   if(!r || !MP_RETORNOS[r]) return;
   state.tab = 'doar';
   state.mpRetorno = r;
   try{ history.replaceState(null, '', location.pathname + location.hash); }catch(e){}
-  if(PAG_USD){ if(r === 'aprovada' && pedido.length >= 10) confirmarRetornoPayPal(pedido); }
-  else if(pid.length >= 6) confirmarRetornoMP(pid);
+  if(pid.length >= 6) confirmarRetornoMP(pid);
   if(r === 'aprovada' && typeof setTimeout === 'function'){
     [5000, 15000].forEach(ms=> setTimeout(()=>{ Promise.resolve(refreshDonorsRemote()).then(()=>{ if(state.tab === 'doar') render(); }).catch(()=>{}); }, ms));
   }
@@ -6268,23 +6285,6 @@ async function confirmarRetornoMP(pid){
   if(window.__sb && window.__sb.client) return rodar();
   window.addEventListener('supabase-ready', rodar, { once:true });
 }
-// Volta do PayPal: a pessoa aprovou, mas o dinheiro só sai quando a função paypal-retorno captura o pedido (e confere valor e moeda).
-// O aviso já mostrado na tela é provisório: se a captura falhar ou ficar pendente, ele muda.
-async function confirmarRetornoPayPal(pedido){
-  const rodar = async ()=>{
-    try{
-      const { data, error } = await window.__sb.client.functions.invoke('paypal-retorno', { body: { pedido } });
-      if(error) throw error;
-      const st = data && data.status;
-      if(st === 'approved'){ await refreshDonorsRemote(); }
-      else if(st === 'pending') state.mpRetorno = 'pendente';
-      else if(st === 'rejected') state.mpRetorno = 'recusada';
-      if(state.tab === 'doar') render();
-    }catch(e){ console.error('Não consegui confirmar o pagamento na volta', e); }
-  };
-  if(window.__sb && window.__sb.client) return rodar();
-  window.addEventListener('supabase-ready', rodar, { once:true });
-}
 // Pede à Edge Function (Checkout Pro) a preference da doação. Devolve { init_point } ou null (o erro aparece no bloco).
 async function criarPreferenceMP(funcao){
   const d = state.mpDoacao;
@@ -6295,17 +6295,15 @@ async function criarPreferenceMP(funcao){
   if(!isSupabaseConfigured() || !window.__sb || !window.__sb.client) return falha(kzt('pag.indisponivel'));
   d.estado = 'carregando'; d.msg = ''; state.mpRetorno = null; render();
   try{
-    // em dólar a função recebe o valor em US$ (o que a pessoa vê); em reais, o valor em R$
-    const enviado = PAG_USD ? Math.round(valor / KZ_USD_BRL * 100) / 100 : valor;
     const { data, error } = await window.__sb.client.functions.invoke(funcao, {
-      body: { valor: enviado, nome: state.discordUser || d.anonimo ? '' : String(d.nome || '').trim().slice(0, 40), anonimo: !!d.anonimo },
+      body: { valor, nome: state.discordUser || d.anonimo ? '' : String(d.nome || '').trim().slice(0, 40), anonimo: !!d.anonimo },
     });
     if(error){
       let msg = '';
       try{ msg = (await error.context.json()).erro || ''; }catch(e){}
       return falha(msg || kzt('pag.naoAbriu'));
     }
-    const url = data && (PAG_USD ? data.url : data.init_point);
+    const url = data && data.init_point;
     if(typeof url !== 'string' || !PAG_HOST.test(url)) return falha(kzt('pag.inesperado'));
     return { init_point: url };
   }catch(e){
@@ -6325,7 +6323,19 @@ function attachMpDoacaoHandlers(view){
   if(anon) anon.addEventListener('change', ()=>{ d.anonimo = anon.checked; const n = document.getElementById('mpNome'); if(n) n.disabled = d.anonimo; });
   const btn = view.querySelector('#mpDoarBtn');
   // Checkout Pro: a função "mp-doacao" cria a preference no servidor; o botão leva para o init_point devolvido
-  if(btn) btn.addEventListener('click', ()=> criarPreferenceMP(PAG_FUNCAO).then(pref => { if(pref && pref.init_point) window.location.assign(pref.init_point); }));
+  if(btn) btn.addEventListener('click', ()=> criarPreferenceMP('mp-doacao').then(pref => { if(pref && pref.init_point) window.location.assign(pref.init_point); }));
+  // Ko-fi (site em inglês): copiar o código do perfil e reler o mural depois de doar
+  const status = msg => { const s = document.getElementById('mpStatus'); if(s) s.textContent = msg; };
+  const copiar = document.getElementById('kofiCopiar');
+  if(copiar) copiar.addEventListener('click', async ()=>{
+    const cod = (document.getElementById('kofiCodigo') || {}).textContent || '';
+    try{ await navigator.clipboard.writeText(cod); status(kzt('pag.kofiCopiado')); }
+    catch(e){ try{ const el = document.getElementById('kofiCodigo'); const sel = window.getSelection(); const rg = document.createRange(); rg.selectNodeContents(el); sel.removeAllRanges(); sel.addRange(rg); status(kzt('pag.kofiSelecionado')); }catch(e2){} }
+  });
+  const atualizar = document.getElementById('kofiAtualizar');
+  if(atualizar) atualizar.addEventListener('click', ()=>{
+    Promise.resolve(refreshDonorsRemote()).then(()=>{ if(state.tab === 'doar'){ render(); status(kzt('pag.kofiAtualizado')); } }).catch(()=>{});
+  });
 }
 
 // Patentes: sobem conforme o total doado (acumulado), do primeiro apoio até o topo.
