@@ -7,7 +7,7 @@
 // Nunca gasta dinheiro: a chave é de um projeto do Google AI Studio SEM cobrança ligada.
 // Segredos (Painel do Supabase → Edge Functions → Secrets): GEMINI_API_KEY (obrigatório); IA_MODELO (padrão gemini-2.5-flash);
 //   AVISO_DISCORD_WEBHOOK (opcional); IA_LIMITE_VISITANTE (padrão 12 chamadas/dia); IA_LIMITE_GLOBAL (padrão 200 chamadas/dia); IA_SAL (qualquer texto).
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+// (sem o import jsr:@supabase/functions-js/edge-runtime.d.ts: ele só serve de tipos e fazia o deploy falhar quando o jsr.io demora)
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const ORIGENS = ["https://zenkyo.com.br", "https://www.zenkyo.com.br", "https://ahllysin.github.io", "http://localhost:8765", "http://127.0.0.1:8765", "http://localhost:8766"];
