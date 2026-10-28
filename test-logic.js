@@ -943,17 +943,17 @@ async function main(){
     const fs = require('fs'), path = require('path');
     const r = evalIn(sandbox, `(() => {
       const bak = nvIconeVer, bakC = state.characters;
-      state.characters = bakC.filter(x => x.name !== 'Vegeta Instinto Superior');   // simula quem ainda não está no site
-      nvIconeVer = { 'vegeta-instinto-superior': 'abc123' };
-      const gift = AFFINITY_CHAR_GIFTS['Vegeta Instinto Superior'][0];
+      state.characters = bakC.filter(x => x.name !== 'Vegeta Hakaishin');   // simula quem ainda não está no site
+      nvIconeVer = { 'vegeta-hakaishin': 'abc123' };
+      const gift = AFFINITY_CHAR_GIFTS['Vegeta Hakaishin'][0];
       const com = affinityPopHtml(gift, '');
       nvIconeVer = {};
       const sem = affinityPopHtml(gift, '');
       nvIconeVer = bak; state.characters = bakC;
-      return { com: com.includes('icones/vegeta-instinto-superior.webp?v=abc123'), sem: !sem.includes('vegeta-instinto-superior.webp') && sem.includes('ini') };
+      return { com: com.includes('icones/vegeta-hakaishin.webp?v=abc123'), sem: !sem.includes('vegeta-hakaishin.webp') && sem.includes('ini') };
     })()`);
     assert.ok(r.com && r.sem);
-    assert.ok(fs.existsSync(path.join(__dirname, 'icones', 'vegeta-instinto-superior.webp')), 'o ícone do Vegeta Instinto Superior deveria existir');
+    assert.ok(fs.existsSync(path.join(__dirname, 'icones', 'vegeta-hakaishin.webp')), 'o ícone do Vegeta Hakaishin deveria existir');
   });
 
   await test('Guia de Assistência: cartões dos 13 apoios agrupados por custo e ícone junto do nome nos textos e tabelas', () => {
