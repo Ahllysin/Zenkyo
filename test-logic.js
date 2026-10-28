@@ -227,7 +227,7 @@ async function main(){
       supabaseAvailable = antes.av; window.__sb = antes.sb; state.iaOff = antes.off; state.communityLoaded = antes.comm; state.descRes = null; state.descText = '';
       return out;
     })().then(v => { window.__iaRes = v; }, e => { window.__iaRes = { erro: String(e && e.stack || e) }; });`);
-    await new Promise(res => setTimeout(res, 700));
+    for(let i = 0; i < 50 && !evalIn(sandbox, 'window.__iaRes'); i++) await new Promise(res => setTimeout(res, 100));
     const r = evalIn(sandbox, 'window.__iaRes') || {};
     assert.ok(!r.erro, r.erro);
     assert.deepStrictEqual(r.chamadas, ['interpretar', 'explicar'], 'primeiro interpreta o pedido, depois pede a explicação dos times montados');
@@ -767,9 +767,14 @@ async function main(){
       const c1 = parseTeamPrompt('time com Gogeta SS4 como principal');
       const c2 = parseTeamPrompt('quero Goku SS4 e Vegeta SS4');
       const t = buildDescribedTeams(c1, 3).list;
-      return { nomes1: c1.names, tags1: c1.tags, refs1: c1.refs, nomes2: c2.names.map(id => getChar(id).name), tags2: c2.tags, gog: gog.id,
+      // citado pelo nome entra mesmo que não combine com os outros filtros do pedido (ex.: pediu tank e ele não é tank)
+      const c3 = parseTeamPrompt('time de tank com Gogeta SS4');
+      const t3 = buildDescribedTeams(c3, 3).list;
+      return { forcadoComFiltro: t3.length > 0 && t3.every(o => o.team.includes(gog.id)), tankPedido: c3.roles.includes('tank'),
+ nomes1: c1.names, tags1: c1.tags, refs1: c1.refs, nomes2: c2.names.map(id => getChar(id).name), tags2: c2.tags, gog: gog.id,
         tamanhos: t.map(o => o.team.filter(Boolean).length), todosTem: t.every(o => o.team.includes(gog.id)), n: t.length, naoSo4: t.some(o => o.team.some(id => id && !(getChar(id).tags || []).includes('SS4'))) };
     })()`);
+    assert.ok(r.tankPedido && r.forcadoComFiltro, 'guerreiro citado entra em todas as opções mesmo com outro filtro no pedido');
     assert.deepStrictEqual(r.nomes1, [r.gog], 'o guerreiro citado entra obrigatório');
     assert.deepStrictEqual(r.tags1, [], 'o "SS4" do nome não vira filtro do grupo SS4');
     assert.deepStrictEqual(r.refs1, [], 'nome completo não puxa as outras versões do mesmo primeiro nome');

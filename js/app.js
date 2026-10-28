@@ -3780,7 +3780,10 @@ const DESC_TAGS = [
   ['SS4', /\bss4\b|\bssj4\b|super saiyajin 4/], ['Tropa do Orgulho', /orgulho|pride/], ['Deus da Destruição', /deus(es)? da destrui|\bhakai\b|gods? of destruction/],
 ];
 const DESC_AFFS = [['Fogo', /\bfogo\b|vermelh|\bred\b|\bfire\b/], ['Raio', /\braio\b|eletric|amarel|\byellow\b|lightning|thunder/], ['Pedra', /\bpedra\b|\bterra\b|\bverde\b|\bgreen\b|\brock\b|\bstone\b|\bearth\b/], ['Luz', /\bluz\b|branc|\bwhite\b|\blight\b/]];
-const DESC_NEG = /\b(sem|exceto|menos|nao quero|nem|tirando|fora|without|except|excluding|dont want|do not want)\b/;
+// em inglês "no tanks" nega; em português "no ar" / "no time" não (por isso o "no" só vale em /en/)
+const DESC_NEG = KZ_LANG === 'en'
+  ? /\b(sem|exceto|menos|nao quero|nem|tirando|fora|without|except|excluding|dont want|do not want|no|not|avoid|exclude)\b/
+  : /\b(sem|exceto|menos|nao quero|nem|tirando|fora|without|except|excluding|dont want|do not want)\b/;
 const DESC_GERAL = /melhor time|time forte|time completo|equilibrad|qualquer time|time bom|monte um time|monta um time|me ajuda|me sugere|sugest|best team|strong team|complete team|balanced|any team|good team|build a team|help me|suggest/;
 function descNorm(s){ return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
 // Lê um trecho do texto (já sem acento) e devolve os filtros encontrados.
@@ -3840,6 +3843,8 @@ function parseTeamPrompt(text){
   const palavras = posRefs.split(/[^a-z0-9]+/).filter(w => w.length >= 4 && !DESC_PALAVRAS_SOLTAS.test(w));
   const primeiros = new Set((state.characters || []).filter(c => !crit.names.includes(c.id)).map(c => descNorm(c.name).split(/[^a-z0-9]+/)[0]));
   crit.refs = [...new Set(palavras.filter(w => primeiros.has(w)))];
+  // "time do goku": a palavra sozinha vale para todas as versões (refs); não força o "Goku" comum além das 3 versões mais raras
+  crit.names = crit.names.filter(id => { const c = getChar(id), nn = c ? descNorm(c.name) : ''; return !(nn && !nn.includes(' ') && crit.refs.includes(nn)); });
   crit.refs.forEach(w => { crit.labels.push(kzt('desc.citado', { w: w.charAt(0).toUpperCase() + w.slice(1) })); });
   crit.geral = DESC_GERAL.test(pos);
   crit.vazio = !(crit.mechs.length || crit.roles.length || crit.types.length || crit.genders.length || crit.races.length || crit.tags.length
@@ -3908,6 +3913,8 @@ function buildDescribedTeams(crit, maxOptions){
   const relevantN = hasSoft ? byRel.filter(c => info.get(c.id).rel > 0).length : byRel.length;
   // se faltar gente com o efeito pedido, completa a equipe com os melhores do filtro
   const pool = byRel.slice(0, hasSoft ? Math.max(relevantN + 8, 16) : 40).slice(0, 36);
+  // quem a pessoa citou pelo nome sempre entra no conjunto, mesmo sem combinar com os outros filtros do pedido
+  crit.names.forEach(id => { const c = hardPool.find(x => x.id === id); if(c && !pool.includes(c)) pool.push(c); });
   if(!pool.length) return { list:[], hardN:hardPool.length, relevantN:0, hasSoft };
   const forced = crit.names.filter(id => pool.some(c => c.id === id)).slice(0, 6);
   const base = [null, null, null, null, null, null];
@@ -4156,7 +4163,7 @@ function renderDescribePanel(){
       out = (r.com && r.com.length ? `<p class="kz-desc-msg">${kzt('desc.naoMontou')}</p>`
         : `<p class="kz-desc-msg warn">${kzt('desc.naoEntendi')}</p>`) + renderDescComunidade(r.com);
     } else {
-      const chips = r.crit.labels.concat(r.crit.names.map(id => (getChar(id) || {}).name).filter(Boolean)).map(l => `<span class="kz-desc-chip">${escapeHtml(l)}</span>`).join('');
+      const chips = r.crit.labels.concat(r.crit.names.map(id => { const c = getChar(id); return c ? kzNome(c.name) : ''; }).filter(Boolean)).map(l => `<span class="kz-desc-chip">${escapeHtml(l)}</span>`).join('');
       const aviso = !r.list.length ? kzt('desc.nenhumAtende')
         : (r.hasSoft && r.relevantN < 6) ? kzt(r.relevantN === 1 ? 'desc.poucos1' : 'desc.poucosN', { n: r.relevantN })
         : (!r.hasSoft && r.hardN < 6) ? kzt(r.hardN === 1 ? 'desc.filtros1' : 'desc.filtrosN', { n: r.hardN }) : '';
