@@ -1462,3 +1462,36 @@ html.kz-touch-drag,html.kz-touch-drag body{overscroll-behavior:contain;}
   html.vis-novo .kz-nvcb .kz-slot-eff .pills{flex-wrap:wrap;}
   html.vis-novo .kz-nvcb .kz-slot:not(.filled){min-height:96px;padding:18px 14px;}
 }
+
+/* ---------- aba Arena-Z (APK Beta) ---------- */
+.kz-nav-beta{display:inline-block;margin-left:6px;padding:1px 6px;font-style:normal;font-size:10px;font-weight:900;letter-spacing:.1em;color:#0A0606;background:#FF6A13;vertical-align:middle;}
+.kz-nva-top{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:32px;align-items:stretch;margin-top:24px;}
+html.vis-novo .kz-nva-pn{position:relative;display:flex;flex-direction:column;gap:14px;padding:28px;border:0;border-radius:0;background:linear-gradient(160deg,#1A0D0A,#0E0707 70%);box-shadow:inset 0 0 0 1.5px #3A1E16;}
+.kz-nva-pn::before{content:'';position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#E8261B,#FF6A13,#FFC21A);}
+.kz-nva-beta h2{margin:0;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-style:italic;font-size:34px;text-transform:uppercase;color:#FFC21A;}
+.kz-nva-badge{align-self:flex-start;padding:3px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-style:italic;font-size:16px;letter-spacing:.14em;color:#0A0606;background:#FF6A13;transform:skewX(-10deg);}
+.kz-nva-pn p{margin:0;font-size:16px;line-height:1.6;color:#E2D2C2;}
+.kz-nva-pn b{color:#FFC21A;}
+.kz-nva-mut{color:#C9B7A6;font-size:14px;}
+.kz-nva-btns{display:flex;flex-wrap:wrap;gap:14px;margin-top:6px;}
+.kz-nva-btns .kz-btn{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:0 24px;text-decoration:none;font-size:18px;}
+.kz-nva-steps{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:12px;color:#E2D2C2;font-size:16px;line-height:1.55;}
+.kz-nva-steps li::marker{color:#FF6A13;font-weight:900;}
+.kz-nva-feats{display:flex;flex-direction:column;gap:30px;}
+html.vis-novo .kz-nva-feat{display:flex;flex-direction:column;gap:12px;padding:24px;background:linear-gradient(160deg,#1A0D0A,#0E0707 70%);box-shadow:inset 0 0 0 1.5px #3A1E16;}
+.kz-nva-feat h3{margin:0;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-style:italic;font-size:28px;text-transform:uppercase;color:#FFF4E6;}
+.kz-nva-feat p{margin:0;max-width:760px;font-size:16px;line-height:1.6;color:#E2D2C2;}
+.kz-nva-feat b{color:#FFC21A;}
+.kz-nva-shots{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;margin-top:6px;}
+.kz-nva-shots.multi{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));}
+.kz-nva-shots figure{margin:0;}
+.kz-nva-shots img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;box-shadow:0 0 0 2px #3A1E16;}
+.kz-nva-shots figcaption{margin-top:6px;font-size:13px;color:#C9B7A6;}
+.kz-nva-avisos{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px;color:#E2D2C2;font-size:16px;line-height:1.6;}
+.kz-nva-avisos b{color:#FFC21A;}
+.kz-nva a:not(.kz-btn){color:#FFC21A;}
+@media (max-width:700px){
+  .kz-nva-top{grid-template-columns:minmax(0,1fr);gap:20px;}
+  html.vis-novo .kz-nva-pn,html.vis-novo .kz-nva-feat{padding:20px;}
+  .kz-nva-btns .kz-btn{width:100%;}
+}

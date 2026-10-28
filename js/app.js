@@ -427,7 +427,7 @@ let loaded = false;
 
 /* ======================= STORAGE ======================= */
 /* ---------- Links por aba e por guerreiro: #/guerreiro/<nome>, #/combos, #/colecao ... ---------- */
-const ROUTE_TABS = { guerreiros:'chars', colecao:'collection', combos:'combos', guias:'guias', tierlist:'tierlist', comunidade:'comunidade', favoritos:'favs', doar:'doar' };
+const ROUTE_TABS = { guerreiros:'chars', colecao:'collection', combos:'combos', guias:'guias', tierlist:'tierlist', comunidade:'comunidade', favoritos:'favs', doar:'doar', arena:'arena' };
 const ROUTE_NAMES = Object.fromEntries(Object.entries(ROUTE_TABS).map(([k, v]) => [v, k]));
 function parseRouteHash(h){
   h = String(h || '');
@@ -525,7 +525,7 @@ async function loadState(){
   loaded = true;
   render();
 }
-const NAV_TABS = ['chars','collection','combos','guias','tierlist','comunidade','favs','perfil','doar','admin'];
+const NAV_TABS = ['arena','chars','collection','combos','guias','tierlist','comunidade','favs','perfil','doar','admin'];
 async function saveFavs(){ await persist('favs', JSON.stringify(state.favs)); }
 async function saveUiTab(){ await persist('ui_tab', state.tab); }
 
@@ -1253,7 +1253,7 @@ function nvLineupHtml(team, small, edit){
 // Depois de cada render, com a prévia ligada: título em pincel (data-text alimenta as camadas do CSS), topo com fogo
 // e kanji em cada aba, e a arte de corpo inteiro na ficha. Personagens (lista) já vem pronto de renderCharsTabNovo.
 const NV_TAB_DECOR = { collection:['集',kzt('deco.colecao')], combos:['連',kzt('deco.combos')], guias:['書',kzt('deco.guias')], tierlist:['番',kzt('deco.tierlist')],
-  comunidade:['社',kzt('deco.comunidade')], favs:['★',kzt('deco.favs')], perfil:['印',kzt('deco.perfil')], doar:['援',kzt('deco.doar')] };
+  comunidade:['社',kzt('deco.comunidade')], favs:['★',kzt('deco.favs')], perfil:['印',kzt('deco.perfil')], doar:['援',kzt('deco.doar')], arena:['龍',kzt('arena.tag')] };
 function nvBgHtml(kanji, kanjiStyle){
   const embers = NV_EMBERS.slice(0, nvEco() ? 0 : nvLite() ? 3 : 6).map(([l,b,s,d,dl])=>`<span class="kz-nv-em" style="left:${l + 8}%;bottom:${Math.round(b / 2)}px;width:${s}px;height:${s}px;animation-duration:${d}s;animation-delay:${dl}s"></span>`).join('');
   return `<div class="kz-nv-ph-bg" aria-hidden="true"><div class="kz-nv-fire"></div><div class="kz-nv-rays"></div><div class="kz-nv-tone"></div><div class="kz-nv-vig"></div>${kanji ? `<span class="kz-nv-kbig"${kanjiStyle ? ` style="${kanjiStyle}"` : ''}>${kanji}</span>` : ''}${embers}</div>`;
@@ -1348,6 +1348,7 @@ function render(){
     : tab === 'favs' ? renderFavsTab()
     : tab === 'perfil' ? renderPerfilTab()
     : tab === 'doar' ? renderDoarTab()
+    : tab === 'arena' ? renderArenaTab()
     : tab === 'admin' ? renderAdminTab()
     : renderCombosTab();
   nvDecorate(view);
@@ -7057,6 +7058,53 @@ ${mpDoacaoHtml()}
         ${Object.values(HONOR_BADGES).map(h=>`
         <article class="kz-nvd-hon"><span class="kz-nvf-seal" aria-hidden="true">${h.glyph}</span><div><h3>${escapeHtml(h.label)}</h3><p class="pd">${escapeHtml(h.desc)}</p></div></article>`).join('')}
       </div>
+    </section>
+  </section>`;
+}
+/* ---------- Aba Arena-Z (APK Beta): download, instalação e o que muda na Beta ---------- */
+const ARENA_APK_URL = 'https://github.com/Ahllysin/Zenkyo/releases/latest/download/Arena-Z.apk';
+const ARENA_VIDEO_URL = 'https://www.youtube.com/watch?v=DQQ0fYkVNwk';
+const ARENA_ITENS = [
+  { k:'combos', fotos:['combos', 'combos-guerreiros'] }, { k:'efeitos', fotos:['efeitos'] }, { k:'implantar', fotos:['implantar'] },
+  { k:'eventos', fotos:['invasao', 'passe-heroi', 'hall-da-fama'] }, { k:'recarga', fotos:['recarga'] }
+];
+function renderArenaTab(){
+  const link = (href, cls, txt) => `<a class="kz-btn ${cls}" href="${href}" target="_blank" rel="noopener noreferrer">${txt}</a>`;
+  const head = visualNovo()
+    ? nvPageHeadHtml({ key:'arena', kanji:'龍', tag:kzt('arena.tag'), title:'Arena-Z', kanjiStyle:'right:8%;top:-60px;font-size:380px', sub:kzt('arena.sub') })
+    : `<h1 class="kz-title">Arena-Z</h1><div class="kz-subtitle">${kzt('arena.sub')}</div>`;
+  return `
+  <section class="kz-page kz-nvp kz-nva">
+    ${head}
+    <div class="kz-nva-top">
+      <div class="kz-nva-pn kz-nva-beta">
+        <span class="kz-nva-badge">BETA</span>
+        <h2>${kzt('arena.betaTit')}</h2>
+        <p>${kzt('arena.betaTxt')}</p>
+        <p>${kzt('arena.soPt')}</p>
+        <div class="kz-nva-btns">${link(ARENA_APK_URL, 'kz-btn-primary', kzt('arena.baixar'))}${link(ARENA_VIDEO_URL, '', kzt('arena.video'))}</div>
+        <p class="kz-nva-mut">${kzt('arena.tamanho')}</p>
+      </div>
+      <div class="kz-nva-pn">
+        <span class="kz-nv-lb">${kzt('arena.instalarTit')}</span>
+        <ol class="kz-nva-steps">${['arena.i1', 'arena.i2', 'arena.i3', 'arena.i4'].map(k => `<li>${kzt(k)}</li>`).join('')}</ol>
+      </div>
+    </div>
+    <section class="kz-nvd-sec">
+      <div><h2 class="kz-nvd-h2">${nvTtl(kzt('arena.novidadesTit'))}</h2><p class="kz-nvd-sub">${kzt('arena.novidadesSub')}</p></div>
+      <div class="kz-nva-feats">
+        ${ARENA_ITENS.map(it => `
+        <article class="kz-nva-feat">
+          <h3>${kzt('arena.' + it.k + 'Tit')}</h3>
+          <p>${kzt('arena.' + it.k + 'Txt')}</p>
+          <div class="kz-nva-shots${it.fotos.length > 1 ? ' multi' : ''}">${it.fotos.map((f, i) => `<figure><img src="arena-z/${f}.webp" alt="${escapeAttr(kzt('arena.' + it.k + 'Alt' + (i + 1)))}" loading="lazy" decoding="async" width="960" height="540"><figcaption>${kzt('arena.' + it.k + 'Alt' + (i + 1))}</figcaption></figure>`).join('')}</div>
+        </article>`).join('')}
+      </div>
+    </section>
+    <section class="kz-nvd-sec">
+      <div><h2 class="kz-nvd-h2">${nvTtl(kzt('arena.avisosTit'))}</h2></div>
+      <ul class="kz-nva-avisos">${['arena.a1', 'arena.a2', 'arena.a3'].map(k => `<li>${kzt(k)}</li>`).join('')}</ul>
+      <p class="kz-nva-mut"><a href="https://github.com/Ahllysin/Zenkyo/issues" target="_blank" rel="noopener noreferrer">${kzt('arena.contato')}</a></p>
     </section>
   </section>`;
 }
