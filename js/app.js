@@ -7065,7 +7065,7 @@ ${mpDoacaoHtml()}
 const ARENA_APK_URL = 'https://github.com/Ahllysin/Zenkyo/releases/latest/download/Arena-Z.apk';
 const ARENA_VIDEO_URL = 'https://www.youtube.com/watch?v=DQQ0fYkVNwk';
 const ARENA_ITENS = [
-  { k:'combos', fotos:['combos', 'combos-guerreiros'] }, { k:'efeitos', fotos:['efeitos'] }, { k:'implantar', fotos:['implantar'] },
+  { k:'combos', fotos:['combos', 'combos-guerreiros'] }, { k:'efeitos', fotos:['efeitos'] },
   { k:'eventos', fotos:['invasao', 'passe-heroi', 'hall-da-fama'] }, { k:'recarga', fotos:['recarga'] }
 ];
 function renderArenaTab(){
