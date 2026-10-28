@@ -290,6 +290,24 @@ async function main(){
     assert.ok(html.includes('Passivas do Supremo'), 'faltou o grupo Passivas do Supremo');
   });
 
+  await test('Alma de Guerra: todo guerreiro tem 4 almas, a aba da ficha mostra as 4 e as habilidades mostram o Nv.1 → Nv.125', () => {
+    const r = evalIn(sandbox, `(() => {
+      const erros = [];
+      state.characters.forEach(c => {
+        const a = ALMAS[c.name];
+        if(!a || a.length !== 4) { erros.push(c.name + ': ' + (a ? a.length : 0) + ' almas'); return; }
+        state.charDetailTab = 'almas';
+        const n = (renderCharDetailPage(c.id).match(/class="cdp-soul"/g) || []).length;
+        if(n !== 4) erros.push(c.name + ': a aba mostra ' + n + ' almas');
+      });
+      state.charDetailTab = 'habilidades';
+      const goku = renderCharDetailPage(state.characters.find(c => c.name === 'Goku').id);
+      return { erros, niveis: /kz-nvf-niv|kz-ab-niv/.test(goku) };
+    })()`);
+    assert.deepStrictEqual(r.erros, [], r.erros.slice(0, 5).join(' | '));
+    assert.ok(r.niveis, 'a ficha deveria mostrar o Nv.1 → Nv.125 das habilidades');
+  });
+
   console.log('\n[efeitos de combo das Supremas]');
 
   await test('toda Suprema cujo texto (na versão mais forte da Ficha) menciona um efeito de combo tem esse efeito marcado em c.supreme.effects', () => {

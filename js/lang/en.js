@@ -843,4 +843,15 @@ kzAddLang('en', {
   'arena.a2': 'Arena-Z is <b>not affiliated</b> with Bandai Namco, Toei Animation, Shueisha or the game\'s creators. Dragon Ball, its characters and images belong to their owners.',
   'arena.a3': 'Only install the file downloaded from this page. Do not use copies from other sites.',
   'arena.contato': 'Contact / report a problem',
+  // ---- Alma de Guerra e níveis das habilidades ----
+  'detalhe.almas': 'War Soul',
+  'hab.niveis': 'Lv.1 → Lv.125:',
+  'almas.semDados': 'This warrior has no War Soul data yet.',
+  'almas.intro': 'Each warrior has 4 souls, unlocked by Breakthrough (Epic, Epic+2, Epic+4 and Legend+1). Each soul has 20 levels, paid with War Soul EXP.',
+  'almas.alma': 'Soul {n}',
+  'almas.libera': 'Unlocks: {v}',
+  'almas.nv1': 'Lv.1:',
+  'almas.nv20': 'Lv.20:',
+  'almas.semEfeito': 'No effect in the game data.',
+  'almas.exp': '{n} War Soul EXP from Lv.0 to Lv.20',
 });

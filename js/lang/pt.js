@@ -846,4 +846,15 @@ kzAddLang('pt', {
   'arena.a2': 'O Arena-Z <b>não tem vínculo</b> com Bandai Namco, Toei Animation, Shueisha ou com os criadores do jogo. Dragon Ball, os personagens e as imagens pertencem aos seus donos.',
   'arena.a3': 'Instale apenas o arquivo baixado desta página. Não use cópias de outros sites.',
   'arena.contato': 'Contato / relatar um problema',
+  // ---- Alma de Guerra e níveis das habilidades ----
+  'detalhe.almas': 'Alma de Guerra',
+  'hab.niveis': 'Nv.1 → Nv.125:',
+  'almas.semDados': 'Este guerreiro ainda não tem dados de Alma de Guerra.',
+  'almas.intro': 'Cada guerreiro tem 4 almas, liberadas pela Ruptura (Épico, Épico+2, Épico+4 e Lenda+1). Cada alma tem 20 níveis, pagos com EXP de Alma de Guerra.',
+  'almas.alma': 'Alma {n}',
+  'almas.libera': 'Libera: {v}',
+  'almas.nv1': 'Nv.1:',
+  'almas.nv20': 'Nv.20:',
+  'almas.semEfeito': 'Sem efeito nos dados do jogo.',
+  'almas.exp': '{n} de EXP de Alma de Guerra do Nv.0 ao Nv.20',
 });

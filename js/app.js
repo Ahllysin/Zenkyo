@@ -1816,7 +1816,7 @@ function nvHeroGo(c, i){
 }
 
 /* ======================= PERSONAGENS: FICHA ======================= */
-const DETAIL_TABS = [['habilidades','技',kzt('detalhe.habilidades')],['comida','食',kzt('detalhe.afinidade')],['vinculos','絆',kzt('detalhe.vinculos')]];
+const DETAIL_TABS = [['habilidades','技',kzt('detalhe.habilidades')],['comida','食',kzt('detalhe.afinidade')],['vinculos','絆',kzt('detalhe.vinculos')],['almas','魂',kzt('detalhe.almas')]];
 
 // Ordem usada pra passar de um guerreiro pro outro: a mesma da lista (respeita os filtros ativos).
 function charStepList(currentId){
@@ -2100,6 +2100,7 @@ function renderCharDetailPage(charId){
   const cur = DETAIL_TABS.find(t=>t[0]===state.charDetailTab) || DETAIL_TABS[0];
   const body = cur[0] === 'habilidades' ? renderRoleCard(c) + renderDetailAbilities(c)
     : cur[0] === 'comida' ? renderCharFoodSection(c)
+    : cur[0] === 'almas' ? renderCharSoulsSection(c)
     : renderCharBondsSection(c);
   return `
   <section class="kz-page">
@@ -2188,6 +2189,7 @@ function nvfAbilityBlock(c, g){
           <div class="kz-nvf-mv-meta">${textStarsHtml(t.reqLevel)}<span class="lb">${escapeHtml(kzTermo(tipo))} · ${escapeHtml(reqLabelText(t.reqLevel))}</span>${d && d.dano ? `<span class="kz-nvf-dmg">${kzt('hab.dano', { v: escapeHtml(kzTrad(d.dano)) })}</span>` : ''}</div>
           <h3 class="kz-nvf-sn">${d ? (escapeHtml(kzTrad(d.nome)) || '—') : kzt('hab.naoCapturado')}</h3>
           <p class="kz-nvf-ds">${d ? nvfTermsHtml(kzTrad(d.desc)) : kzt('hab.naoExtraido')}</p>
+          ${d && d.lv ? `<p class="kz-nvf-niv"><b>${kzt('hab.niveis')}</b> ${escapeHtml(d.lv)}</p>` : ''}
         </div>
       </section>`;
 }
@@ -2245,7 +2247,7 @@ function renderCharDetailNovo(c){
   const nome = kzNome(c.name) || kzt('geral.semNome'), fs = nome.length > 20 ? 72 : nome.length > 13 ? 92 : 116;   // nome longo: título menor
   const corpo = cur[0] === 'habilidades'
     ? `<div class="kz-nvf-body"><div class="kz-nvf-abs">${nvfAbilitiesHtml(c)}</div><aside class="kz-nvf-side">${nvfRolePanel(c)}${nvfSynergyPanel(c)}</aside></div>`
-    : `<div class="kz-tabpanel"><div class="kz-panel-head"><span class="kz-panel-glyph">${cur[1]}</span><h2 class="kz-panel-title">${cur[2]}</h2></div>${cur[0] === 'comida' ? renderCharFoodSection(c) : renderCharBondsSection(c)}</div>`;
+    : `<div class="kz-tabpanel"><div class="kz-panel-head"><span class="kz-panel-glyph">${cur[1]}</span><h2 class="kz-panel-title">${cur[2]}</h2></div>${cur[0] === 'comida' ? renderCharFoodSection(c) : cur[0] === 'almas' ? renderCharSoulsSection(c) : renderCharBondsSection(c)}</div>`;
   return `
   <section class="kz-page kz-nvf">
     <div class="kz-nvf-hero">
@@ -2328,6 +2330,7 @@ function renderDetailAbilityRow(tier){
       </div>
       <div class="kz-ab-name">${noData ? kzt('hab.naoCapturado') : (escapeHtml(kzTrad(data.nome))||'—')}</div>
       <div class="kz-ab-desc">${noData ? kzt('hab.naoExtraido') : escapeHtml(kzTrad(data.desc||''))}</div>
+      ${!noData && data.lv ? `<div class="kz-ab-niv"><b>${kzt('hab.niveis')}</b> ${escapeHtml(data.lv)}</div>` : ''}
     </div>
   </div>`;
 }
@@ -2498,6 +2501,20 @@ function bondRowHtml(c, b){
         <div class="cdp-bond-note">${nota}</div>
       </div>
     </div>`;
+}
+// Alma de Guerra: as 4 almas do guerreiro (liberadas pela Ruptura), com o efeito no Nv.1 e no Nv.20 e o EXP gasto.
+function renderCharSoulsSection(c){
+  const lista = (typeof ALMAS !== 'undefined' && ALMAS[c.name]) || [];
+  if(!lista.length) return `<div class="kz-empty-ball"><img src="${ballSrc(1)}" alt=""><div>${kzt('almas.semDados')}</div></div>`;
+  return `<div class="cdp-aff-block"><p class="cdp-soul-intro">${kzt('almas.intro')}</p></div>
+    <div class="cdp-soul-list">${lista.map(([nome, libera, base, max, exp], i)=>`
+      <article class="cdp-soul">
+        <div class="cdp-soul-head"><span class="cdp-soul-n">${i + 1}</span><h3>${escapeHtml(kzTrad(nome)) || kzt('almas.alma', { n: i + 1 })}</h3><span class="cdp-soul-lib">${kzt('almas.libera', { v: escapeHtml(libera) })}</span></div>
+        ${base ? `<p class="cdp-soul-lv"><b>${kzt('almas.nv1')}</b> ${escapeHtml(kzTrad(base))}</p>` : ''}
+        ${max ? `<p class="cdp-soul-lv"><b>${kzt('almas.nv20')}</b> ${escapeHtml(kzTrad(max))}</p>` : ''}
+        ${!base && !max ? `<p class="cdp-soul-lv mut">${kzt('almas.semEfeito')}</p>` : ''}
+        ${exp ? `<p class="cdp-soul-exp">${kzt('almas.exp', { n: escapeHtml(exp) })}</p>` : ''}
+      </article>`).join('')}</div>`;
 }
 function renderCharBondsSection(c){
   const v = VINCULOS[c.name];

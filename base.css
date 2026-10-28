@@ -1408,3 +1408,17 @@ a.kz-donate-cta{text-decoration:none;}
 .kz-kofi-passos b{color:var(--gold-light);}
 .kz-kofi-passos ol{margin:6px 0 0;padding-left:20px;display:grid;gap:4px;}
 .kz-mp-dica a{color:var(--gold-light);text-decoration:underline;}
+
+/* ---------- Alma de Guerra e níveis 1 → 125 das habilidades (ficha) ---------- */
+.cdp-soul-intro{margin:0;font-size:15px;line-height:1.6;color:var(--muted,#c9b7a6);}
+.cdp-soul-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px;margin-top:16px;}
+.cdp-soul{display:flex;flex-direction:column;gap:8px;padding:16px;border-radius:12px;border:1px solid var(--line-soft);background:rgba(20,20,34,.6);}
+.cdp-soul-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.cdp-soul-head h3{margin:0;font-size:17px;flex:1 1 auto;min-width:0;}
+.cdp-soul-n{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#ff6a13;color:#0a0606;font-weight:900;font-size:14px;}
+.cdp-soul-lib{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#ffc21a;}
+.cdp-soul-lv{margin:0;font-size:14px;line-height:1.55;}
+.cdp-soul-lv b{color:#ffc21a;margin-right:4px;}
+.cdp-soul-lv.mut,.cdp-soul-exp{color:#a99b8b;font-size:13px;margin:0;}
+.kz-nvf-niv,.kz-ab-niv{margin:8px 0 0;font-size:14px;line-height:1.5;color:#c9b7a6;}
+.kz-nvf-niv b,.kz-ab-niv b{color:#ffc21a;margin-right:4px;}
