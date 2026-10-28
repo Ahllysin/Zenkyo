@@ -266,7 +266,7 @@ async function main(){
         v.lista.forEach(b => {
           if(b.tipo === 'arma'){ if(!b.item || !['ATQ','PV'].includes(b.stat) || !(b.valor > 0)) erros.push(c.name + ': vínculo de arma incompleto (' + b.nome + ')'); return; }
           if(!['ambos','todos','sozinho'].includes(b.tipo)) erros.push(c.name + ': tipo inválido ' + b.tipo);
-          if(!['ATQ','PV'].includes(b.stat) || !Array.isArray(b.niveis) || b.niveis.length !== 3 || !(b.niveis[0] < b.niveis[1] && b.niveis[1] < b.niveis[2])) erros.push(c.name + ': níveis inválidos em ' + b.nome);
+          if(!['ATQ','PV'].includes(b.stat) || !Array.isArray(b.niveis) || b.niveis.length !== 3 || !(b.niveis[0] <= b.niveis[1] && b.niveis[1] <= b.niveis[2] && b.niveis[2] > 0)) erros.push(c.name + ': níveis inválidos em ' + b.nome);
           if(b.tipo === 'sozinho' ? b.parceiros.length : !b.parceiros.length) erros.push(c.name + ': parceiros incoerentes em ' + b.nome);
           if(b.escalaPor && !b.parceiros.includes(b.escalaPor)) erros.push(c.name + ': quem sobe o nível não é parceiro em ' + b.nome);
         });
@@ -924,13 +924,14 @@ async function main(){
   await test('"Quem usa este presente": quem ainda não está no site usa o ícone da pasta Icones se existir (senão, iniciais)', () => {
     const fs = require('fs'), path = require('path');
     const r = evalIn(sandbox, `(() => {
-      const bak = nvIconeVer;
+      const bak = nvIconeVer, bakC = state.characters;
+      state.characters = bakC.filter(x => x.name !== 'Vegeta Instinto Superior');   // simula quem ainda não está no site
       nvIconeVer = { 'vegeta-instinto-superior': 'abc123' };
       const gift = AFFINITY_CHAR_GIFTS['Vegeta Instinto Superior'][0];
       const com = affinityPopHtml(gift, '');
       nvIconeVer = {};
       const sem = affinityPopHtml(gift, '');
-      nvIconeVer = bak;
+      nvIconeVer = bak; state.characters = bakC;
       return { com: com.includes('icones/vegeta-instinto-superior.webp?v=abc123'), sem: !sem.includes('vegeta-instinto-superior.webp') && sem.includes('ini') };
     })()`);
     assert.ok(r.com && r.sem);

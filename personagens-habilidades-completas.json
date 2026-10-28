@@ -8885,6 +8885,1872 @@
           "icone": "ability-icons/LR/lr-5.png"
         }
       ]
+    },
+    {
+      "nome": "Android 19",
+      "habilidade": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Explosão de Ki] Ataca um único inimigo, com 30% de chance de infligir [Atordoamento] (incapaz de agir, dura 1 turno).",
+          "icone": "ability-icons/Novos/android-19/Skill.png",
+          "dano": "150%+10"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 3,
+          "tipo": "Despertar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/android-19/Skill.png",
+          "dano": "175%+10"
+        }
+      },
+      "suprema": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Explosão de Ki] Ataca uma coluna de inimigos e reduz o Ki inimigo em 200.",
+          "icone": "ability-icons/Novos/android-19/Ultimate.png",
+          "dano": "230%+12"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 5,
+          "tipo": "Despertar (dourada)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/android-19/Ultimate.png"
+        },
+        "smax": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 5,
+          "tipo": "Despertar (azul)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/android-19/Ultimate.png",
+          "dano": "450%+20"
+        }
+      },
+      "combinado": {
+        "nome": "Sem nome nos dados do jogo",
+        "desc": "Sem descrição nos dados do jogo.",
+        "estrelas": 1,
+        "tipo": "Ativar",
+        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+      },
+      "passivasHabilidade": [
+        {
+          "nome": "Ataque de Sequência Aprimorado",
+          "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+          "estrelas": 2,
+          "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+        }
+      ],
+      "passivasSupremo": [],
+      "passivaUnica": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 3,
+          "tipo": "Ativar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/android-19/Passiva.png"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 6,
+          "tipo": "Despertar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/android-19/Passiva MAX.png"
+        }
+      },
+      "passivaQuatroEstrelas": {
+        "nome": "Sem nome nos dados do jogo",
+        "estrelas": 4,
+        "tipo": "Ativar",
+        "desc": "Sem descrição nos dados do jogo.",
+        "icone": "ability-icons/Passiva padrão/4 estrelas ATQ.png"
+      }
+    },
+    {
+      "nome": "Boo (Gotenks)",
+      "habilidade": {
+        "base": {
+          "nome": "Makankosappo",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Artes Marciais] Boo usa a habilidade de Piccolo para atacar uma coluna de inimigos, reduz a DEF inimiga em 30%, 60% de chance de infligir [Derrubar].",
+          "icone": "ability-icons/Novos/boo-gotenks/Skill.png",
+          "dano": "120%+6"
+        },
+        "max": {
+          "nome": "MAX. Canhão de Luz Demoníaca",
+          "estrelas": 3,
+          "tipo": "Despertar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/boo-gotenks/Skill.png"
+        }
+      },
+      "suprema": {
+        "base": {
+          "nome": "Super Ataque Fantasma",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Explosão de Ki] Ataca uma coluna de inimigos, aumenta o Ki dos aliados da mesma coluna em 100, reduz a Taxa de Redução de Dano inimiga em 15% (1 turno).",
+          "icone": "ability-icons/Novos/boo-gotenks/Ultimate.png",
+          "dano": "260%+14"
+        },
+        "max": {
+          "nome": "Super Ataque Fantasma MÁX.",
+          "estrelas": 5,
+          "tipo": "Despertar (dourada)",
+          "desc": "[Explosão de Ki] Ataca uma coluna de inimigos, aumenta o Ki dos aliados da mesma coluna em 100, reduz a Taxa de Redução de Dano inimiga em 15% (1 turno).",
+          "icone": "ability-icons/Novos/boo-gotenks/Ultimate.png",
+          "dano": "290%+18"
+        },
+        "smax": {
+          "nome": "SMAX. Ataque Fantasma Supremo",
+          "estrelas": 5,
+          "tipo": "Despertar (azul)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/boo-gotenks/Ultimate.png"
+        }
+      },
+      "combinado": {
+        "nome": "Ataque de Perseguição",
+        "desc": "[Artes Marciais / Explosão de Ki] Ataca um único inimigo, segue com [Repulsão], inflige [Malabarismo Menor].",
+        "estrelas": 1,
+        "tipo": "Ativar",
+        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png",
+        "dano": "75%+8"
+      },
+      "passivasHabilidade": [
+        {
+          "nome": "Ataque de Sequência Aprimorado",
+          "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+          "estrelas": 2,
+          "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+        }
+      ],
+      "passivasSupremo": [],
+      "passivaUnica": {
+        "base": {
+          "nome": "Força Majin",
+          "estrelas": 3,
+          "tipo": "Ativar",
+          "desc": "Quando um Guerreiro inimigo sofre KO, invoca um [Fantasma] imóvel naquela posição (herda 5% do PV Máx. de Boo [Gotenks]); quando derrotado, o Fantasma explode, causando dano igual a 5% do PV Máx. aos inimigos próximos (dobrado se acionado por Boo [Gotenks]); Fantasmas são [Unidades Invocadas] (não afetam vitória/derrota, não contam como unidades vivas, podem ser alvejados); máximo de 2 por batalha.",
+          "icone": "ability-icons/Novos/boo-gotenks/Passiva.png"
+        },
+        "max": {
+          "nome": "MAX. Poder do Demônio",
+          "estrelas": 6,
+          "tipo": "Despertar",
+          "desc": "Aumento do ataque do Majin Boo aliado; ao ser derrotado, reduz em 20% a taxa de redução de dano e em 30% a recuperação de raiva dos inimigos na linha de frente (por 1 turno). No primeiro turno, a habilidade pequena é ativada obrigatoriamente.",
+          "icone": "ability-icons/Novos/boo-gotenks/Passiva MAX.png"
+        }
+      },
+      "passivaQuatroEstrelas": {
+        "nome": "Aprimoramento de Ataque",
+        "estrelas": 4,
+        "tipo": "Ativar",
+        "desc": "Sem descrição nos dados do jogo.",
+        "icone": "ability-icons/Passiva padrão/4 estrelas PV.png"
+      }
+    },
+    {
+      "nome": "Boo Magro",
+      "habilidade": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Artes Marciais] Ataca um único inimigo.",
+          "icone": "ability-icons/Novos/boo-magro/Skill.png",
+          "dano": "150%+8"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 3,
+          "tipo": "Despertar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/boo-magro/Skill.png",
+          "dano": "170%+8"
+        }
+      },
+      "suprema": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Explosão de Ki] Ataca a Fileira de Trás inimiga, 70% de chance de infligir [Queimadura da Alma], e aplica 1 acúmulo de [Chamuscado].",
+          "icone": "ability-icons/Novos/boo-magro/Ultimate.png",
+          "dano": "150%+10"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 5,
+          "tipo": "Despertar (dourada)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/boo-magro/Ultimate.png",
+          "dano": "210%+10"
+        },
+        "smax": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 5,
+          "tipo": "Despertar (azul)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/boo-magro/Ultimate.png",
+          "dano": "410%+20"
+        }
+      },
+      "combinado": {
+        "nome": "Sem nome nos dados do jogo",
+        "desc": "Sem descrição nos dados do jogo.",
+        "estrelas": 1,
+        "tipo": "Ativar",
+        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+      },
+      "passivasHabilidade": [
+        {
+          "nome": "Ataque de Sequência Aprimorado",
+          "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+          "estrelas": 2,
+          "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+        }
+      ],
+      "passivasSupremo": [],
+      "passivaUnica": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 3,
+          "tipo": "Ativar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/boo-magro/Passiva.png"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 6,
+          "tipo": "Despertar",
+          "desc": "Aumenta sua própria taxa de roubo de vida enquanto reduz a taxa de controle de todos os inimigos em combate. Além disso, aumenta em 10% a taxa de dano dos Guerreiros de Técnica contra Guerreiros de Defesa.",
+          "icone": "ability-icons/Novos/boo-magro/Passiva MAX.png"
+        }
+      },
+      "passivaQuatroEstrelas": {
+        "nome": "Sem nome nos dados do jogo",
+        "estrelas": 4,
+        "tipo": "Ativar",
+        "desc": "Sem descrição nos dados do jogo.",
+        "icone": "ability-icons/Passiva padrão/4 estrelas ATQ.png"
+      }
+    },
+    {
+      "nome": "Burter",
+      "habilidade": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Artes Marciais] Ataca um único inimigo, aumenta a própria Taxa de Bloqueio em 20% (2 turnos).",
+          "icone": "ability-icons/Novos/burter/Skill.png",
+          "dano": "150%+12"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 3,
+          "tipo": "Despertar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/burter/Skill.png",
+          "dano": "175%+12"
+        }
+      },
+      "suprema": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Artes Marciais] Ataca uma coluna de inimigos, aumenta a Força de Bloqueio da própria Fileira em 50%.",
+          "icone": "ability-icons/Novos/burter/Ultimate.png",
+          "dano": "250%+15"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 5,
+          "tipo": "Despertar (dourada)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/burter/Ultimate.png"
+        },
+        "smax": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 5,
+          "tipo": "Despertar (azul)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/burter/Ultimate.png",
+          "dano": "320%+15"
+        }
+      },
+      "combinado": {
+        "nome": "Sem nome nos dados do jogo",
+        "desc": "Sem descrição nos dados do jogo.",
+        "estrelas": 1,
+        "tipo": "Ativar",
+        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+      },
+      "passivasHabilidade": [
+        {
+          "nome": "Ataque de Sequência Aprimorado",
+          "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+          "estrelas": 2,
+          "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+        }
+      ],
+      "passivasSupremo": [],
+      "passivaUnica": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 3,
+          "tipo": "Ativar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/burter/Passiva.png"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 6,
+          "tipo": "Despertar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/burter/Passiva MAX.png"
+        }
+      },
+      "passivaQuatroEstrelas": {
+        "nome": "Sem nome nos dados do jogo",
+        "estrelas": 4,
+        "tipo": "Ativar",
+        "desc": "Sem descrição nos dados do jogo.",
+        "icone": "ability-icons/Passiva padrão/4 estrelas PV.png"
+      }
+    },
+    {
+      "nome": "Cabba",
+      "habilidade": {
+        "base": {
+          "nome": "Garlick Ho",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Explosão de Ki] Ataca um único inimigo, causa 25% de Dano Extra a personagens que não são do Universo 6, 60% de chance de causar [Empurrão].",
+          "icone": "ability-icons/Novos/cabba/Skill.png",
+          "dano": "150%+8"
+        },
+        "max": {
+          "nome": "MAX. Canhão de Força",
+          "estrelas": 3,
+          "tipo": "Despertar",
+          "desc": "[Ataque Especial] Ataca um único inimigo, causando 30% de dano adicional contra personagens que não sejam do Sexto Universo; se o número de turnos em campo for maior que 3, aumenta o próprio Ataque em 15% e causa [Recuo] com 60% de chance.",
+          "icone": "ability-icons/Novos/cabba/Skill.png",
+          "dano": "160%+8"
+        }
+      },
+      "suprema": {
+        "base": {
+          "nome": "Balas de Energia Contínuas",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Explosão de Ki] Ataca um único inimigo, ganha +15% de Taxa de Crít. e +20% de Dano Crít. para este ataque.",
+          "icone": "ability-icons/Novos/cabba/Ultimate.png",
+          "dano": "370%+20"
+        },
+        "max": {
+          "nome": "Balas de Energia Contínuas MÁX.",
+          "estrelas": 5,
+          "tipo": "Despertar (dourada)",
+          "desc": "[Explosão de Ki] Ataca um único inimigo, ganha +20% de Taxa de Crít. e +30% de Dano Crít. para este ataque.",
+          "icone": "ability-icons/Novos/cabba/Ultimate.png",
+          "dano": "400%+20"
+        },
+        "smax": {
+          "nome": "SMAX. Rajada Contínua",
+          "estrelas": 5,
+          "tipo": "Despertar (azul)",
+          "desc": "[Ataque Especial] Unidade inimiga única, este ataque adiciona 30% de taxa de crítico e 30% de intensidade de crítico. 10% do dano real causado será convertido em pontos de vida para os Guerreiros do Sexto Universo aliados, causando [Grande Flutuação no Ar].",
+          "icone": "ability-icons/Novos/cabba/Ultimate.png",
+          "dano": "400%+20"
+        }
+      },
+      "combinado": {
+        "nome": "Ataque de Perseguição",
+        "desc": "[Artes Marciais / Explosão de Ki] Ataca um único inimigo, segue com [Derrubar], causa [Empurrão].",
+        "estrelas": 1,
+        "tipo": "Ativar",
+        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+      },
+      "passivasHabilidade": [
+        {
+          "nome": "Ataque de Sequência Aprimorado",
+          "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+          "estrelas": 2,
+          "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+        }
+      ],
+      "passivasSupremo": [],
+      "passivaUnica": {
+        "base": {
+          "nome": "Impulso de Coragem",
+          "estrelas": 3,
+          "tipo": "Ativar",
+          "desc": "Aumenta o próprio ATQ; quando Cabba entra em batalha, se houver mais de 3 aliados do Universo 6, restaura 150 de Ki adicional ao derrotar um inimigo.",
+          "icone": "ability-icons/Novos/cabba/Passiva.png"
+        },
+        "max": {
+          "nome": "MÁX. Avanço de Coragem",
+          "estrelas": 6,
+          "tipo": "Despertar",
+          "desc": "Aumenta o próprio ataque; quando Cabba entra em campo, se o número de membros do Sexto Universo for maior que 3, ele ganha 200 de raiva adicional ao derrotar um inimigo, e a probabilidade de ativar a habilidade pequena aumenta em 15%.",
+          "icone": "ability-icons/Novos/cabba/Passiva MAX.png"
+        }
+      },
+      "passivaQuatroEstrelas": {
+        "nome": "Aprimoramento de Ataque",
+        "estrelas": 4,
+        "tipo": "Ativar",
+        "desc": "Aumenta permanentemente o próprio ATQ.",
+        "icone": "ability-icons/Passiva padrão/4 estrelas ATQ.png"
+      }
+    },
+    {
+      "nome": "Dr. Gero",
+      "habilidade": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Artes Marciais] Ataca um único inimigo.",
+          "icone": "ability-icons/Novos/dr-gero/Skill.png"
+        },
+        "max": {
+          "nome": "MAX.",
+          "estrelas": 3,
+          "tipo": "Despertar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/dr-gero/Skill.png",
+          "dano": "170%+8"
+        }
+      },
+      "suprema": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Explosão de Ki] Ataca todos os inimigos, 70% de chance de infligir [Cegueira] (não pode usar habilidades, 1 turno), e aumenta o ATQ dos aliados [Androide] em 15% por 2 turnos.",
+          "icone": "ability-icons/Novos/dr-gero/Ultimate.png",
+          "dano": "150%+10"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 5,
+          "tipo": "Despertar (dourada)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/dr-gero/Ultimate.png",
+          "dano": "150%+10"
+        },
+        "smax": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 5,
+          "tipo": "Despertar (azul)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/dr-gero/Ultimate.png",
+          "dano": "175%+12"
+        }
+      },
+      "combinado": {
+        "nome": "Sem nome nos dados do jogo",
+        "desc": "Sem descrição nos dados do jogo.",
+        "estrelas": 1,
+        "tipo": "Ativar",
+        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+      },
+      "passivasHabilidade": [
+        {
+          "nome": "Ataque de Sequência Aprimorado",
+          "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+          "estrelas": 2,
+          "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+        }
+      ],
+      "passivasSupremo": [],
+      "passivaUnica": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 3,
+          "tipo": "Ativar",
+          "desc": "Ao entrar em batalha, Dr. Gero concede a um aliado Androide [Reparo de Emergência] (revive uma vez com 20% de PV e 100% de Ki ao ser derrotado, uma vez por batalha).",
+          "icone": "ability-icons/Novos/dr-gero/Passiva.png"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 6,
+          "tipo": "Despertar",
+          "desc": "Aumenta a probabilidade de ativação de habilidades próprias. Quando Rocky entra em campo, se os 3 do AllStar (Harvey D, Brian e Rocky) estiverem presentes, aumenta adicionalmente em 15% a probabilidade de ativação de habilidades do trio AllStar (por 2 turnos) e, no primeiro turno, recupera 200 de raiva adicional para o trio.",
+          "icone": "ability-icons/Novos/dr-gero/Passiva MAX.png"
+        }
+      },
+      "passivaQuatroEstrelas": {
+        "nome": "Sem nome nos dados do jogo",
+        "estrelas": 4,
+        "tipo": "Ativar",
+        "desc": "Sem descrição nos dados do jogo.",
+        "icone": "ability-icons/Passiva padrão/4 estrelas ATQ.png"
+      }
+    },
+    {
+      "nome": "Freeza (Forma Original)",
+      "habilidade": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Explosão de Ki] Ataca uma coluna de inimigos, causa 40% de Dano Extra a [Saiyajins].",
+          "icone": "ability-icons/Novos/freeza-forma-original/Skill.png",
+          "dano": "140%+8"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 3,
+          "tipo": "Despertar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/freeza-forma-original/Skill.png",
+          "dano": "170%+8"
+        }
+      },
+      "suprema": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Explosão de Ki] Ataca uma Fileira de inimigos, causa 40% de Dano Extra a [Saiyajins], cada alvo tem 20% de chance de sofrer [Ligação] (não pode agir, 1 turno).",
+          "icone": "ability-icons/Novos/freeza-forma-original/Ultimate.png",
+          "dano": "200%+10"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 5,
+          "tipo": "Despertar (dourada)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/freeza-forma-original/Ultimate.png",
+          "dano": "240%+16"
+        },
+        "smax": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 5,
+          "tipo": "Despertar (azul)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/freeza-forma-original/Ultimate.png",
+          "dano": "420%+20"
+        }
+      },
+      "combinado": {
+        "nome": "Sem nome nos dados do jogo",
+        "desc": "Sem descrição nos dados do jogo.",
+        "estrelas": 1,
+        "tipo": "Ativar",
+        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+      },
+      "passivasHabilidade": [
+        {
+          "nome": "Ataque de Sequência Aprimorado",
+          "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+          "estrelas": 2,
+          "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+        }
+      ],
+      "passivasSupremo": [],
+      "passivaUnica": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 3,
+          "tipo": "Ativar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/freeza-forma-original/Passiva.png"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 6,
+          "tipo": "Despertar",
+          "desc": "Durante a batalha, aumenta o dano dos golpes especiais dos Guerreiros do Fluxo Extremo (o próprio, Ryo Sakazaki, Yuri Sakazaki, Robert). Quando o próprio é derrotado, recupera 200 de raiva para os Guerreiros do Fluxo Extremo e aumenta a intensidade de crítico dos Guerreiros do Fluxo Extremo em 30% por 2 turnos.",
+          "icone": "ability-icons/Novos/freeza-forma-original/Passiva MAX.png"
+        }
+      },
+      "passivaQuatroEstrelas": {
+        "nome": "Sem nome nos dados do jogo",
+        "estrelas": 4,
+        "tipo": "Ativar",
+        "desc": "Sem descrição nos dados do jogo.",
+        "icone": "ability-icons/Passiva padrão/4 estrelas PV.png"
+      }
+    },
+    {
+      "nome": "Ginyu",
+      "habilidade": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Artes Marciais] Ataca um único inimigo.",
+          "icone": "ability-icons/Novos/ginyu/Skill.png",
+          "dano": "135%+14"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 3,
+          "tipo": "Despertar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/ginyu/Skill.png",
+          "dano": "175%+8"
+        }
+      },
+      "suprema": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Explosão de Ki] Ataca um único inimigo; se a contagem de aliados for menor que a de inimigos, aumenta a própria Taxa de Crít. em 30% neste turno.",
+          "icone": "ability-icons/Novos/ginyu/Ultimate.png",
+          "dano": "380%+20"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 5,
+          "tipo": "Despertar (dourada)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/ginyu/Ultimate.png",
+          "dano": "400%+20"
+        },
+        "smax": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 5,
+          "tipo": "Despertar (azul)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/ginyu/Ultimate.png",
+          "dano": "430%+22"
+        }
+      },
+      "combinado": {
+        "nome": "Sem nome nos dados do jogo",
+        "desc": "Sem descrição nos dados do jogo.",
+        "estrelas": 1,
+        "tipo": "Ativar",
+        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+      },
+      "passivasHabilidade": [
+        {
+          "nome": "Ataque de Sequência Aprimorado",
+          "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+          "estrelas": 2,
+          "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+        }
+      ],
+      "passivasSupremo": [],
+      "passivaUnica": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 3,
+          "tipo": "Ativar",
+          "desc": "No início do turno, se o PV de Ginyu < 30%, troca de corpo com o inimigo de maior PV (troca PV e Ki, volta ao normal no início do próximo turno). Ativa uma vez por batalha.",
+          "icone": "ability-icons/Novos/ginyu/Passiva.png"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 6,
+          "tipo": "Despertar",
+          "desc": "Aumenta o próprio ataque. Quando Harvey D entrar em campo, se o Trio AllStar (Harvey D, Brian, Rocky) estiver presente, aumenta adicionalmente o ataque do Trio AllStar em 15% (2 turnos) e recupera 120 de raiva própria por turno (4 turnos).",
+          "icone": "ability-icons/Novos/ginyu/Passiva MAX.png"
+        }
+      },
+      "passivaQuatroEstrelas": {
+        "nome": "Sem nome nos dados do jogo",
+        "estrelas": 4,
+        "tipo": "Ativar",
+        "desc": "Sem descrição nos dados do jogo.",
+        "icone": "ability-icons/Passiva padrão/4 estrelas PV.png"
+      }
+    },
+    {
+      "nome": "Guldo",
+      "habilidade": {
+        "base": {
+          "nome": "Soco Relâmpago",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Artes Marciais] Causa dano a um único inimigo. Se o PV do inimigo estiver abaixo de 45%, aumenta o dano em 25%.",
+          "icone": "ability-icons/Novos/guldo/Skill.png",
+          "dano": "140%+8"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 3,
+          "tipo": "Despertar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/guldo/Skill.png",
+          "dano": "165%+8"
+        }
+      },
+      "suprema": {
+        "base": {
+          "nome": "Corte Infinito",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Explosão de Ki] Causa dano ao inimigo com menos PV, com 40% de chance de infligir [Enraizamento] (incapaz de agir, dura 1 turno).",
+          "icone": "ability-icons/Novos/guldo/Ultimate.png",
+          "dano": "370%+20"
+        },
+        "max": {
+          "nome": "Corte Infinito MÁX.",
+          "estrelas": 5,
+          "tipo": "Despertar (dourada)",
+          "desc": "[Explosão de Ki] Causa dano ao inimigo com menos PV, com 40% de chance de infligir [Enraizamento] (incapaz de agir, dura 1 turno).",
+          "icone": "ability-icons/Novos/guldo/Ultimate.png"
+        },
+        "smax": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 5,
+          "tipo": "Despertar (azul)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/guldo/Ultimate.png",
+          "dano": "420%+20"
+        }
+      },
+      "combinado": {
+        "nome": "Ataque de Perseguição",
+        "desc": "[Artes Marciais / Explosão de Ki] Ataca um único inimigo, perseguindo [Malabarismo Maior], infligindo [Empurrão].",
+        "estrelas": 1,
+        "tipo": "Ativar",
+        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png",
+        "dano": "75%+8"
+      },
+      "passivasHabilidade": [
+        {
+          "nome": "Ataque de Sequência Aprimorado",
+          "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+          "estrelas": 2,
+          "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+        }
+      ],
+      "passivasSupremo": [],
+      "passivaUnica": {
+        "base": {
+          "nome": "Instinto Assassino",
+          "estrelas": 3,
+          "tipo": "Ativar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/guldo/Passiva.png"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 6,
+          "tipo": "Despertar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/guldo/Passiva MAX.png"
+        }
+      },
+      "passivaQuatroEstrelas": {
+        "nome": "Aprimoramento de Ataque",
+        "estrelas": 4,
+        "tipo": "Ativar",
+        "desc": "Aumenta permanentemente o próprio ATQ.",
+        "icone": "ability-icons/Passiva padrão/4 estrelas ATQ.png"
+      }
+    },
+    {
+      "nome": "Kahseral",
+      "habilidade": {
+        "base": {
+          "nome": "Disco Cortante",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Explosão de Ki] Ataca um único inimigo, reduz a DEF do alvo em 20%, 60% de chance de infligir [Derrubar].",
+          "icone": "ability-icons/Novos/kahseral/Skill.png",
+          "dano": "145%+8"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 3,
+          "tipo": "Despertar",
+          "desc": "[Golpe Especial] Ataca um único inimigo, reduzindo sua Defesa em 20% e com 60% de chance de causar [Queda].",
+          "icone": "ability-icons/Novos/kahseral/Skill.png",
+          "dano": "160%+8"
+        }
+      },
+      "suprema": {
+        "base": {
+          "nome": "Bombardeiro da Justiça",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Explosão de Ki] Ataca um único inimigo, reduz a Taxa de Redução de Dano do alvo em 15%.",
+          "icone": "ability-icons/Novos/kahseral/Ultimate.png",
+          "dano": "320%+20"
+        },
+        "max": {
+          "nome": "Bombardeiro da Justiça MÁX.",
+          "estrelas": 5,
+          "tipo": "Despertar (dourada)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/kahseral/Ultimate.png",
+          "dano": "360%+20"
+        },
+        "smax": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 5,
+          "tipo": "Despertar (azul)",
+          "desc": "[Golpe Especial] Ataca um único inimigo, reduzindo sua taxa de redução de dano em 15%, causando [Pequeno Elevação].",
+          "icone": "ability-icons/Novos/kahseral/Ultimate.png",
+          "dano": "400%+20"
+        }
+      },
+      "combinado": {
+        "nome": "Ataque de Perseguição",
+        "desc": "[Artes Marciais / Explosão de Ki] Ataca um único inimigo, persegue [Pequeno Arremesso], inflige [Derrubar].",
+        "estrelas": 1,
+        "tipo": "Ativar",
+        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+      },
+      "passivasHabilidade": [
+        {
+          "nome": "Ataque de Sequência Aprimorado",
+          "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+          "estrelas": 2,
+          "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+        }
+      ],
+      "passivasSupremo": [],
+      "passivaUnica": {
+        "base": {
+          "nome": "Impulso Muscular",
+          "estrelas": 3,
+          "tipo": "Ativar",
+          "desc": "Aumenta a própria Taxa de Perfuração. No início da batalha, aumenta em 10% o dano causado por aliados da [Esquadrão do Orgulho].",
+          "icone": "ability-icons/Novos/kahseral/Passiva.png"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 6,
+          "tipo": "Despertar",
+          "desc": "Aumenta a própria taxa de acerto crítico. No início da batalha, aumenta em 10% a taxa de dano dos Guerreiros do [Time Orgulhoso] aliado.",
+          "icone": "ability-icons/Novos/kahseral/Passiva MAX.png"
+        }
+      },
+      "passivaQuatroEstrelas": {
+        "nome": "Aprimoramento de PV",
+        "estrelas": 4,
+        "tipo": "Ativar",
+        "desc": "Aumenta permanentemente o PV Máx. próprio.",
+        "icone": "ability-icons/Passiva padrão/4 estrelas PV.png"
+      }
+    },
+    {
+      "nome": "Majin Boo (Gohan)",
+      "habilidade": {
+        "base": {
+          "nome": "Soco Relâmpago",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Artes Marciais] Ataca um único inimigo, 50% de chance de ativar novamente (máximo de 1 ativação por turno), 60% de chance de causar [Derrubar].",
+          "icone": "ability-icons/Novos/majin-boo-gohan/Skill.png",
+          "dano": "150%+8"
+        },
+        "max": {
+          "nome": "MAX. Golpe Relâmpago",
+          "estrelas": 3,
+          "tipo": "Despertar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/majin-boo-gohan/Skill.png",
+          "dano": "175%+16"
+        }
+      },
+      "suprema": {
+        "base": {
+          "nome": "Onda de Energia Maligna",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Explosão de Ki] Ataca um único inimigo, causa 20% de Dano Extra a Guerreiros do Tipo Defesa, e lança imediatamente uma habilidade adicional.",
+          "icone": "ability-icons/Novos/majin-boo-gohan/Ultimate.png",
+          "dano": "260%+20"
+        },
+        "max": {
+          "nome": "Onda de Energia Maligna MÁX.",
+          "estrelas": 5,
+          "tipo": "Despertar (dourada)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/majin-boo-gohan/Ultimate.png",
+          "dano": "260%+20"
+        },
+        "smax": {
+          "nome": "SMAX. Onda de Energia Corrompida",
+          "estrelas": 5,
+          "tipo": "Despertar (azul)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/majin-boo-gohan/Ultimate.png",
+          "dano": "300%+20"
+        }
+      },
+      "combinado": {
+        "nome": "Ataque de Perseguição",
+        "desc": "[Artes Marciais / Explosão de Ki] Ataca um único inimigo, segue com [Derrubar], causa [Grande Malabarismo].",
+        "estrelas": 1,
+        "tipo": "Ativar",
+        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png",
+        "dano": "75%+8"
+      },
+      "passivasHabilidade": [
+        {
+          "nome": "Ataque de Sequência Aprimorado",
+          "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+          "estrelas": 2,
+          "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+        }
+      ],
+      "passivasSupremo": [],
+      "passivaUnica": {
+        "base": {
+          "nome": "Força Majin",
+          "estrelas": 3,
+          "tipo": "Ativar",
+          "desc": "Ao ser derrotado, revive com 20% de PV e 100% do Ki de antes da derrota (uma vez por batalha).",
+          "icone": "ability-icons/Novos/majin-boo-gohan/Passiva.png"
+        },
+        "max": {
+          "nome": "MAX. Poder do Demônio",
+          "estrelas": 6,
+          "tipo": "Despertar",
+          "desc": "Durante a batalha, aumenta a defesa de todos os aliados. Ao entrar em campo, se houver Majin Boo, Boo Puro ou Boo (Gotenks) entre os aliados, aumenta sua própria taxa de controle em 30%.",
+          "icone": "ability-icons/Novos/majin-boo-gohan/Passiva MAX.png"
+        }
+      },
+      "passivaQuatroEstrelas": {
+        "nome": "Aprimoramento de Ataque",
+        "estrelas": 4,
+        "tipo": "Ativar",
+        "desc": "Aumenta permanentemente o próprio ATQ.",
+        "icone": "ability-icons/Passiva padrão/4 estrelas PV.png"
+      }
+    },
+    {
+      "nome": "Nappa",
+      "habilidade": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Artes Marciais] Ataca um único inimigo e aplica 1 acúmulo de [Queimadura] (sofre dano equivalente a 25% do ATQ do lançador no início de cada turno, cada acúmulo reduz a cura em 10%, acumula até 10 vezes, dura 2 turnos).",
+          "icone": "ability-icons/Novos/nappa/Skill.png",
+          "dano": "140%+8"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 3,
+          "tipo": "Despertar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/nappa/Skill.png",
+          "dano": "175%+8"
+        }
+      },
+      "suprema": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Explosão de Ki] Ataca uma coluna de inimigos, aplica 1 acúmulo de [Queimadura] e destrói o [Escudo] inimigo.",
+          "icone": "ability-icons/Novos/nappa/Ultimate.png",
+          "dano": "240%+14"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 5,
+          "tipo": "Despertar (dourada)",
+          "desc": "[Explosão de Ki] Ataca uma coluna de inimigos, aplica 1 acúmulo de [Queimadura] e destrói o [Escudo] inimigo.",
+          "icone": "ability-icons/Novos/nappa/Ultimate.png",
+          "dano": "260%+14"
+        },
+        "smax": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 5,
+          "tipo": "Despertar (azul)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/nappa/Ultimate.png",
+          "dano": "280%+18"
+        }
+      },
+      "combinado": {
+        "nome": "Sem nome nos dados do jogo",
+        "desc": "Sem descrição nos dados do jogo.",
+        "estrelas": 1,
+        "tipo": "Ativar",
+        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+      },
+      "passivasHabilidade": [
+        {
+          "nome": "Ataque de Sequência Aprimorado",
+          "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+          "estrelas": 2,
+          "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+        }
+      ],
+      "passivasSupremo": [],
+      "passivaUnica": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 3,
+          "tipo": "Ativar",
+          "desc": "Aumenta a própria DEF em 20%.",
+          "icone": "ability-icons/Novos/nappa/Passiva.png"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 6,
+          "tipo": "Despertar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/nappa/Passiva MAX.png"
+        }
+      },
+      "passivaQuatroEstrelas": {
+        "nome": "Sem nome nos dados do jogo",
+        "estrelas": 4,
+        "tipo": "Ativar",
+        "desc": "Sem descrição nos dados do jogo.",
+        "icone": "ability-icons/Passiva padrão/4 estrelas PV.png"
+      }
+    },
+    {
+      "nome": "Raditz",
+      "habilidade": {
+        "base": {
+          "nome": "Batida Rápida",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Artes Marciais] Ataca um único inimigo. Se o PV do alvo estiver acima de 50%, ganha +25% de dano.",
+          "icone": "ability-icons/Novos/raditz/Skill.png",
+          "dano": "140%+8"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 3,
+          "tipo": "Despertar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/raditz/Skill.png",
+          "dano": "168%+8"
+        }
+      },
+      "suprema": {
+        "base": {
+          "nome": "Super Rajada de Energia",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "Ataca o inimigo com mais PV, causa +15% de dano a inimigos do Tipo Defesa e ganha Efeito Fatal (+25% de dano se o PV do alvo > 50%).",
+          "icone": "ability-icons/Novos/raditz/Ultimate.png",
+          "dano": "370%+20"
+        },
+        "max": {
+          "nome": "Super Rajada de Energia MÁX.",
+          "estrelas": 5,
+          "tipo": "Despertar (dourada)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/raditz/Ultimate.png"
+        },
+        "smax": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 5,
+          "tipo": "Despertar (azul)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/raditz/Ultimate.png"
+        }
+      },
+      "combinado": {
+        "nome": "Ataque de Perseguição",
+        "desc": "[Artes Marciais / Explosão de Ki] Ataca um único inimigo, perseguindo [Malabarismo Maior], infligindo [Empurrão].",
+        "estrelas": 1,
+        "tipo": "Ativar",
+        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png",
+        "dano": "75%+8"
+      },
+      "passivasHabilidade": [
+        {
+          "nome": "Ataque de Sequência Aprimorado",
+          "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+          "estrelas": 2,
+          "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+        }
+      ],
+      "passivasSupremo": [],
+      "passivaUnica": {
+        "base": {
+          "nome": "Detecção de Fraqueza",
+          "estrelas": 3,
+          "tipo": "Ativar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/raditz/Passiva.png"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 6,
+          "tipo": "Despertar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/raditz/Passiva MAX.png"
+        }
+      },
+      "passivaQuatroEstrelas": {
+        "nome": "Aprimoramento de Ataque",
+        "estrelas": 4,
+        "tipo": "Ativar",
+        "desc": "Aumenta permanentemente o próprio ATQ.",
+        "icone": "ability-icons/Passiva padrão/4 estrelas ATQ.png"
+      }
+    },
+    {
+      "nome": "Arale",
+      "habilidade": {
+        "base": {
+          "nome": "Jet Gun",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Explosão de Ki] Ataca uma coluna de inimigos, recupera o próprio PV; inflige no alvo principal [Ferida Grave] (reduz a Taxa de Cura em 40%, perde 6% do PV por turno) por 2 turnos, e tem 60% de chance de infligir [Grande Malabarismo].",
+          "icone": "ability-icons/Novos/arale/Skill.png"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 3,
+          "tipo": "Despertar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/arale/Skill.png",
+          "dano": "170%+12"
+        }
+      },
+      "suprema": {
+        "base": {
+          "nome": "Arremesso do Carro de Polícia",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Artes Marciais] Ataca um único inimigo, 20% de chance de infligir [Atordoamento] (incapaz de agir, dura 1 turno); causa 15% de dano em área aos inimigos adjacentes, restaurando o próprio PV.",
+          "icone": "ability-icons/Novos/arale/Ultimate.png",
+          "dano": "380%+20"
+        },
+        "max": {
+          "nome": "Arremesso do Carro de Polícia MÁX.",
+          "estrelas": 5,
+          "tipo": "Despertar (dourada)",
+          "desc": "[Artes Marciais] Ataca um único inimigo, 20% de chance de infligir [Atordoamento] (incapaz de agir, dura 1 turno); causa 20% de dano em área aos inimigos adjacentes, restaurando o próprio PV. Se houver mais de 1 inimigo vivo, derruba o alvo da Fileira da Frente para fora do campo de batalha.",
+          "icone": "ability-icons/Novos/arale/Ultimate.png",
+          "dano": "420%+20"
+        },
+        "smax": {
+          "nome": "SMAX.",
+          "estrelas": 5,
+          "tipo": "Despertar (azul)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/arale/Ultimate.png",
+          "dano": "450%+24"
+        }
+      },
+      "combinado": {
+        "nome": "Ataque de Perseguição",
+        "desc": "[Artes Marciais / Explosão de Ki] Ataca um único inimigo, segue com [Pequeno Malabarismo], infligindo [Derrubar].",
+        "estrelas": 1,
+        "tipo": "Ativar",
+        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+      },
+      "passivasHabilidade": [
+        {
+          "nome": "Ataque de Sequência Aprimorado",
+          "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+          "estrelas": 2,
+          "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+        }
+      ],
+      "passivasSupremo": [],
+      "passivaUnica": {
+        "base": {
+          "nome": "Garota Gênio",
+          "estrelas": 3,
+          "tipo": "Ativar",
+          "desc": "Aumenta o ATQ dos [Androides] aliados; ao entrar em batalha, para cada [Androide] aliado, aumenta o próprio ATQ e DEF em 10%.",
+          "icone": "ability-icons/Novos/arale/Passiva.png"
+        },
+        "max": {
+          "nome": "MAX.",
+          "estrelas": 6,
+          "tipo": "Despertar",
+          "desc": "Em batalha, reduz o ataque dos guerreiros masculinos inimigos. Quando houver guerreiros com as seguintes Almas de Fúria em sua equipe durante a batalha, a Leona Despertada receberá efeitos de bônus: Alma de Tigre: aumenta o ataque em 12%; Alma de Urso: aumenta a raiva inicial em 240 pontos; Alma de Serpente: aumenta a taxa de roubo de vida em 12%; Alma de Tartaruga: aumenta a defesa em 12% (efeitos do mesmo tipo não se acumulam). Adiciona o efeito de Inabalável: quanto menos vida, maior o dano, e o efeito de Inabalável pode aumentar o dano em até 30%.",
+          "icone": "ability-icons/Novos/arale/Passiva MAX.png"
+        }
+      },
+      "passivaQuatroEstrelas": {
+        "nome": "Aprimoramento de Ataque Avançado",
+        "estrelas": 4,
+        "tipo": "Ativar",
+        "desc": "Aumenta permanentemente o próprio ATQ.",
+        "icone": "ability-icons/Passiva padrão/4 estrelas ATQ.png"
+      }
+    },
+    {
+      "nome": "Champa",
+      "habilidade": {
+        "base": {
+          "nome": "Golpe Selvagem",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Artes Marciais] Ataca alvo único; se o alvo tiver o status [Intimidação], o dano da habilidade aumenta em 40%, 60% de chance de causar [Derrubar].",
+          "icone": "ability-icons/Novos/champa/Skill.png",
+          "dano": "155%+15"
+        },
+        "max": {
+          "nome": "MAX. Golpe Selvagem",
+          "estrelas": 3,
+          "tipo": "Despertar",
+          "desc": "[ATQ Físico] Ataca um único alvo, aumenta sua própria velocidade de recuperação de Fúria em 20%, eleva a taxa de dano em 15%. Se o alvo estiver sob o efeito de [Atordoamento], o dano da habilidade aumenta em 50%, com 60% de chance de causar [Queda].",
+          "icone": "ability-icons/Novos/champa/Skill.png",
+          "dano": "175%+15"
+        }
+      },
+      "suprema": {
+        "base": {
+          "nome": "Projétil de Energia Sombria",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Explosão de Ki] Ataca uma coluna; 50% de chance de aplicar o efeito [Intimidação] aos alvos (reduz a Velocidade de Recuperação de Fúria, 40% de chance de reduzir muito o dano ao atacar, não acumulável, dura 2 turnos), aumenta a própria Redução de Dano em 15% (2 turnos).",
+          "icone": "ability-icons/Novos/champa/Ultimate.png",
+          "dano": "260%+12"
+        },
+        "max": {
+          "nome": "Bala de Energia Sombria MÁX.",
+          "estrelas": 5,
+          "tipo": "Despertar (dourada)",
+          "desc": "[Explosão de Ki] Ataca uma coluna inimiga, 70% de chance de aplicar o efeito [Intimidação] aos alvos (reduz a Velocidade de Recuperação de Fúria, 40% de chance de reduzir muito o dano ao atacar, não acumulável, dura 2 turnos), e aumenta a própria Redução de Dano em 20% (2 turnos).",
+          "icone": "ability-icons/Novos/champa/Ultimate.png",
+          "dano": "280%+12"
+        },
+        "smax": {
+          "nome": "SMAX. Projétil de Energia das Sombras",
+          "estrelas": 5,
+          "tipo": "Despertar (azul)",
+          "desc": "[Ataque Especial] Ataca uma fileira, com 70% de chance de aplicar [Atordoamento] no alvo (reduz a velocidade de recuperação de raiva, com 40% de chance de reduzir significativamente o dano ao atacar, não acumulável, dura 2 turnos) e aumenta sua própria taxa de redução de dano em 24% (2 turnos); além disso, adiciona a si mesmo o efeito [Proteção do Deus da Destruição] (aumenta seu próprio contra-ataque em 24%, com 40% de chance ao receber dano de fazer com que o atacante obtenha [Atordoamento], dura 2 turnos).",
+          "icone": "ability-icons/Novos/champa/Ultimate.png",
+          "dano": "300%+18"
+        }
+      },
+      "combinado": {
+        "nome": "Ataque de Perseguição",
+        "desc": "[Artes Marciais / Explosão de Ki] Ataca um único alvo inimigo, segue com [Empurrão], causa [Pequeno Lançamento].",
+        "estrelas": 1,
+        "tipo": "Ativar",
+        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png",
+        "dano": "75%+8"
+      },
+      "passivasHabilidade": [
+        {
+          "nome": "Ataque de Sequência Aprimorado",
+          "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+          "estrelas": 2,
+          "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+        }
+      ],
+      "passivasSupremo": [],
+      "passivaUnica": {
+        "base": {
+          "nome": "Destruição da Fúria Divina",
+          "estrelas": 3,
+          "tipo": "Ativar",
+          "desc": "Aumenta a própria taxa de contra-ataque; Zompa possui poder destrutivo inato, ao ser atacado por alvo único, a defesa do atacante é reduzida em 8% (acumulável), dura 2 turnos.",
+          "icone": "ability-icons/Novos/champa/Passiva.png"
+        },
+        "max": {
+          "nome": "MAX. Ira do Deus da Destruição",
+          "estrelas": 6,
+          "tipo": "Despertar",
+          "desc": "Aumenta sua própria taxa de contra-ataque; Champa possui uma habilidade inata de destruição. Ao receber um ataque individual, a defesa do atacante é reduzida em 8% (acumulável) por 2 turnos. No início do turno, para cada Guerreiro inimigo em campo com efeito [Atordoamento], aumenta seu próprio ataque em 6%.",
+          "icone": "ability-icons/Novos/champa/Passiva MAX.png"
+        }
+      },
+      "passivaQuatroEstrelas": {
+        "nome": "Aprimoramento de Ataque Avançado",
+        "estrelas": 4,
+        "tipo": "Ativar",
+        "desc": "Sem descrição nos dados do jogo.",
+        "icone": "ability-icons/Passiva padrão/4 estrelas ATQ.png"
+      }
+    },
+    {
+      "nome": "Gás",
+      "habilidade": {
+        "base": {
+          "nome": "Golpe de Fratura",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Ataque Físico] Ataca um único inimigo, com 30% de chance de causar [Silêncio], 60% de chance de causar [Repulsão], reduz 20% de dano de ataque especial do alvo (por 2 turnos), recupera 7% de sua vida e 50 de Fúria. Se houver um guerreiro [Saiyajin] na mesma linha, o valor de recuperação é dobrado. [Silêncio]: Não pode liberar o golpe definitivo, dura 1 turno.",
+          "icone": "ability-icons/Novos/gas/Skill.png",
+          "dano": "160%+15"
+        },
+        "max": {
+          "nome": "MAX. Golpe Explosivo",
+          "estrelas": 3,
+          "tipo": "Despertar",
+          "desc": "[ATQ Físico] Ataca um único inimigo, com 35% de chance de causar [Silêncio] e 60% de chance de causar [Recuo]. Reduz o dano de ataque especial do alvo em 25% (2 turnos). Recupera 8% da vida e 100 de Fúria para si mesmo e para os Guerreiros na mesma fileira. Se houver um guerreiro [Saiyajin] na mesma coluna, a recuperação de si mesmo é dobrada. [Silêncio]: Impossibilidade de usar o golpe definitivo, dura 1 turno.",
+          "icone": "ability-icons/Novos/gas/Skill.png",
+          "dano": "160%+15"
+        }
+      },
+      "suprema": {
+        "base": {
+          "nome": "Super Boca de Canhão Mágico",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Ataque Especial] Aumenta sua própria taxa de dano e redução de dano em 15% (por 2 turnos), ataca um único inimigo, depois entra em estado de [Carregamento], a vida é restaurada a pelo menos 50%, no máximo 1 vez por batalha; se não puder entrar no estado de [Carregamento], recupera 12% de sua vida. [Estado de Carregamento]: Neste estado, não pode agir, imune a efeitos de [Controle], reduz o dano recebido de golpes definitivos em 20%. Ao sofrer ataques de habilidade e ataques definitivos, ganha [Fúria] equivalente a 50% do seu ataque, e 50% do dano sofrido é acumulado como [Fúria] (máximo de 5 vezes seu ataque). Se a [Fúria] estiver cheia, libera [Canhão de Energia Mortal], esvazia a [Fúria] e retorna ao estado normal. [Canhão de Energia Mortal]: Causa [Ataque Especial] de 200 * ataque a uma linha aleatória de inimigos, com adicional de 80% do valor atual de [Fúria] em unidades na linha de frente, recupera 15% de sua vida.",
+          "icone": "ability-icons/Novos/gas/Ultimate.png",
+          "dano": "380%+24"
+        },
+        "max": {
+          "nome": "MAX. Super Boca de Canhão Mágico",
+          "estrelas": 5,
+          "tipo": "Despertar (dourada)",
+          "desc": "[Ataque Especial] Aumenta sua própria taxa de dano e redução de dano em 20% (por 2 turnos), ataca um único inimigo, depois entra em estado de [Carregamento], a vida é restaurada a pelo menos 50%, no máximo 2 vezes por batalha; se não puder entrar no estado de [Carregamento], recupera 12% de sua vida. [Estado de Carregamento]: Neste estado, não pode agir, imune a efeitos de [Controle], reduz o dano recebido de golpes definitivos em 30%. Ao sofrer ataques de habilidade e ataques definitivos, ganha [Fúria] equivalente a 50% do seu ataque, e 50% do dano sofrido é acumulado como [Fúria] (máximo de 5 vezes seu ataque). Se a [Fúria] estiver cheia, libera [Canhão de Energia Mortal], esvazia a [Fúria] e retorna ao estado normal. [Canhão de Energia Mortal]: Causa [Ataque Especial] de 220 * ataque a uma linha aleatória de inimigos, causa dano adicional de 20% da vida perdida ao alvo, nas unidades da linha de frente causa adicional de 100% do valor atual de [Fúria], recupera 15% de sua vida.",
+          "icone": "ability-icons/Novos/gas/Ultimate.png",
+          "dano": "400%+24"
+        },
+        "smax": {
+          "nome": "SMAX. Super Canhão Mágico",
+          "estrelas": 5,
+          "tipo": "Despertar (azul)",
+          "desc": "[Golpe Especial] Aumenta sua própria Taxa de Dano e Taxa de Redução de Dano em 30% (2 turnos). Ataca um único inimigo e, em seguida, entra em estado de [Acúmulo de Força]. A vida é restaurada para pelo menos 60%. Este efeito pode ser ativado no máximo 2 vezes por batalha. Se não for possível entrar em [Acúmulo de Força], recupera 15% da própria vida. [Estado de Acúmulo de Força]: Neste estado, não é possível agir. Imune a efeitos de [Controle]. O dano recebido de Golpes Especiais é reduzido em 40%. Ao sofrer ataques de habilidade e Golpes Especiais, ganha [Fúria] equivalente a 50% do próprio Ataque. 50% do dano recebido é acumulado como [Fúria] (máximo de 5 vezes o próprio Ataque). Se a [Fúria] estiver cheia, libera [Canhão de Energia Mortal], esvazia a [Fúria] e retorna ao estado normal. [Canhão de Energia Mortal]: Causa dano de [Golpe Especial] igual a 250% do Ataque a uma fileira aleatória de inimigos. Causa dano adicional ao alvo igual a 30% da própria vida perdida. Aplica 120% do valor atual de [Fúria] a unidades da linha de frente. Recupera 25% da própria vida. Este dano ignora o efeito de [Imunidade à Morte].",
+          "icone": "ability-icons/Novos/gas/Ultimate.png",
+          "dano": "420%+24"
+        }
+      },
+      "combinado": {
+        "nome": "Onda Explosiva",
+        "desc": "[Ataque Físico] Ataca um único inimigo, persegue após [Pequeno Lançamento], causa [Repulsão].",
+        "estrelas": 1,
+        "tipo": "Ativar",
+        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png",
+        "dano": "75%+8"
+      },
+      "passivasHabilidade": [
+        {
+          "nome": "Ataque de Sequência Aprimorado",
+          "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+          "estrelas": 2,
+          "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+        }
+      ],
+      "passivasSupremo": [],
+      "passivaUnica": {
+        "base": {
+          "nome": "Inchaço Muscular",
+          "estrelas": 3,
+          "tipo": "Ativar",
+          "desc": "Reduz a defesa dos [Guerreiros Malignos] inimigos. Aumenta sua própria taxa de bloqueio em 10%. Se sofrer ataque de golpe definitivo e o bloqueio não for ativado, ganha 1 camada de [Tenacidade] (cada camada aumenta 5% de bloqueio, acumulável, limpa quando o bloqueio é ativado, máx. 6 camadas). No estado [Carregamento], se sofrer dano letal, recupera toda a [Fúria] imediatamente e libera [Canhão de Energia Mortal], mas fora do [Carregamento], recupera 30% de vida e 150 de Fúria. No máximo 1 vez por batalha.",
+          "icone": "ability-icons/Novos/gas/Passiva.png"
+        },
+        "max": {
+          "nome": "MAX. Músculos inchados",
+          "estrelas": 6,
+          "tipo": "Despertar",
+          "desc": "Reduz a defesa dos [Guerreiros das Trevas] inimigos. Aumenta sua própria taxa de bloqueio em 15%. Se for atacado por um golpe especial e não ativar o bloqueio, ganha 1 camada de [Resistência] (cada camada aumenta a taxa de bloqueio em 5%, acumulável, e é zerada ao ativar o bloqueio, máximo de 6 camadas). Quando estiver em estado de [Acúmulo de Força] e sofrer dano letal, recupera imediatamente toda a [Fúria] e libera o [Canhão de Luz Mortal]. Se não estiver em estado de [Acúmulo de Força], recupera 30% da vida e 300 de fúria, com efeito máximo de 2 vezes por batalha.",
+          "icone": "ability-icons/Novos/gas/Passiva MAX.png"
+        }
+      },
+      "passivaQuatroEstrelas": {
+        "nome": "Sem nome nos dados do jogo",
+        "estrelas": 4,
+        "tipo": "Ativar",
+        "desc": "Aumenta permanentemente seu próprio ataque e vida.",
+        "icone": "ability-icons/Passiva padrão/4 estrelas ATQ+PV.png"
+      }
+    },
+    {
+      "nome": "Vegetto (SS4)",
+      "habilidade": {
+        "base": {
+          "nome": "Golpe Aéreo Divino",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/vegetto-ss4/Skill.png"
+        },
+        "max": {
+          "nome": "MAX. Golpe Divino do Vácuo",
+          "estrelas": 3,
+          "tipo": "Despertar",
+          "desc": "Ataca um único inimigo; aumenta o dano da habilidade em 35%; causa dano adicional de 50% do dano total desta habilidade à fileira onde o alvo está; com 50% de chance, reduz em 200 a raiva de 1 inimigo aleatório na fileira do alvo; aplica o efeito de Proteção Corporal nos Guerreiros da própria fileira (no portador, aumenta a redução de dano em 20%, recupera 10% da Vida Máxima a cada ataque recebido, desaparece após 1-3 ataques recebidos <quanto mais inimigos em campo, mais vezes>, não pode ser dissipado), com duração de 1 turno; no início do próximo turno aliado, consome o efeito de Proteção Corporal ainda existente e recupera 150 de raiva para o portador; o próprio personagem tem um aumento de 60% nos efeitos de recuperação de Vida e raiva obtidos através da Proteção Corporal.",
+          "icone": "ability-icons/Novos/vegetto-ss4/Skill.png",
+          "dano": "175%+15"
+        }
+      },
+      "suprema": {
+        "base": {
+          "nome": "Big Bang Attack",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/vegetto-ss4/Ultimate.png"
+        },
+        "max": {
+          "nome": "Big Bang Attack MÁX.",
+          "estrelas": 5,
+          "tipo": "Despertar (dourada)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/vegetto-ss4/Ultimate.png",
+          "dano": "430%+24"
+        },
+        "smax": {
+          "nome": "SMAX. Ataque da Grande Explosão",
+          "estrelas": 5,
+          "tipo": "Despertar (azul)",
+          "desc": "Ataca o inimigo com maior Fúria, em seguida aumenta sua própria Taxa de Dano, Taxa de Redução de Dano em 35% e Taxa de Roubo de Vida em 50% por 1 turno; todos os seus ataques ignoram 70% da Defesa do alvo por 1 turno; causa até 70% de dano adicional com base na Fúria atual do alvo; absorve 200 de Fúria do alvo principal; tem 70% de chance de silenciar o alvo por 1 turno; quando esse efeito é dissipado, recupera imediatamente 200 de Fúria; remove os efeitos positivos do alvo; reduz a Força de Bloqueio e a Força de Crítico do alvo e dos inimigos ao redor em 35% por 1 turno; se o dano causado por este Golpe Especial for inferior a 40% da Vida Máxima do alvo, recupera imediatamente toda a Fúria; neste turno, o dano do Golpe Especial ativado desta forma não será reduzido e não aplicará o efeito de Silêncio; se este Golpe Especial não for ativado, toda a Fúria será reduzida no início do turno; este efeito só pode ser ativado uma vez por turno.",
+          "icone": "ability-icons/Novos/vegetto-ss4/Ultimate.png",
+          "dano": "450%+24"
+        }
+      },
+      "combinado": {
+        "nome": "Ataque de Perseguição",
+        "desc": "Sem descrição nos dados do jogo.",
+        "estrelas": 1,
+        "tipo": "Ativar",
+        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+      },
+      "passivasHabilidade": [
+        {
+          "nome": "Ataque de Sequência Aprimorado",
+          "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+          "estrelas": 2,
+          "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+        }
+      ],
+      "passivasSupremo": [],
+      "passivaUnica": {
+        "base": {
+          "nome": "Lampejo do Tempo",
+          "estrelas": 3,
+          "tipo": "Ativar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/vegetto-ss4/Passiva.png"
+        },
+        "max": {
+          "nome": "MÁX. Cintilação Temporal",
+          "estrelas": 6,
+          "tipo": "Despertar",
+          "desc": "Aumenta sua própria taxa de crítico e taxa de penetração, 30% de ataque e defesa e 30% de intensidade de crítico; cada Guerreiro de Fusão aliado aumenta em 15% a probabilidade de suas próprias habilidades menores; no início de cada turno aliado, 55% de chance (aumenta em 10% para cada guerreiro aliado em estado de controle) de remover imediatamente seus próprios estados negativos e petrificação, e aumenta seu próprio ataque em 30% (1 turno); ao ser atingido e com vida abaixo de 40%, desaparece instantaneamente do campo de batalha, retornando na próxima ação aliada, recuperando 50% da vida máxima e 300 de raiva, e aumentando o dano de habilidade definitiva em 25% (1 turno), além de aumentar permanentemente a resistência a habilidades definitivas e a resistência a habilidades menores em 15% (acumulável até 3 vezes, herdado após renascimento). Este efeito pode ser ativado no máximo 2 vezes por batalha; pode renascer uma vez, recuperando 60% da vida e herdando toda a raiva, e redefinindo o número de ativações do desaparecimento.",
+          "icone": "ability-icons/Novos/vegetto-ss4/Passiva MAX.png"
+        }
+      },
+      "passivaQuatroEstrelas": {
+        "nome": "Aprimoramento de PV e Ataque",
+        "estrelas": 4,
+        "tipo": "Ativar",
+        "desc": "Aumenta permanentemente o ATQ e PV próprios.",
+        "icone": "ability-icons/Passiva padrão/4 estrelas PV.png"
+      }
+    },
+    {
+      "nome": "Bardock SS4",
+      "habilidade": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/bardock-ss4/Skill.png"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 3,
+          "tipo": "Despertar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/bardock-ss4/Skill.png"
+        }
+      },
+      "suprema": {
+        "base": {
+          "nome": "Onda de Choque Destrutiva MÁX.",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/bardock-ss4/Ultimate.png",
+          "dano": "430%+24"
+        },
+        "max": {
+          "nome": "Onda de Choque Destrutiva MÁX.",
+          "estrelas": 5,
+          "tipo": "Despertar (dourada)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/bardock-ss4/Ultimate.png",
+          "dano": "430%+24"
+        },
+        "smax": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 5,
+          "tipo": "Despertar (azul)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/bardock-ss4/Ultimate.png"
+        }
+      },
+      "combinado": {
+        "nome": "Ataque de Perseguição",
+        "desc": "Sem descrição nos dados do jogo.",
+        "estrelas": 1,
+        "tipo": "Ativar",
+        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+      },
+      "passivasHabilidade": [
+        {
+          "nome": "Ataque de Sequência Aprimorado",
+          "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+          "estrelas": 2,
+          "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+        }
+      ],
+      "passivasSupremo": [],
+      "passivaUnica": {
+        "base": null,
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 6,
+          "tipo": "Despertar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/bardock-ss4/Passiva MAX.png"
+        }
+      }
+    },
+    {
+      "nome": "Goku & Vegeta SSGSS",
+      "habilidade": {
+        "base": {
+          "nome": "Kienzan e Kamehameha",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/goku-vegeta-ssgss/Skill.png",
+          "dano": "160%+15"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 3,
+          "tipo": "Despertar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/goku-vegeta-ssgss/Skill.png",
+          "dano": "170%+8"
+        }
+      },
+      "suprema": {
+        "base": {
+          "nome": "Garlick Kamehameha",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/goku-vegeta-ssgss/Ultimate.png",
+          "dano": "224%+25"
+        },
+        "max": {
+          "nome": "Garlick Kamehameha MÁX.",
+          "estrelas": 5,
+          "tipo": "Despertar (dourada)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/goku-vegeta-ssgss/Ultimate.png",
+          "dano": "180%+25"
+        },
+        "smax": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 5,
+          "tipo": "Despertar (azul)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/goku-vegeta-ssgss/Ultimate.png",
+          "dano": "300%+18"
+        }
+      },
+      "combinado": {
+        "nome": "Ataque de Perseguição",
+        "desc": "Sem descrição nos dados do jogo.",
+        "estrelas": 1,
+        "tipo": "Ativar",
+        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+      },
+      "passivasHabilidade": [
+        {
+          "nome": "Ataque de Sequência Aprimorado",
+          "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+          "estrelas": 2,
+          "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+        }
+      ],
+      "passivasSupremo": [],
+      "passivaUnica": {
+        "base": {
+          "nome": "Combo Invencível",
+          "estrelas": 3,
+          "tipo": "Ativar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/goku-vegeta-ssgss/Passiva.png"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 6,
+          "tipo": "Despertar",
+          "desc": "Aumenta a própria Defesa. Quando Brian entra em campo, se o Trio AllStar (Harvey D, Brian, Rocky) estiver presente, aumenta adicionalmente a própria Defesa em 25% (2 turnos). Ao ser derrotado, aumenta a velocidade de recuperação de Raiva do Trio AllStar em 30% (2 turnos) e a Redução de Dano em 10% (2 turnos).",
+          "icone": "ability-icons/Novos/goku-vegeta-ssgss/Passiva MAX.png"
+        }
+      },
+      "passivaQuatroEstrelas": {
+        "nome": "Aprimoramento de PV e Ataque",
+        "estrelas": 4,
+        "tipo": "Ativar",
+        "desc": "Sem descrição nos dados do jogo.",
+        "icone": "ability-icons/Passiva padrão/4 estrelas ATQ+PV.png"
+      }
+    },
+    {
+      "nome": "Granola",
+      "habilidade": {
+        "base": {
+          "nome": "Metralhadora de Dedos",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/granola/Skill.png",
+          "dano": "160%+15"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 3,
+          "tipo": "Despertar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/granola/Skill.png"
+        }
+      },
+      "suprema": {
+        "base": {
+          "nome": "Ataque Autossacrificial",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/granola/Ultimate.png",
+          "dano": "400%+24"
+        },
+        "max": {
+          "nome": "Ataque Autossacrificial MÁX.",
+          "estrelas": 5,
+          "tipo": "Despertar (dourada)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/granola/Ultimate.png",
+          "dano": "430%+24"
+        },
+        "smax": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 5,
+          "tipo": "Despertar (azul)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/granola/Ultimate.png"
+        }
+      },
+      "combinado": {
+        "nome": "Sem nome nos dados do jogo",
+        "desc": "Sem descrição nos dados do jogo.",
+        "estrelas": 1,
+        "tipo": "Ativar",
+        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+      },
+      "passivasHabilidade": [
+        {
+          "nome": "Ataque de Sequência Aprimorado",
+          "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+          "estrelas": 2,
+          "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+        }
+      ],
+      "passivasSupremo": [],
+      "passivaUnica": {
+        "base": {
+          "nome": "Poder do Maior do Universo",
+          "estrelas": 3,
+          "tipo": "Ativar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/granola/Passiva.png"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 6,
+          "tipo": "Despertar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/granola/Passiva MAX.png"
+        }
+      },
+      "passivaQuatroEstrelas": {
+        "nome": "Aprimoramento de PV e Ataque",
+        "estrelas": 4,
+        "tipo": "Ativar",
+        "desc": "Sem descrição nos dados do jogo.",
+        "icone": "ability-icons/Passiva padrão/4 estrelas ATQ+PV.png"
+      }
+    },
+    {
+      "nome": "Vegeta Instinto Superior",
+      "habilidade": {
+        "base": {
+          "nome": "Golpe Furioso",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Ataque Especial] Ataca um único inimigo (prioriza alvos com [Quebra de Vida]), com 30% de chance de causar [Imobilização], armazena imediatamente 10% de [Energia Destrutiva]; causa 50% de dano extra contra alvos com [Quebra de Vida]; recupera 10% de sua vida e 100 de Fúria, se a Fúria do alvo principal for maior que 500, drena 100 de Fúria adicional. [Imobilização]: Não pode agir, dura 1 turno.",
+          "icone": "ability-icons/Novos/vegeta-instinto-superior/Skill.png",
+          "dano": "160%+15"
+        },
+        "max": {
+          "nome": "GOLPE DE RAIVA MÁX.",
+          "estrelas": 3,
+          "tipo": "Despertar",
+          "desc": "Ataca uma fileira de inimigos, aumenta sua própria taxa de bloqueio em 40%, com 40% de chance de causar paralisia em um inimigo aleatório da fileira alvo por 1 turno; recupera 10% da própria vida; se o alvo principal for um Guerreiro do tipo Ataque, reduz a intensidade de crítico em 20% e a taxa de roubo de vida em 8%; reduz o dano recebido de Guerreiros do tipo Habilidade em 40%; aumenta permanentemente sua própria chance de habilidade secundária em 25% (acumulável até 3 vezes), com 60% de chance de causar [Repulsão].",
+          "icone": "ability-icons/Novos/vegeta-instinto-superior/Skill.png",
+          "dano": "175%+15"
+        }
+      },
+      "suprema": {
+        "base": {
+          "nome": "Lampejo Explosivo Gamma",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Ataque Especial] Ataca o inimigo com a maior vida, aumenta taxa de dano em 15% e taxa de redução de dano em 15%. Aumenta seu próprio ataque, defesa e taxa de crítico com base na proporção de vida do alvo (quanto maior a vida do alvo, maior o aumento, máx. 15%). Armazena 10% de [Energia Destrutiva] imediatamente. Este ataque ganha uma taxa de dano extra igual a 30% da sua taxa de penetração (máx. 50%), mas a taxa de bloqueio do alvo também é tratada como taxa de redução de dano adicional de 30% desse valor (máx. 50%). Causa [Quebra de Vida] com 20% de efeito. [Quebra de Vida]: Reduz o limite de vida do alvo, não pode ser removida por remoção comum, dura 3 turnos.",
+          "icone": "ability-icons/Novos/vegeta-instinto-superior/Ultimate.png",
+          "dano": "400%+24"
+        },
+        "max": {
+          "nome": "Lampejo Explosivo Gamma MÁX.",
+          "estrelas": 5,
+          "tipo": "Despertar (dourada)",
+          "desc": "[Ataque Especial] Ataca o inimigo com a maior vida, aumenta taxa de dano em 20% e taxa de redução de dano em 20%. Aumenta seu próprio ataque, defesa e taxa de crítico com base na proporção de vida do alvo (quanto maior a vida do alvo, maior o aumento, máx. 20%). Armazena 15% de [Energia Destrutiva] imediatamente. Este ataque ganha uma taxa de dano extra igual a 50% da sua taxa de penetração (máx. 50%), mas a taxa de bloqueio do alvo também é tratada como taxa de redução de dano adicional de 30% desse valor (máx. 50%). Causa dano adicional de 15% da vida atual do alvo. Causa [Quebra de Vida] com 30% de efeito. [Quebra de Vida]: Reduz o limite de vida do alvo, não pode ser removida por remoção comum, dura 3 turnos.",
+          "icone": "ability-icons/Novos/vegeta-instinto-superior/Ultimate.png",
+          "dano": "400%+24"
+        },
+        "smax": {
+          "nome": "SMAX. Clarão Explosivo Gama",
+          "estrelas": 5,
+          "tipo": "Despertar (azul)",
+          "desc": "Ataca um inimigo único, absorvendo 20% da taxa de dano e 20% da taxa de crítico, com 40% de chance de causar paralisia; se este golpe for crítico, causa 40% do dano deste ataque como dano de respingo nos arredores do alvo principal; de acordo com o tipo de alvo, aplica efeitos especiais: Ataque: reduz 15% da taxa de dano, Defesa: reduz 15% da taxa de redução de dano, Técnica: reduz 15% do dano de golpe definitivo. Cada vez que o golpe definitivo é liberado, adiciona permanentemente uma camada de \"Potencial de Ruptura\" (cada camada aumenta 4% de ataque, defesa e taxa de crítico, acumulável até 10 vezes), e ao contra-atacar, ganha uma camada adicional de \"Potencial de Ruptura\". Se causar uma eliminação enquanto estiver no estado de \"Vontade Suprema\", ganha 200 de fúria adicional.",
+          "icone": "ability-icons/Novos/vegeta-instinto-superior/Ultimate.png",
+          "dano": "430%+25"
+        }
+      },
+      "combinado": {
+        "nome": "Ataque de Perseguição",
+        "desc": "[Ataque Físico] Ataca um único inimigo, persegue após [Grande Lançamento], causa [Derrubada]; contra alvos com [Quebra de Vida], causa dano adicional de 30%.",
+        "estrelas": 1,
+        "tipo": "Ativar",
+        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png",
+        "dano": "75%+8"
+      },
+      "passivasHabilidade": [
+        {
+          "nome": "Ataque de Sequência Aprimorado",
+          "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+          "estrelas": 2,
+          "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+        }
+      ],
+      "passivasSupremo": [],
+      "passivaUnica": {
+        "base": {
+          "nome": "Tempestade de Retaliação",
+          "estrelas": 3,
+          "tipo": "Ativar",
+          "desc": "Aumenta seu próprio dano de habilidade e resistência a golpes definitivos; recebe 25% menos dano de guerreiros [do Tipo Técnico]; causa 25% mais dano a guerreiros [do Tipo Defensivo]; Para cada guerreiro inimigo com [Quebra de Vida], ganha 1 camada do [Poder da Destruição]; ao sofrer dano e ter vida inferior a 50%, contra-ataca (primeira vez com golpe definitivo, depois com habilidade, no máximo 1 vez por turno, no máximo 2 vezes por batalha); todos os danos causados por si são armazenados em [Energia Destrutiva] em 20% do valor (máx. 100% de sua vida máxima). Quando sua vida estiver abaixo de 40%, consome imediatamente [Energia Destrutiva] para recuperar até 60% de vida (no máximo 2 vezes por turno). No início da batalha, ganha 30% de [Energia Destrutiva]. Ao morrer, ativa [Última Tentativa], este efeito apenas 1 vez por batalha. [Poder da Destruição]: Cada camada aumenta 5% de ataque e 5% de penetração. [Última Tentativa]: Remove efeitos negativos, aumenta 15% de resistência a golpes definitivos e 15% de resistência a habilidades (por 2 turnos), recupera a vida para 40% e recupera 300 de Fúria.",
+          "icone": "ability-icons/Novos/vegeta-instinto-superior/Passiva.png"
+        },
+        "max": {
+          "nome": "MÁX. Tempestade de Contra-ataque",
+          "estrelas": 6,
+          "tipo": "Despertar",
+          "desc": "Aumenta o dano de golpe especial durante a batalha; aumenta a taxa de dano em 15%, o ataque em 20%, a defesa em 40% e a taxa de crítico em 30%; o ataque causa dano equivalente a 10% da vida máxima do alvo principal (se o alvo tiver escudo, o efeito de dano aumenta para 25%); no primeiro turno, libera habilidade pequena obrigatoriamente; durante o turno inimigo, se sofrer dano único superior a 30% da vida atual, ganha imediatamente \"Vontade de Luta Suprema\" (recupera 30% da vida, 30% de resistência a habilidades pequenas e 30% de resistência a golpes especiais, com duração de 1 turno, ativável no máximo 1 vez por turno e até 3 vezes por batalha; se houver apenas 1 inimigo em campo, \"Vontade de Luta Suprema\" dura 2 turnos); se estiver no turno inimigo e sob efeito de \"Vontade de Luta Suprema\", ao sofrer ataque de golpe especial, realiza contra-ataque de golpe especial, ativável no máximo 1 vez por turno e até 3 vezes por batalha); ao morrer pela primeira vez, revive com 100% de probabilidade, recupera 80% da vida máxima e 80% de raiva, e ganha 30% adicional de resistência a habilidades pequenas e 30% de resistência a golpes especiais por 2 turnos (pode ser acumulado com o efeito de \"Vontade de Luta Suprema\").",
+          "icone": "ability-icons/Novos/vegeta-instinto-superior/Passiva MAX.png"
+        }
+      },
+      "passivaQuatroEstrelas": {
+        "nome": "Aprimoramento de PV e Ataque",
+        "estrelas": 4,
+        "tipo": "Ativar",
+        "desc": "Aumenta permanentemente o ATQ e PV próprios.",
+        "icone": "ability-icons/Passiva padrão/4 estrelas ATQ+PV.png"
+      }
+    },
+    {
+      "nome": "Vegetto e Gogeta",
+      "habilidade": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/vegetto-e-gogeta/Skill.png"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 3,
+          "tipo": "Despertar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/vegetto-e-gogeta/Skill.png"
+        }
+      },
+      "suprema": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/vegetto-e-gogeta/Ultimate.png"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 5,
+          "tipo": "Despertar (dourada)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/vegetto-e-gogeta/Ultimate.png",
+          "dano": "280%+15"
+        },
+        "smax": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 5,
+          "tipo": "Despertar (azul)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/vegetto-e-gogeta/Ultimate.png"
+        }
+      },
+      "combinado": {
+        "nome": "Sem nome nos dados do jogo",
+        "desc": "Sem descrição nos dados do jogo.",
+        "estrelas": 1,
+        "tipo": "Ativar",
+        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+      },
+      "passivasHabilidade": [
+        {
+          "nome": "Ataque de Sequência Aprimorado",
+          "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+          "estrelas": 2,
+          "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+        }
+      ],
+      "passivasSupremo": [],
+      "passivaUnica": {
+        "base": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 3,
+          "tipo": "Ativar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/vegetto-e-gogeta/Passiva.png"
+        },
+        "max": {
+          "nome": "Sem nome nos dados do jogo",
+          "estrelas": 6,
+          "tipo": "Despertar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/vegetto-e-gogeta/Passiva MAX.png"
+        }
+      },
+      "passivaQuatroEstrelas": {
+        "nome": "Sem nome nos dados do jogo",
+        "estrelas": 4,
+        "tipo": "Ativar",
+        "desc": "Sem descrição nos dados do jogo.",
+        "icone": "ability-icons/Passiva padrão/4 estrelas PV.png"
+      }
     }
   ]
 }
