@@ -50,6 +50,24 @@ DOAÇÕES INTERNACIONAIS PELO STRIPE (site em inglês, zenkyo.com.br/en/)
   Teste: com chaves de teste, cartão 4242 4242 4242 4242 (qualquer data futura e CVC). Reembolsar no painel do Stripe
   desconta do mural.
 
+IA DO MONTADOR DE TIME (Descreva o time; Gemini, plano gratuito)
+================================================================
+  - Função ia-montador → duas ações: "interpretar" (pedido → filtros e guerreiro principal) e "explicar" (explica os times que o
+                         SITE montou, só com os dados que o site mandou). A IA nunca escolhe guerreiros. Publicar SEM verificação de JWT.
+  - Banco: migrations/20261028_ia_montador.sql (tabelas ia_uso e ia_avisos + funções ia_consumir, ia_devolver, ia_avisar, ia_tem_aviso).
+  - Aberta a qualquer visitante (sem login). Limites por dia: IA_LIMITE_VISITANTE (padrão 12 chamadas) e IA_LIMITE_GLOBAL (padrão 200).
+    Cada pedido do site usa 2 chamadas (interpretar + explicar). O visitante é contado por um hash do IP, nunca pelo IP.
+  - NUNCA GASTA DINHEIRO: use uma chave do Google AI Studio de um projeto SEM cobrança (não ative billing). Se o plano gratuito acabar
+    (erro 429 "por dia"), a função para de chamar a IA no resto do dia, o site usa a leitura simples e o dono é avisado UMA vez por dia.
+  SEGREDOS (Painel do Supabase → Edge Functions → Secrets):
+    GEMINI_API_KEY         Google AI Studio → Get API key (projeto sem billing).
+    AVISO_DISCORD_WEBHOOK  (recomendado) endereço de webhook de um canal privado do Discord: Configurações do canal → Integrações → Webhooks.
+                           É por ele que você é avisado quando o limite gratuito acaba. Sem ele o aviso só aparece nos logs da função.
+    IA_MODELO              (opcional) padrão gemini-2.5-flash; confira os modelos com plano gratuito em ai.google.dev/gemini-api/docs/pricing.
+    IA_LIMITE_VISITANTE / IA_LIMITE_GLOBAL / IA_SAL   (opcionais) ver acima.
+  Ver o uso: Google AI Studio → Dashboard/Usage. Ver quando o limite acabou: tabela ia_avisos (motivo limite_gemini_diario).
+  A função antiga ia-time (Anthropic) não é mais usada e pode ser apagada.
+
 --- Funções do Supabase (pasta supabase/functions) ---
 mp-doacao (cria a preferência), mp-webhook (aviso do Mercado Pago), mp-retorno (confirma na volta ao site),
 mp-conferir (conferir um pagamento, só o dono), mp-reconciliar (confere os pedidos abertos, só o dono; roda na aba Admin).

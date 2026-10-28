@@ -278,6 +278,9 @@ let state = {
   slotSel: null,                    // casa do Montador selecionada, esperando um guerreiro do elenco
   rosterSearch: '',
   recRarity: 'all',
+  iaOff: false,                       // IA do montador desligada nesta sessão (limite gratuito do dia ou função não configurada)
+  iaAviso: '',                        // motivo da última falha da IA, mostrado ao lado do resultado
+  recFill: null,                      // frente que falta na equipe (dano|tank|suporte|controle) para filtrar as sugestões
   autoMode: 'equilibrado',
   autoOpts: null,
   descText: '', descRes: null,      // aba Combos: "Descreva o time" (texto e resultado, não persiste)
@@ -3810,20 +3813,31 @@ function parseTeamPrompt(text){
     neg = fim >= 0 ? resto.slice(0, fim) : resto;
     pos = t.slice(0, m.index) + ' ' + (fim >= 0 ? resto.slice(fim) : '');
   }
-  const crit = { ...descLerTrecho(pos), names:[], refs:[], mode:'equilibrado', excl:null, geral:false };
+  // guerreiros citados pelo nome completo ("com Vegetto SSGSS") entram obrigatoriamente; o nome sai do texto antes de ler os filtros,
+  // senão "Gogeta SS4" viraria também o filtro do grupo SS4 e "Goku SS4" puxaria o "Goku" comum
+  const nomesCitados = [];
+  const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  let posLimpo = pos, posRefs = pos;   // posRefs: só tira os nomes com mais de uma palavra ("time do goku" continua valendo para todas as versões)
+  const candidatos = [];
+  (state.characters || []).forEach(c => { [c.name, kzNome(c.name)].forEach(n => { const nn = descNorm(n); if(nn.length >= 4 && !candidatos.some(x => x.nn === nn && x.id === c.id)) candidatos.push({ id:c.id, nn }); }); });
+  candidatos.sort((a, b) => b.nn.length - a.nn.length).forEach(({ id, nn }) => {
+    const re = new RegExp('(^|[^a-z0-9])' + escRe(nn) + '(?=[^a-z0-9]|$)', 'g');
+    if(re.test(posLimpo)){
+      if(!nomesCitados.includes(id)) nomesCitados.push(id);
+      posLimpo = posLimpo.replace(re, '$1 ');
+      if(nn.includes(' ')) posRefs = posRefs.replace(re, '$1 ');
+    }
+  });
+  const crit = { ...descLerTrecho(posLimpo), names:[], refs:[], mode:'equilibrado', excl:null, geral:false };
   if(neg){
     const ex = descLerTrecho(neg);
     const total = ex.mechs.length + ex.roles.length + ex.types.length + ex.genders.length + ex.races.length + ex.tags.length + ex.affs.length + ex.rars.length;
     if(total){ crit.excl = ex; crit.labels = crit.labels.concat(ex.labels.map(l => kzt('desc.sem', { l }))); }
   }
-  if(/combo/.test(pos)) crit.mode = 'combos'; else if(/sinergia|synerg/.test(pos)) crit.mode = 'sinergias';
-  // guerreiros citados pelo nome completo ("com Vegetto SSGSS") entram obrigatoriamente
-  (state.characters || []).forEach(c => {
-    const n = descNorm(c.name);
-    if(n.length >= 4 && new RegExp('(^|[^a-z0-9])' + n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '([^a-z0-9]|$)').test(pos)) crit.names.push(c.id);
-  });
+  if(/combo/.test(posLimpo)) crit.mode = 'combos'; else if(/sinergia|synerg/.test(posLimpo)) crit.mode = 'sinergias';
+  crit.names = nomesCitados;
   // só o primeiro nome ("time do goku"): todas as versões ganham pontos, a equipe escolhe as que fazem sentido
-  const palavras = pos.split(/[^a-z0-9]+/).filter(w => w.length >= 4 && !DESC_PALAVRAS_SOLTAS.test(w));
+  const palavras = posRefs.split(/[^a-z0-9]+/).filter(w => w.length >= 4 && !DESC_PALAVRAS_SOLTAS.test(w));
   const primeiros = new Set((state.characters || []).filter(c => !crit.names.includes(c.id)).map(c => descNorm(c.name).split(/[^a-z0-9]+/)[0]));
   crit.refs = [...new Set(palavras.filter(w => primeiros.has(w)))];
   crit.refs.forEach(w => { crit.labels.push(kzt('desc.citado', { w: w.charAt(0).toUpperCase() + w.slice(1) })); });
@@ -3984,12 +3998,118 @@ function renderDescComunidade(coms){
   }).join('');
   return `<div class="kz-desc-com"><span class="kz-label">${kzt('desc.daComunidade')}</span><div class="kz-auto-rows">${rows}</div></div>`;
 }
+/* ---------- IA do montador (Gemini, pela função "ia-montador" do Supabase) ---------- */
+// A IA só faz duas coisas: (1) traduz o pedido em filtros e nomes do elenco; (2) explica os times que o SITE montou, a partir dos dados reais.
+// Quem escolhe os guerreiros continua sendo o Montador. Se a IA falhar, passar do limite gratuito do dia ou estiver desligada,
+// tudo funciona com a leitura por palavras-chave e a explicação feita pelas regras (descExplicaLocal).
+const IA_FUNCAO = 'ia-montador';
+function iaDisponivel(){ return !state.iaOff && isSupabaseConfigured() && !!(window.__sb && window.__sb.client); }
+// Devolve o JSON da função ou null. Em limite diário/IA desligada, deixa de tentar até recarregar a página.
+async function iaChamar(corpo){
+  try{
+    const { data, error } = await window.__sb.client.functions.invoke(IA_FUNCAO, { body: { idioma: KZ_LANG, ...corpo } });
+    if(!error && data && !data.erro) return data;
+    let j = data || null;
+    if(error){ try{ j = await error.context.json(); }catch(e){ j = null; } }
+    if(!j || j.limite === 'diario' || j.limite === 'global' || /não configurada|not configured/i.test(String(j.erro || ''))) state.iaOff = true;
+    state.iaAviso = (j && j.limite && j.limite !== 'minuto') ? kzt('ia.limiteAcabou') : kzt('ia.indisponivel');
+    return null;
+  }catch(e){
+    state.iaAviso = kzt('ia.indisponivel');
+    return null;
+  }
+}
+// Filtros que a IA devolveu → mesmo formato que descLerTrecho() devolve (para mesclar com a leitura local).
+function descCritDeIa(o){
+  const c = { mechs:[], roles:[], types:[], genders:[], races:[], tags:[], affs:[], rars:[], labels:[] };
+  ((o && o.efeitos) || []).forEach(k => { const m = DESC_MECHS.find(x => x.key === k); if(m){ c.mechs.push(m); c.labels.push(m.label); } });
+  ((o && o.papeis) || []).forEach(r => { if(ROLE_INFO[r]){ c.roles.push(r); c.labels.push(ROLE_INFO[r].label); } });
+  ((o && o.tipos) || []).forEach(ty => { c.types.push(ty); c.labels.push(kzt('desc.tipo', { t: kzTermo(ty) })); });
+  ((o && o.generos) || []).forEach(g => { c.genders.push(g); c.labels.push(kzTermo(g)); });
+  ((o && o.racas) || []).forEach(r => { c.races.push(r); c.labels.push(kzTermo(r)); });
+  ((o && o.grupos) || []).forEach(g => { c.tags.push(g); c.labels.push(kzTermo(g.replace(/^Guerreiro (de |)/, ''))); });
+  ((o && o.afinidades) || []).forEach(a => { c.affs.push(a); c.labels.push(kzt('desc.afinidade', { a: kzTermo(a) })); });
+  ((o && o.raridades) || []).forEach(r => { c.rars.push(r); c.labels.push(r === 'SSR' || r === 'SR' ? r : kzTermo(r.replace(/^SSR \[(.*)\]$/, '$1'))); });
+  return c;
+}
+const DESC_LISTAS = ['mechs', 'roles', 'types', 'genders', 'races', 'tags', 'affs', 'rars'];
+function descJuntar(dst, src){
+  DESC_LISTAS.forEach(k => src[k].forEach(v => { if(!dst[k].includes(v)) dst[k].push(v); }));
+  src.labels.forEach(l => { if(!dst.labels.includes(l)) dst.labels.push(l); });
+}
+// Soma o que a IA entendeu ao que a leitura local já achou (a local continua valendo: nomes completos, "sem X" etc.).
+function descMesclarIa(crit, ia, porNome){
+  descJuntar(crit, descCritDeIa(ia));
+  const ex = descCritDeIa(ia.excluir);
+  if(ex.labels.length){
+    if(!crit.excl) crit.excl = { mechs:[], roles:[], types:[], genders:[], races:[], tags:[], affs:[], rars:[], labels:[] };
+    descJuntar(crit.excl, ex);
+    ex.labels.forEach(l => { const t = kzt('desc.sem', { l }); if(!crit.labels.includes(t)) crit.labels.push(t); });
+  }
+  (ia.principais || []).forEach(n => { const id = porNome.get(n); if(id && !crit.names.includes(id)) crit.names.push(id); });
+  crit.principais = (ia.principais || []).map(n => porNome.get(n)).filter(Boolean);
+  if(crit.mode === 'equilibrado' && ia.foco && ia.foco !== 'equilibrado') crit.mode = ia.foco;
+  crit.vazio = !(crit.mechs.length || crit.roles.length || crit.types.length || crit.genders.length || crit.races.length || crit.tags.length
+    || crit.affs.length || crit.rars.length || crit.names.length || crit.refs.length || crit.excl || crit.geral);
+  return crit;
+}
+// Resumo dos times (só dados do site) que vai para a IA escrever a explicação.
+function iaTimesPayload(list, crit){
+  return list.map(o => {
+    const pil = teamPillars(o.team);
+    return {
+      membros: o.team.filter(Boolean).map(id => { const c = getChar(id); return { nome: kzNome(c.name), papeis: rolesOf(c).slice(0, 3).map(r => ROLE_INFO[r].label), principal: crit.names.includes(id) }; }),
+      pilares: Object.fromEntries(PILLAR_ORDER.map(k => [PILLARS[k].label, Math.round(pil[k] * 10) / 10])),
+      faltam: missingPillars(o.team).map(k => PILLARS[k].label),
+      combos: o.combos, maiorCadeia: (o.longest || 0) + 1,
+      sinergias: synergyReport(o.team).ativos.slice(0, 4).map(a => `${a.nome}: ${kzTrad(a.txt)}`),
+    };
+  });
+}
+// Explicação feita só pelas regras (reserva quando a IA não responde): frentes fortes/fracas, combos e sinergias do time.
+function descExplicaLocal(o, crit){
+  const ids = o.team.filter(Boolean), n = ids.length, scale = Math.max(n / 6, 0.5);
+  const pil = teamPillars(o.team), miss = missingPillars(o.team);
+  const fortes = [], fracos = [];
+  PILLAR_ORDER.forEach(k => { if(pil[k] >= PILLARS[k].target * scale && !miss.includes(k)) fortes.push(kzt('exp.forte.' + k)); });
+  if(o.combos >= 30) fortes.push(kzt('exp.forteCombos', { n: o.combos, c: (o.longest || 0) + 1 }));
+  const syn = synergyReport(o.team).ativos;
+  if(syn.length) fortes.push(kzt('exp.forteSinergias', { n: syn.length }));
+  miss.forEach(k => fracos.push(kzt('exp.fraco.' + k)));
+  if(!fracos.length) fracos.push(kzt('exp.fracoNenhum'));
+  const principais = (crit.principais && crit.principais.length ? crit.principais : crit.names.filter(id => ids.includes(id))).map(getChar).filter(Boolean).slice(0, 2);
+  const topo = PILLAR_ORDER.slice().sort((a, b) => pil[b] / PILLARS[b].target - pil[a] / PILLARS[a].target)[0];
+  const titulo = principais.length ? kzt('exp.tituloPrincipal', { nome: kzNome(principais[0].name) }) + ' · ' + kzt('exp.tituloFoco', { p: PILLARS[topo].label })
+    : crit.mode === 'combos' ? kzt('exp.tituloCombos')
+    : !miss.length ? kzt('exp.tituloEquilibrado') : kzt('exp.tituloPilar', { p: PILLARS[topo].label });
+  const comp = PILLAR_ORDER.map(k => PILLARS[k].label + ' ' + (Math.round(pil[k] * 10) / 10).toString().replace('.', KZ_DECIMAL)).join(' · ');
+  const resumo = kzt('exp.resumo', { n, comp, combos: o.combos, c: (o.longest || 0) + 1 });
+  return { titulo, resumo, como_jogar: '', pontos_fortes: fortes.slice(0, 3), pontos_fracos: fracos.slice(0, 3), ia: false };
+}
+// Pede à IA a explicação dos times já montados; quando chega, troca a explicação local pela da IA (se o pedido ainda for o mesmo).
+async function iaExplicarTimes(r){
+  if(!iaDisponivel() || !r.list.length) return;
+  r.iaEstado = 'carregando'; render();
+  const resp = await iaChamar({ acao:'explicar', texto: r.texto, times: iaTimesPayload(r.list, r.crit) });
+  if(state.descRes !== r) return;
+  if(resp && Array.isArray(resp.times) && resp.times.length === r.list.length){ r.ia = resp.times; r.iaEstado = 'ok'; }
+  else { r.iaEstado = 'falhou'; r.iaMsg = state.iaAviso || ''; }
+  render();
+}
 async function runDescribeTeam(text){
   const txt = String(text || '').trim().slice(0, 200);
   state.descText = txt;
   if(!txt){ state.descRes = null; render(); return; }
-  let crit = null;
-  crit = parseTeamPrompt(txt);
+  state.iaAviso = '';
+  let crit = parseTeamPrompt(txt);
+  // IA: entende pedidos mais soltos ("com X como principal", "sem controle fraco") e soma ao que a leitura local achou
+  let usouIa = false;
+  if(iaDisponivel()){
+    showToast(kzt('desc.montandoToast'));
+    const porNome = new Map(state.characters.map(c => [kzNome(c.name), c.id]));
+    const r = await iaChamar({ acao:'interpretar', texto: txt, elenco: [...porNome.keys()] });
+    if(r && r.crit && !r.vazio){ crit = descMesclarIa(crit, r.crit, porNome); usouIa = true; }
+  }
   // ideias da Comunidade: carrega os posts se ainda não vieram
   if(isSupabaseConfigured() && !state.communityLoaded && !state.communityLoading){ try{ await refreshCommunity(); }catch(e){} }
   const coms = descPostsParecidos(crit, txt);
@@ -3998,9 +4118,24 @@ async function runDescribeTeam(text){
   showToast(kzt('desc.montandoToast'));
   setTimeout(() => {
     const r = buildDescribedTeams(crit, 3);
-    state.descRes = { texto:txt, crit, ...r, com:coms };
+    const res = { texto:txt, crit, ...r, com:coms, usouIa, iaEstado: '', iaMsg: state.iaAviso || '' };
+    state.descRes = res;
     render();
+    iaExplicarTimes(res);
   }, 30);
+}
+function renderDescExplica(o, i, r){
+  const ia = r.ia && r.ia[i];
+  const e = ia ? { ...ia, ia: true } : descExplicaLocal(o, r.crit);
+  const lista = (cls, itens) => itens && itens.length ? `<ul class="${cls}">${itens.map(t => `<li>${escapeHtml(t)}</li>`).join('')}</ul>` : '';
+  const tag = ia ? `<span class="kz-ia-tag" title="${escapeAttr(kzt('ia.tagAjuda'))}">${kzt('ia.tag')}</span>`
+    : r.iaEstado === 'carregando' ? `<span class="kz-ia-tag wait">${kzt('ia.gerando')}</span>` : '';
+  return `<div class="kz-desc-exp">
+    <div class="kz-desc-exp-tit"><b>${escapeHtml(e.titulo)}</b>${tag}</div>
+    <p>${escapeHtml(e.resumo)}</p>
+    ${e.como_jogar ? `<p class="como"><b>${kzt('exp.comoJogar')}</b> ${escapeHtml(e.como_jogar)}</p>` : ''}
+    <div class="kz-desc-exp-cols">${lista('fortes', e.pontos_fortes)}${lista('fracos', e.pontos_fracos)}</div>
+  </div>`;
 }
 function applyDescOption(i){
   const o = state.descRes && state.descRes.list[i];
@@ -4027,6 +4162,7 @@ function renderDescribePanel(){
         : (!r.hasSoft && r.hardN < 6) ? kzt(r.hardN === 1 ? 'desc.filtros1' : 'desc.filtrosN', { n: r.hardN }) : '';
       out = `<div class="kz-desc-understood"><span>${kzt('desc.entendi')}</span>${chips}</div>
         ${aviso ? `<p class="kz-desc-msg warn">${aviso}</p>` : ''}
+        ${r.list.length && (r.ia || r.usouIa) ? `<p class="kz-ia-nota">${kzt('ia.nota')}</p>` : r.list.length && r.iaMsg ? `<p class="kz-ia-nota">${escapeHtml(r.iaMsg)}</p>` : ''}
         ${r.list.length ? `<div class="kz-auto-rows">${r.list.map((o, i) => renderDescOptionRow(o, i, r)).join('')}</div>` : ''}
         ${renderDescComunidade(r.com)}`;
     }
@@ -4054,6 +4190,7 @@ function renderDescOptionRow(o, i, r){
     <div class="kz-auto-row-info"><b>${i === 0 ? kzt('auto.melhor') : kzt('auto.opcao', { n: i + 1 })}</b>
       <span>${r.hasSoft ? `${kzt('desc.combinam', { m: '<b>' + o.match + '</b>', n: o.team.filter(Boolean).length })} · ` : ''}${kzt('desc.linhaCombos', { combos: '<b>' + o.combos + '</b>', bal: '<b>' + Math.round(o.balance * 100) + '</b>' })}</span></div>
     <button type="button" class="kz-btn kz-btn-sm kz-btn-primary" data-desc-apply="${i}">${kzt('auto.usar')}</button>
+    ${renderDescExplica(o, i, r)}
     <div class="kz-desc-whys">${why}</div>
   </div>`;
 }
@@ -4890,13 +5027,13 @@ function renderRecommendationsNovo(){
   if(!filled) return '';
   const full = filled === 6;
   const rar = state.recRarity || 'all';
-  const recs = recommendForTeam(8, rar);
+  const { miss: faltam, fill, recs } = recListaFor(rar, 8);
   const head = `
       <div class="kz-nvcb-rechead">
         <div><h2>${nvTtl(full ? kzt('cb.quemTroca') : kzt('cb.quemEncaixa'))}</h2>
         <p>${kzt('cb.ordenado')}</p></div>
         <div class="kz-nv-chipgrp"><span class="kz-nv-lb">${kzt('cb.sugerir')}</span>${[['all',kzt('auto.todas')],['SSR',kzt('auto.soSSR')],['SR',kzt('auto.soSR')],['R',kzt('auto.soR')]].map(([v,l])=>`<button type="button" class="kz-fchip ${rar===v?'active':''}" data-rec-rarity="${v}">${l}</button>`).join('')}</div>
-      </div>`;
+      </div>${recFillBarHtml(faltam, fill, true)}`;
   if(!recs.length){
     const msg = full ? (rar !== 'all' ? kzt('cb.nenhumaTrocaRar', { rar }) : kzt('cb.nenhumaTroca'))
       : (rar !== 'all' ? kzt('cb.nenhumGuerreiroRar', { rar }) : kzt('cb.nenhumGuerreiro'));
@@ -4914,7 +5051,7 @@ function renderRecommendationsNovo(){
       <div class="kz-rec-card kz-nvcb-sug${i === 0 ? ' top' : ''}">
         <div class="art">${portraitInner(c)}</div>
         <div class="body">
-          <div class="top"><span class="nm">${escapeHtml(kzNome(c.name))}</span><span class="kz-nvco-hit">${r.gain > 0 ? kzt(r.gain > 1 ? 'cb.maisEncN' : 'cb.maisEnc1', { n: r.gain }) : kzt('cb.sinergia')}</span><span class="kz-nv-lb mut">${kzt('slot.casa', { n: r.slot + 1 })}</span></div>
+          <div class="top"><span class="nm">${escapeHtml(kzNome(c.name))}</span><span class="kz-nvco-hit">${recMotivoLabel(r)}</span><span class="kz-nv-lb mut">${kzt('slot.casa', { n: r.slot + 1 })}</span></div>
           <div class="tags">${rolePillsHtml(c, 2, true)}${fill.length ? `<span class="kz-fill-tag">${kzt('cb.preenche', { lista: fill.map(k => PILLARS[k].label).join(', ') })}</span>` : ''}${effLineHtml(kzt('sf.persegue'), c.combo.triggers)}${effLineHtml(kzt('sf.causa'), c.combo.effects)}</div>
           ${chain}
           ${(r.sinergias || []).slice(0, 2).map(a=>`<div class="kz-syn-line">${synergyItemHtml(a)}</div>`).join('')}
@@ -5287,6 +5424,9 @@ function recommendForTeam(limit, rarity){
   if(!team.some(Boolean)) return [];
   const base = comboScoreFor(team);
   const baseSyn = synergyReport(team).total;
+  const baseBal = balanceScore(team);
+  // quanto vale o equilíbrio na nota: no foco "combos" pesa pouco; se a equipe já tem frente faltando, pesa mais
+  const pesoBal = ({ equilibrado: 30, combos: 8, sinergias: 15 })[state.autoMode || 'equilibrado'] * (missingPillars(team).length ? 1.5 : 1);
   const empties = team.map((id,i)=>id ? -1 : i).filter(i=>i>-1);
   const slots = empties.length ? empties : team.map((_,i)=>i);
   const inTeam = new Set(team.filter(Boolean));
@@ -5301,25 +5441,46 @@ function recommendForTeam(limit, rarity){
       t[s] = c.id;
       const gain = comboScoreFor(t) - base;
       const syn = synergyReport(t).total - baseSyn;
-      const nota = gain + 5 * syn;   // uma dupla forte (Goku SS4 + Vegeta SS4) vale como ~10 encadeamentos
-      if(!best || nota > best.nota) best = { gain, syn, nota, slot:s, replaced, team:t };
+      const balGain = balanceScore(t) - baseBal;
+      const nota = gain + 5 * syn + pesoBal * balGain;   // uma dupla forte (Goku SS4 + Vegeta SS4) vale como ~10 encadeamentos
+      if(!best || nota > best.nota) best = { gain, syn, balGain, nota, slot:s, replaced, team:t };
     });
-    if(best && (best.gain > 0 || best.syn >= 0.15)){
+    // entra quem aumenta combos, quem tem sinergia ou quem tapa um buraco da equipe (ganho de equilíbrio)
+    if(best && (best.gain > 0 || best.syn >= 0.15 || best.balGain >= 0.05)){
       const sinergias = synergyReport(best.team).ativos.filter(a=>a.de === c.id || a.alvos.includes(c.id));
-      res.push({ char:c, slot:best.slot, replacedId:best.replaced, gain:best.gain, syn:best.syn, nota:best.nota, sinergias, team:best.team, bal:balanceScore(best.team) });
+      res.push({ char:c, slot:best.slot, replacedId:best.replaced, gain:best.gain, syn:best.syn, balGain:best.balGain, nota:best.nota, sinergias, team:best.team, bal:balanceScore(best.team) });
     }
   });
   res.sort((a,b)=> b.nota - a.nota || b.gain - a.gain || (b.bal - a.bal) || rarityRank(a.char.rarity) - rarityRank(b.char.rarity) || a.char.name.localeCompare(b.char.name));
   return res.slice(0, limit || 8);
+}
+// Quem a equipe precisa: com uma frente faltando (ex.: controle), filtra só quem preenche ela (papel >= 0,6 naquela frente).
+function recPreenche(r, k){ return analyzeRoles(r.char).pillars[k] >= 0.6; }
+function recListaFor(rarity, limit){
+  const miss = missingPillars(state.team);
+  const fill = state.recFill && miss.includes(state.recFill) ? state.recFill : null;
+  const todos = recommendForTeam(fill ? 60 : limit, rarity);
+  return { miss, fill, recs: fill ? todos.filter(r => recPreenche(r, fill)).slice(0, limit) : todos };
+}
+function recFillBarHtml(miss, fill, novo){
+  if(!miss.length) return '';
+  const chips = miss.map(k => `<button type="button" class="kz-fchip ${fill === k ? 'active' : ''}" data-rec-fill="${k}">${PILLARS[k].label}</button>`).join('');
+  const todos = `<button type="button" class="kz-fchip ${fill ? '' : 'active'}" data-rec-fill="">${kzt('auto.todas')}</button>`;
+  return novo
+    ? `<div class="kz-nv-chipgrp kz-rec-fillbar"><span class="kz-nv-lb warn">${kzt('cb.faltaNaEquipe', { lista: miss.map(k => PILLARS[k].label).join(', ') })}</span>${todos}${chips}</div>`
+    : `<div class="kz-rec-filter kz-rec-fillbar"><span class="kz-label warn">${kzt('cb.faltaNaEquipe', { lista: miss.map(k => PILLARS[k].label).join(', ') })}</span>${todos}${chips}</div>`;
+}
+function recMotivoLabel(r){
+  return r.gain > 0 ? kzt(r.gain > 1 ? 'cb.maisEncN' : 'cb.maisEnc1', { n: r.gain }) : r.syn >= 0.15 ? kzt('cb.sinergia') : kzt('cb.equilibrioMais');
 }
 function renderRecommendations(){
   const filled = state.team.filter(Boolean).length;
   if(!filled) return '';
   const full = filled === 6;
   const rar = state.recRarity || 'all';
-  const recs = recommendForTeam(8, rar);
+  const { miss: faltam, fill, recs } = recListaFor(rar, 8);
   const head = `<div class="kz-rec-head"><h3>${kzt('cb.quemEncaixaEquipe')}</h3><span class="kz-muted" style="font-size:13px;">${kzt('cb.ordenadoAntigo')}</span></div>
-  <div class="kz-rec-filter"><span class="kz-label">${kzt('cb.sugerir')}</span>${[['all',kzt('auto.todas')],['SSR',kzt('auto.soSSR')],['SR',kzt('auto.soSR')],['R',kzt('auto.soR')]].map(([v,l])=>`<button type="button" class="kz-fchip ${rar===v?'active':''}" data-rec-rarity="${v}">${l}</button>`).join('')}</div>`;
+  <div class="kz-rec-filter"><span class="kz-label">${kzt('cb.sugerir')}</span>${[['all',kzt('auto.todas')],['SSR',kzt('auto.soSSR')],['SR',kzt('auto.soSR')],['R',kzt('auto.soR')]].map(([v,l])=>`<button type="button" class="kz-fchip ${rar===v?'active':''}" data-rec-rarity="${v}">${l}</button>`).join('')}</div>${recFillBarHtml(faltam, fill, false)}`;
   if(!recs.length){
     const msg = full ? (rar !== 'all' ? kzt('cb.nenhumaTrocaRar', { rar }) : kzt('cb.nenhumaTroca')) : (rar !== 'all' ? kzt('cb.nenhumElencoRar', { rar }) : kzt('cb.nenhumElenco'));
     return `<div class="kz-rec">${head}<div class="kz-muted">${msg}</div></div>`;
@@ -5340,7 +5501,7 @@ function renderRecommendations(){
         <div class="kz-rec-art">${portraitInner(c)}</div>
         <div>
           <div class="kz-rec-name">${escapeHtml(kzNome(c.name))}</div>
-          <span class="kz-rec-gain">${r.gain > 0 ? kzt(r.gain>1 ? 'cb.maisEncN' : 'cb.maisEnc1', { n: r.gain }) : kzt('cb.sinergia')} · ${kzt('slot.casa', { n: r.slot+1 })}</span>
+          <span class="kz-rec-gain">${recMotivoLabel(r)} · ${kzt('slot.casa', { n: r.slot+1 })}</span>
         </div>
       </div>
       <div class="kz-rec-roles">${rolePillsHtml(c, 2, true)}${fillTag(c)}</div>
@@ -5402,6 +5563,7 @@ function attachCombosHandlers(){
   attachRosterItemHandlers(view);
   attachSF('roster', view, render);
   view.querySelectorAll('[data-rec-rarity]').forEach(b=>b.addEventListener('click', ()=>{ state.recRarity = b.dataset.recRarity; state.autoOpts = null; render(); }));
+  view.querySelectorAll('[data-rec-fill]').forEach(b=>b.addEventListener('click', ()=>{ state.recFill = b.dataset.recFill || null; render(); }));
   view.querySelectorAll('[data-rec-place]').forEach(b=>b.addEventListener('click', ()=>{
     state.slotSel = parseInt(b.dataset.recSlot, 10);
     placeChar(b.dataset.recPlace);

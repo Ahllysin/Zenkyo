@@ -167,6 +167,83 @@ async function main(){
     Object.entries(out).forEach(([k, len]) => assert.ok(len > 200, `render de "${k}" veio vazio/curto demais (${len})`));
   });
 
+  await test('Sugestões levam o equilíbrio em conta: frente faltando aparece nas sugestões e o filtro "preenche" só mostra quem tapa o buraco', () => {
+    const r = evalIn(sandbox, `(() => {
+      const antes = { team: [...state.team], fill: state.recFill, mode: state.autoMode };
+      const ordenados = state.characters.map(c => ({ c, p: analyzeRoles(c).pillars }))
+        .filter(x => x.p.controle < 0.3 && x.p.suporte < 0.3 && x.p.dano >= 0.6).sort((a, b) => b.p.dano - a.p.dano).slice(0, 3);
+      state.team = [...ordenados.map(x => x.c.id), null, null, null];
+      state.autoMode = 'equilibrado';
+      const faltam = missingPillars(state.team);
+      const top = recommendForTeam(8, 'all');
+      const fillerNoTopo = faltam.length ? top.some(x => faltam.some(k => recPreenche(x, k))) : null;
+      state.recFill = faltam[0] || null;
+      const f = recListaFor('all', 8);
+      const todosPreenchem = f.fill ? f.recs.every(x => recPreenche(x, f.fill)) : null;
+      const html = renderRecommendations();
+      const out = { n: ordenados.length, faltam, fillerNoTopo, todosPreenchem, nFiltrados: f.recs.length, barra: /data-rec-fill=/.test(html) };
+      state.team = antes.team; state.recFill = antes.fill; state.autoMode = antes.mode;
+      return out;
+    })()`);
+    assert.strictEqual(r.n, 3, 'achou 3 guerreiros só de dano para montar o time de teste');
+    assert.ok(r.faltam.length > 0, 'um time só de dano tem frente faltando');
+    assert.strictEqual(r.fillerNoTopo, true, 'quem preenche a frente que falta entra entre as 8 primeiras sugestões');
+    assert.strictEqual(r.todosPreenchem, true, 'o filtro só mostra quem preenche a frente escolhida');
+    assert.ok(r.nFiltrados > 0, 'existe alguém que preenche a frente');
+    assert.ok(r.barra, 'a barra "Falta na equipe" aparece com o botão de filtro');
+  });
+
+  await test('IA do montador: interpreta o pedido (principal), explica os times e cai para as regras quando a IA falha ou o limite acaba', async () => {
+    runIn(sandbox, `window.__iaRes = null; (async () => {
+      const antes = { sb: window.__sb, av: supabaseAvailable, off: state.iaOff, comm: state.communityLoaded };
+      const principal = state.characters.find(c => c.name === 'Gogeta SS4');
+      const chamadas = [];
+      supabaseAvailable = true; state.communityLoaded = true; state.iaOff = false;
+      window.__sb = { client: { functions: { invoke: (f, o) => {
+        chamadas.push([f, o.body.acao, o.body]);
+        if(o.body.acao === 'interpretar') return Promise.resolve({ data: { vazio: false, crit: { efeitos: [], papeis: ['controle'], tipos: [], generos: [], racas: [], grupos: [], afinidades: [], raridades: [], principais: [kzNome(principal.name)], excluir: {}, foco: 'equilibrado' } }, error: null });
+        const n = o.body.times.length;
+        return Promise.resolve({ data: { times: Array.from({ length: n }, (_, i) => ({ titulo: 'Estilo ' + (i + 1), resumo: 'Resumo ' + (i + 1), como_jogar: 'Jogue assim', pontos_fortes: ['forte A'], pontos_fracos: ['fraco B'] })) }, error: null });
+      } } } };
+      await runDescribeTeam('time com Gogeta SS4 como principal');
+      await new Promise(r => setTimeout(r, 200));
+      const r1 = state.descRes;
+      const html1 = renderDescribePanel();
+      const out = {
+        chamadas: chamadas.map(c => c[1]), elenco: chamadas[0] && chamadas[0][2].elenco.length, total: state.characters.length,
+        temPrincipal: r1.crit.names.includes(principal.id), principais: (r1.crit.principais || []).length, papel: r1.crit.roles.includes('controle'),
+        timeTemPrincipal: r1.list.length > 0 && r1.list.every(o => o.team.includes(principal.id)),
+        estado: r1.iaEstado, nIa: r1.ia && r1.ia.length, nList: r1.list.length,
+        payloadNomes: chamadas[1] ? chamadas[1][2].times[0].membros.map(m => m.nome) : [], payloadPrincipal: chamadas[1] ? chamadas[1][2].times[0].membros.some(m => m.principal) : null,
+        htmlIa: /kz-ia-tag/.test(html1) && html1.includes('Resumo 1') && html1.includes('forte A'),
+      };
+      // limite gratuito do dia acabou: a função responde 429 com limite "diario"; o site para de chamar e usa as regras
+      chamadas.length = 0;
+      window.__sb = { client: { functions: { invoke: () => Promise.resolve({ data: null, error: { context: { json: () => Promise.resolve({ erro: 'limite', limite: 'diario', usar_local: true }) } } }) } } };
+      await runDescribeTeam('quero um time de queimadura');
+      await new Promise(r => setTimeout(r, 200));
+      const r2 = state.descRes, html2 = renderDescribePanel();
+      out.off = state.iaOff; out.localOk = r2.list.length > 0 && /kz-desc-exp/.test(html2) && !/kz-ia-tag/.test(html2); out.aviso = /limite gratuito/.test(html2);
+      supabaseAvailable = antes.av; window.__sb = antes.sb; state.iaOff = antes.off; state.communityLoaded = antes.comm; state.descRes = null; state.descText = '';
+      return out;
+    })().then(v => { window.__iaRes = v; }, e => { window.__iaRes = { erro: String(e && e.stack || e) }; });`);
+    await new Promise(res => setTimeout(res, 700));
+    const r = evalIn(sandbox, 'window.__iaRes') || {};
+    assert.ok(!r.erro, r.erro);
+    assert.deepStrictEqual(r.chamadas, ['interpretar', 'explicar'], 'primeiro interpreta o pedido, depois pede a explicação dos times montados');
+    assert.strictEqual(r.elenco, r.total, 'manda o elenco inteiro para a IA escolher o principal pelo nome');
+    assert.ok(r.temPrincipal && r.principais === 1, 'o guerreiro principal entra obrigatório no time');
+    assert.ok(r.papel, 'filtros da IA são somados ao que a leitura local entendeu');
+    assert.ok(r.timeTemPrincipal, 'todas as opções montadas têm o guerreiro principal');
+    assert.strictEqual(r.estado, 'ok');
+    assert.strictEqual(r.nIa, r.nList, 'uma explicação da IA por time montado');
+    assert.ok(r.payloadPrincipal, 'o resumo enviado marca quem é o principal');
+    assert.ok(r.htmlIa, 'a explicação da IA aparece com a etiqueta IA');
+    assert.strictEqual(r.off, true, 'limite diário desliga a IA nesta sessão');
+    assert.ok(r.localOk, 'sem IA o montador ainda mostra os times com a explicação das regras');
+    assert.ok(r.aviso, 'avisa que o limite gratuito acabou e que foi usada a leitura simples');
+  });
+
   await test('Vínculos: todo personagem do site tem a lista, os dados são coerentes e a aba renderiza cada vínculo', () => {
     const r = evalIn(sandbox, `(() => {
       const erros = [], semDados = [];
@@ -682,6 +759,25 @@ async function main(){
     assert.strictEqual(r.lixo.vazio, true);
     assert.ok(r.gokusNoTime >= 1 && r.gokusNoTime <= 3 && r.tam === 6, 'time do Goku: até 3 versões dele, o resto completa');
     assert.ok(r.semIA, 'sem IA: o Descreva o time usa só a leitura por palavras-chave e os times da Comunidade');
+  });
+
+  await test('Descreva o time: nome completo do guerreiro não vira filtro de grupo ("Gogeta SS4" não é "só SS4") e o time sai completo', () => {
+    const r = evalIn(sandbox, `(() => {
+      const gog = state.characters.find(c => c.name === 'Gogeta SS4'), goku4 = state.characters.find(c => c.name === 'Goku SS4');
+      const c1 = parseTeamPrompt('time com Gogeta SS4 como principal');
+      const c2 = parseTeamPrompt('quero Goku SS4 e Vegeta SS4');
+      const t = buildDescribedTeams(c1, 3).list;
+      return { nomes1: c1.names, tags1: c1.tags, refs1: c1.refs, nomes2: c2.names.map(id => getChar(id).name), tags2: c2.tags, gog: gog.id,
+        tamanhos: t.map(o => o.team.filter(Boolean).length), todosTem: t.every(o => o.team.includes(gog.id)), n: t.length, naoSo4: t.some(o => o.team.some(id => id && !(getChar(id).tags || []).includes('SS4'))) };
+    })()`);
+    assert.deepStrictEqual(r.nomes1, [r.gog], 'o guerreiro citado entra obrigatório');
+    assert.deepStrictEqual(r.tags1, [], 'o "SS4" do nome não vira filtro do grupo SS4');
+    assert.deepStrictEqual(r.refs1, [], 'nome completo não puxa as outras versões do mesmo primeiro nome');
+    assert.ok(r.nomes2.includes('Goku SS4') && r.nomes2.includes('Vegeta SS4') && !r.nomes2.includes('Goku'), '"Goku SS4" não puxa o Goku comum');
+    assert.deepStrictEqual(r.tags2, []);
+    assert.ok(r.n >= 2 && r.tamanhos.every(n => n === 6), 'saem várias opções, todas com 6 guerreiros');
+    assert.ok(r.todosTem, 'todas as opções têm o guerreiro principal');
+    assert.ok(r.naoSo4, 'o resto do time sai de todo o elenco, não só de quem é SS4');
   });
 
   await test('Descreva o time usa times da Comunidade: descrição que fala do assunto, filtros respeitados', () => {
