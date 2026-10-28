@@ -8887,14 +8887,14 @@
       ]
     },
     "77": {
-      "nome": "Gás",
+      "nome": "Piccolo Laranja",
       "habilidade": {
         "base": {
           "nome": "Golpe de Fratura",
           "estrelas": 1,
           "tipo": "Ativar",
           "desc": "[Ataque Físico] Ataca um único inimigo, com 30% de chance de causar [Silêncio], 60% de chance de causar [Repulsão], reduz 20% de dano de ataque especial do alvo (por 2 turnos), recupera 7% de sua vida e 50 de Fúria. Se houver um guerreiro [Saiyajin] na mesma linha, o valor de recuperação é dobrado. [Silêncio]: Não pode liberar o golpe definitivo, dura 1 turno.",
-          "icone": "ability-icons/Novos/gas/Skill.png",
+          "icone": "ability-icons/Novos/piccolo-laranja/Skill.png",
           "dano": "160%+15"
         },
         "max": {
@@ -8902,7 +8902,7 @@
           "estrelas": 3,
           "tipo": "Despertar",
           "desc": "[ATQ Físico] Ataca um único inimigo, com 35% de chance de causar [Silêncio] e 60% de chance de causar [Recuo]. Reduz o dano de ataque especial do alvo em 25% (2 turnos). Recupera 8% da vida e 100 de Fúria para si mesmo e para os Guerreiros na mesma fileira. Se houver um guerreiro [Saiyajin] na mesma coluna, a recuperação de si mesmo é dobrada. [Silêncio]: Impossibilidade de usar o golpe definitivo, dura 1 turno.",
-          "icone": "ability-icons/Novos/gas/Skill.png",
+          "icone": "ability-icons/Novos/piccolo-laranja/Skill.png",
           "dano": "160%+15"
         }
       },
@@ -8912,7 +8912,7 @@
           "estrelas": 1,
           "tipo": "Ativar",
           "desc": "[Ataque Especial] Aumenta sua própria taxa de dano e redução de dano em 15% (por 2 turnos), ataca um único inimigo, depois entra em estado de [Carregamento], a vida é restaurada a pelo menos 50%, no máximo 1 vez por batalha; se não puder entrar no estado de [Carregamento], recupera 12% de sua vida. [Estado de Carregamento]: Neste estado, não pode agir, imune a efeitos de [Controle], reduz o dano recebido de golpes definitivos em 20%. Ao sofrer ataques de habilidade e ataques definitivos, ganha [Fúria] equivalente a 50% do seu ataque, e 50% do dano sofrido é acumulado como [Fúria] (máximo de 5 vezes seu ataque). Se a [Fúria] estiver cheia, libera [Canhão de Energia Mortal], esvazia a [Fúria] e retorna ao estado normal. [Canhão de Energia Mortal]: Causa [Ataque Especial] de 200 * ataque a uma linha aleatória de inimigos, com adicional de 80% do valor atual de [Fúria] em unidades na linha de frente, recupera 15% de sua vida.",
-          "icone": "ability-icons/Novos/gas/Ultimate.png",
+          "icone": "ability-icons/Novos/piccolo-laranja/Ultimate.png",
           "dano": "380%+24"
         },
         "max": {
@@ -8920,7 +8920,7 @@
           "estrelas": 5,
           "tipo": "Despertar (dourada)",
           "desc": "[Ataque Especial] Aumenta sua própria taxa de dano e redução de dano em 20% (por 2 turnos), ataca um único inimigo, depois entra em estado de [Carregamento], a vida é restaurada a pelo menos 50%, no máximo 2 vezes por batalha; se não puder entrar no estado de [Carregamento], recupera 12% de sua vida. [Estado de Carregamento]: Neste estado, não pode agir, imune a efeitos de [Controle], reduz o dano recebido de golpes definitivos em 30%. Ao sofrer ataques de habilidade e ataques definitivos, ganha [Fúria] equivalente a 50% do seu ataque, e 50% do dano sofrido é acumulado como [Fúria] (máximo de 5 vezes seu ataque). Se a [Fúria] estiver cheia, libera [Canhão de Energia Mortal], esvazia a [Fúria] e retorna ao estado normal. [Canhão de Energia Mortal]: Causa [Ataque Especial] de 220 * ataque a uma linha aleatória de inimigos, causa dano adicional de 20% da vida perdida ao alvo, nas unidades da linha de frente causa adicional de 100% do valor atual de [Fúria], recupera 15% de sua vida.",
-          "icone": "ability-icons/Novos/gas/Ultimate.png",
+          "icone": "ability-icons/Novos/piccolo-laranja/Ultimate.png",
           "dano": "400%+24"
         },
         "smax": {
@@ -8928,7 +8928,7 @@
           "estrelas": 5,
           "tipo": "Despertar (azul)",
           "desc": "[Golpe Especial] Aumenta sua própria Taxa de Dano e Taxa de Redução de Dano em 30% (2 turnos). Ataca um único inimigo e, em seguida, entra em estado de [Acúmulo de Força]. A vida é restaurada para pelo menos 60%. Este efeito pode ser ativado no máximo 2 vezes por batalha. Se não for possível entrar em [Acúmulo de Força], recupera 15% da própria vida. [Estado de Acúmulo de Força]: Neste estado, não é possível agir. Imune a efeitos de [Controle]. O dano recebido de Golpes Especiais é reduzido em 40%. Ao sofrer ataques de habilidade e Golpes Especiais, ganha [Fúria] equivalente a 50% do próprio Ataque. 50% do dano recebido é acumulado como [Fúria] (máximo de 5 vezes o próprio Ataque). Se a [Fúria] estiver cheia, libera [Canhão de Energia Mortal], esvazia a [Fúria] e retorna ao estado normal. [Canhão de Energia Mortal]: Causa dano de [Golpe Especial] igual a 250% do Ataque a uma fileira aleatória de inimigos. Causa dano adicional ao alvo igual a 30% da própria vida perdida. Aplica 120% do valor atual de [Fúria] a unidades da linha de frente. Recupera 25% da própria vida. Este dano ignora o efeito de [Imunidade à Morte].",
-          "icone": "ability-icons/Novos/gas/Ultimate.png",
+          "icone": "ability-icons/Novos/piccolo-laranja/Ultimate.png",
           "dano": "420%+24"
         }
       },
@@ -8955,14 +8955,14 @@
           "estrelas": 3,
           "tipo": "Ativar",
           "desc": "Reduz a defesa dos [Guerreiros Malignos] inimigos. Aumenta sua própria taxa de bloqueio em 10%. Se sofrer ataque de golpe definitivo e o bloqueio não for ativado, ganha 1 camada de [Tenacidade] (cada camada aumenta 5% de bloqueio, acumulável, limpa quando o bloqueio é ativado, máx. 6 camadas). No estado [Carregamento], se sofrer dano letal, recupera toda a [Fúria] imediatamente e libera [Canhão de Energia Mortal], mas fora do [Carregamento], recupera 30% de vida e 150 de Fúria. No máximo 1 vez por batalha.",
-          "icone": "ability-icons/Novos/gas/Passiva.png"
+          "icone": "ability-icons/Novos/piccolo-laranja/Passiva.png"
         },
         "max": {
           "nome": "MAX. Músculos inchados",
           "estrelas": 6,
           "tipo": "Despertar",
           "desc": "Reduz a defesa dos [Guerreiros das Trevas] inimigos. Aumenta sua própria taxa de bloqueio em 15%. Se for atacado por um golpe especial e não ativar o bloqueio, ganha 1 camada de [Resistência] (cada camada aumenta a taxa de bloqueio em 5%, acumulável, e é zerada ao ativar o bloqueio, máximo de 6 camadas). Quando estiver em estado de [Acúmulo de Força] e sofrer dano letal, recupera imediatamente toda a [Fúria] e libera o [Canhão de Luz Mortal]. Se não estiver em estado de [Acúmulo de Força], recupera 30% da vida e 300 de fúria, com efeito máximo de 2 vezes por batalha.",
-          "icone": "ability-icons/Novos/gas/Passiva MAX.png"
+          "icone": "ability-icons/Novos/piccolo-laranja/Passiva MAX.png"
         }
       },
       "passivaQuatroEstrelas": {
