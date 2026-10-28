@@ -141,7 +141,7 @@ async function paginas(){
   const hoje = new Date().toISOString().slice(0, 10);
   // cada página tem a versão em português e a em inglês; "alt" liga as duas com hreflang (o Google mostra a certa para cada pessoa)
   const par = (pt, en, pri) => { const alt = [['pt-BR', SITE + pt], ['en', SITE + en]]; return [{ loc: SITE + pt, pri, alt }, { loc: SITE + en, pri, alt }]; };
-  const urls = [...par('/', '/en/', '1.0'), ...par('/privacidade.html', '/en/privacy.html', '0.3'), ...par('/termos.html', '/en/terms.html', '0.3')];
+  const urls = [...par('/', '/en/', '1.0'), ...par('/privacidade.html', '/en/privacy.html', '0.3'), ...par('/termos.html', '/en/terms.html', '0.3'), ...par('/arena-z.html', '/en/arena-z.html', '0.5')];
   const esperadas = new Set();
   const dadosEn = {};
   ['js/lang/dados-en.js', 'js/lang/dados-en-extra.js'].forEach(f => vm.runInNewContext(read(f), { kzAddDados: o => Object.assign(dadosEn, o) }));

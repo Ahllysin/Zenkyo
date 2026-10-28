@@ -23,6 +23,8 @@ kzAddLang('pt', {
   'estatico.termos': 'Termos de doação',
   'estatico.hrefPrivacidade': 'privacidade.html',
   'estatico.hrefTermos': 'termos.html',
+  'estatico.arenaZ': 'Arena-Z (APK Beta)',
+  'estatico.hrefArenaZ': 'arena-z.html',
   'estatico.rodape1': 'Zenkyo é um site de fã, feito pela comunidade, <b>sem vínculo</b> com Bandai Namco, Toei Animation, Shueisha ou com os criadores do jogo. Dragon Ball, os personagens e as imagens pertencem aos seus donos.',
   'estatico.rodape2': '<b>Zenkyo · versão <span data-versao>0.1.1 Alpha</span></b> — o site está em fase de testes: pode ter erros e mudar bastante. Achou algo estranho? <a href="https://github.com/Ahllysin/Zenkyo/issues" target="_blank" rel="noopener noreferrer">Conte aqui</a>.',
   'estatico.rodape3': '<a href="privacidade.html" target="_blank" rel="noopener noreferrer">Privacidade e dados</a> · <a href="termos.html" target="_blank" rel="noopener noreferrer">Termos de doação</a> · <button type="button" class="kz-linkbtn" id="offlineBtn">Modo offline</button> · <a href="https://github.com/Ahllysin/Zenkyo/issues" target="_blank" rel="noopener noreferrer">Contato / pedir remoção de conteúdo</a>',
