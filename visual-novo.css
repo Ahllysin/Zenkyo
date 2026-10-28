@@ -799,10 +799,15 @@ html.vis-novo .kz-coll-card.kz-nvc{display:flex;flex-direction:column;gap:10px;m
 .kz-nvc.off .kz-nvc-nm{color:#9C8574;}
 html.vis-novo .kz-nvc .kz-coll-stars.kz-nvc-st{position:static;padding:0;background:none;display:flex;flex-direction:column;align-items:stretch;gap:6px;}
 .kz-nvc-strow{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
-html.vis-novo .kz-nvc .kz-star-btns{gap:1px;}
-html.vis-novo .kz-nvc .kz-star-btn{width:auto;height:auto;padding:0 1px;font-size:18px;line-height:1;color:#3A1E16;text-shadow:none;background:none;border:0;}
-html.vis-novo .kz-nvc .kz-star-btn.gold{color:#FFC21A;text-shadow:0 0 8px rgba(255,160,30,.9);}
-html.vis-novo .kz-nvc .kz-star-btn.blue{color:#4FB8FF;text-shadow:0 0 8px rgba(79,184,255,.9);}
+/* Estrelas: faixa escura com borda na cor da fase; vazias apagadas, cheias com brilho; LR em arco-íris (o gradiente precisa do fundo do próprio botão, por isso não usa background:none). */
+html.vis-novo .kz-nvc .kz-star-btns{gap:3px;padding:3px 7px;border-radius:999px;background:rgba(0,0,0,.45);border:1px solid #4a2c20;}
+html.vis-novo .kz-nvc .kz-coll-stars[data-phase="blue"] .kz-star-btns{border-color:rgba(79,184,255,.55);box-shadow:0 0 10px rgba(79,184,255,.25);}
+html.vis-novo .kz-nvc .kz-coll-stars[data-phase="gold"] .kz-star-btns{border-color:rgba(255,194,26,.4);}
+html.vis-novo .kz-nvc .kz-coll-stars[data-phase="lr"] .kz-star-btns{border-color:rgba(192,93,255,.7);box-shadow:0 0 12px rgba(192,93,255,.35);}
+html.vis-novo .kz-nvc .kz-star-btn{width:auto;height:auto;padding:0;font-size:19px;line-height:1;color:#5b4132;text-shadow:none;background:none;border:0;cursor:pointer;}
+html.vis-novo .kz-nvc .kz-star-btn.gold{color:#FFC21A;text-shadow:0 0 6px rgba(255,160,30,.85);}
+html.vis-novo .kz-nvc .kz-star-btn.blue{color:#4FB8FF;text-shadow:0 0 6px rgba(79,184,255,.85);}
+html.vis-novo .kz-nvc .kz-star-btn.lr{background:linear-gradient(135deg,#ff4d4d 14%,#ffb13b 30%,#ffe45d 44%,#5dff7a 57%,#4fb8ff 71%,#c05dff 88%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;text-shadow:none;filter:drop-shadow(0 0 4px rgba(255,255,255,.5));}
 .kz-nvc-lv{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-style:italic;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:#C9B7A6;}
 .kz-nvc-lv.blue{color:#4FB8FF;}
 .kz-nvc-lv.lr{color:#FF5ACB;}
