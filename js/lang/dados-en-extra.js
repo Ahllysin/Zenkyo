@@ -629,6 +629,5 @@ kzAddDados({
   "Lágrimas de Desespero": "Tears of Despair",
   "Poder do Macaco": "Ape Power",
   "Discípulos": "Disciples",
-  "Vegetto e Gogeta": "Vegetto and Gogeta",
   "Gás": "Gas"
 });

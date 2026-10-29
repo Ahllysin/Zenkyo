@@ -2005,10 +2005,10 @@
     }
    }
   },
-  "Vegetto e Gogeta": {
+  "Chronoa": {
    "personagem": {
     "id": "c_vegetto-e-gogeta",
-    "name": "Vegetto e Gogeta",
+    "name": "Chronoa",
     "element": "Saiyajin",
     "gender": "Masculino",
     "tags": [
@@ -2231,7 +2231,7 @@
     ]
    ],
    "habilidadesCompletas": {
-    "nome": "Vegetto e Gogeta",
+    "nome": "Chronoa",
     "habilidade": {
      "base": {
       "nome": "Sem nome nos dados do jogo",
