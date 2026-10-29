@@ -1,0 +1,2317 @@
+{
+ "_leia": "Guerreiros do PDF Habilidades-dos-Personagens que ficaram fora do site por enquanto. Para voltar: node _ocultos/restaurar.js \"Nome do guerreiro\".",
+ "personagens": {
+  "Vegetto (SS4)": {
+   "personagem": {
+    "id": "c_vegetto-ss4",
+    "name": "Vegetto (SS4)",
+    "element": "Saiyajin",
+    "gender": "Masculino",
+    "tags": [
+     "SS4",
+     "Guerreiro de Fusão",
+     "Guerreiro de ATQ"
+    ],
+    "rarity": "SSR [Lendário]",
+    "type": "Ataque",
+    "affinity": "Raio",
+    "skill": {
+     "name": "MAX. Golpe Divino do Vácuo",
+     "desc": "Ataca um único inimigo; aumenta o dano da habilidade em 35%; causa dano adicional de 50% do dano total desta habilidade à fileira onde o alvo está; com 50% de chance, reduz em 200 a raiva de 1 inimigo aleatório na fileira do alvo; aplica o efeito de Proteção Corporal nos Guerreiros da própria fileira (no portador, aumenta a redução de dano em 20%, recupera 10% da Vida Máxima a cada ataque recebido, desaparece após 1-3 ataques recebidos <quanto mais inimigos em campo, mais vezes>, não pode ser dissipado), com duração de 1 turno; no início do próximo turno aliado, consome o efeito de Proteção Corporal ainda existente e recupera 150 de raiva para o portador; o próprio personagem tem um aumento de 60% nos efeitos de recuperação de Vida e raiva obtidos através da Proteção Corporal.",
+     "effects": []
+    },
+    "supreme": {
+     "name": "SMAX. Ataque da Grande Explosão",
+     "desc": "Ataca o inimigo com maior Fúria, em seguida aumenta sua própria Taxa de Dano, Taxa de Redução de Dano em 35% e Taxa de Roubo de Vida em 50% por 1 turno; todos os seus ataques ignoram 70% da Defesa do alvo por 1 turno; causa até 70% de dano adicional com base na Fúria atual do alvo; absorve 200 de Fúria do alvo principal; tem 70% de chance de silenciar o alvo por 1 turno; quando esse efeito é dissipado, recupera imediatamente 200 de Fúria; remove os efeitos positivos do alvo; reduz a Força de Bloqueio e a Força de Crítico do alvo e dos inimigos ao redor em 35% por 1 turno; se o dano causado por este Golpe Especial for inferior a 40% da Vida Máxima do alvo, recupera imediatamente toda a Fúria; neste turno, o dano do Golpe Especial ativado desta forma não será reduzido e não aplicará o efeito de Silêncio; se este Golpe Especial não for ativado, toda a Fúria será reduzida no início do turno; este efeito só pode ser ativado uma vez por turno.",
+     "effects": []
+    },
+    "combo": {
+     "name": "Ataque de Perseguição",
+     "desc": "Sem descrição nos dados do jogo.",
+     "triggers": [],
+     "effects": []
+    },
+    "passive": {
+     "name": "",
+     "desc": "",
+     "effects": []
+    }
+   },
+   "habilidades": {
+    "habilidade": {
+     "base": {
+      "nome": "Golpe Aéreo Divino",
+      "estrelas": 1,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/vegetto-ss4/Skill.png"
+     },
+     "max": {
+      "nome": "MAX. Golpe Divino do Vácuo",
+      "estrelas": 3,
+      "tipo": "Despertar",
+      "desc": "Ataca um único inimigo; aumenta o dano da habilidade em 35%; causa dano adicional de 50% do dano total desta habilidade à fileira onde o alvo está; com 50% de chance, reduz em 200 a raiva de 1 inimigo aleatório na fileira do alvo; aplica o efeito de Proteção Corporal nos Guerreiros da própria fileira (no portador, aumenta a redução de dano em 20%, recupera 10% da Vida Máxima a cada ataque recebido, desaparece após 1-3 ataques recebidos <quanto mais inimigos em campo, mais vezes>, não pode ser dissipado), com duração de 1 turno; no início do próximo turno aliado, consome o efeito de Proteção Corporal ainda existente e recupera 150 de raiva para o portador; o próprio personagem tem um aumento de 60% nos efeitos de recuperação de Vida e raiva obtidos através da Proteção Corporal.",
+      "icone": "ability-icons/Novos/vegetto-ss4/Skill.png",
+      "dano": "175%+15",
+      "lv": "Dano: 175% → 187,4% + 15 → 1.875 fixo"
+     }
+    },
+    "suprema": {
+     "base": {
+      "nome": "Big Bang Attack",
+      "estrelas": 1,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/vegetto-ss4/Ultimate.png"
+     },
+     "max": {
+      "nome": "Big Bang Attack MÁX.",
+      "estrelas": 5,
+      "tipo": "Despertar (dourada)",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/vegetto-ss4/Ultimate.png",
+      "dano": "430%+24",
+      "lv": "Dano: 430% → 492% + 24 → 3.000 fixo"
+     },
+     "smax": {
+      "nome": "SMAX. Ataque da Grande Explosão",
+      "estrelas": 5,
+      "tipo": "Despertar (azul)",
+      "desc": "Ataca o inimigo com maior Fúria, em seguida aumenta sua própria Taxa de Dano, Taxa de Redução de Dano em 35% e Taxa de Roubo de Vida em 50% por 1 turno; todos os seus ataques ignoram 70% da Defesa do alvo por 1 turno; causa até 70% de dano adicional com base na Fúria atual do alvo; absorve 200 de Fúria do alvo principal; tem 70% de chance de silenciar o alvo por 1 turno; quando esse efeito é dissipado, recupera imediatamente 200 de Fúria; remove os efeitos positivos do alvo; reduz a Força de Bloqueio e a Força de Crítico do alvo e dos inimigos ao redor em 35% por 1 turno; se o dano causado por este Golpe Especial for inferior a 40% da Vida Máxima do alvo, recupera imediatamente toda a Fúria; neste turno, o dano do Golpe Especial ativado desta forma não será reduzido e não aplicará o efeito de Silêncio; se este Golpe Especial não for ativado, toda a Fúria será reduzida no início do turno; este efeito só pode ser ativado uma vez por turno.",
+      "icone": "ability-icons/Novos/vegetto-ss4/Ultimate.png",
+      "dano": "450%+24",
+      "lv": "Dano: 450% → 512% + 24 → 3.000 fixo"
+     }
+    },
+    "combinado": {
+     "nome": "Ataque de Perseguição",
+     "desc": "Sem descrição nos dados do jogo.",
+     "estrelas": 1,
+     "tipo": "Ativar",
+     "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+    },
+    "passiva": {
+     "nome": "Ataque de Sequência Aprimorado",
+     "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+     "estrelas": 2,
+     "icone": "ability-icons/Passiva padrão/2 estrelas.png",
+     "lv": "Dano de Perseguição: +25% → 56%"
+    },
+    "passivasSupremo": [],
+    "passivaUnica": {
+     "base": {
+      "nome": "Lampejo do Tempo",
+      "estrelas": 3,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/vegetto-ss4/Passiva.png"
+     },
+     "max": {
+      "nome": "MÁX. Cintilação Temporal",
+      "estrelas": 6,
+      "tipo": "Despertar",
+      "desc": "Aumenta sua própria taxa de crítico e taxa de penetração, 30% de ataque e defesa e 30% de intensidade de crítico; cada Guerreiro de Fusão aliado aumenta em 15% a probabilidade de suas próprias habilidades menores; no início de cada turno aliado, 55% de chance (aumenta em 10% para cada guerreiro aliado em estado de controle) de remover imediatamente seus próprios estados negativos e petrificação, e aumenta seu próprio ataque em 30% (1 turno); ao ser atingido e com vida abaixo de 40%, desaparece instantaneamente do campo de batalha, retornando na próxima ação aliada, recuperando 50% da vida máxima e 300 de raiva, e aumentando o dano de habilidade definitiva em 25% (1 turno), além de aumentar permanentemente a resistência a habilidades definitivas e a resistência a habilidades menores em 15% (acumulável até 3 vezes, herdado após renascimento). Este efeito pode ser ativado no máximo 2 vezes por batalha; pode renascer uma vez, recuperando 60% da vida e herdando toda a raiva, e redefinindo o número de ativações do desaparecimento.",
+      "icone": "ability-icons/Novos/vegetto-ss4/Passiva MAX.png",
+      "lv": "Taxa de Crítico: +5% → 11,2% · Perfuração de Bloqueio: +5% → 11,2%"
+     }
+    },
+    "passivaQuatroEstrelas": {
+     "nome": "Aprimoramento de PV e Ataque",
+     "estrelas": 4,
+     "tipo": "Ativar",
+     "desc": "Aumenta permanentemente o ATQ e PV próprios.",
+     "icone": "ability-icons/Passiva padrão/4 estrelas PV.png"
+    }
+   },
+   "vinculos": {
+    "papel": "Ataque",
+    "total": {
+     "atq": 75,
+     "pv": 75
+    },
+    "lista": [
+     {
+      "nome": "Guerreiro Supremo",
+      "tipo": "ambos",
+      "parceiros": [
+       "SSGSS Gogeta"
+      ],
+      "escalaPor": "SSGSS Gogeta",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Fusão SS4",
+      "tipo": "ambos",
+      "parceiros": [
+       "Broly SS4"
+      ],
+      "escalaPor": "Broly SS4",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Universo Paralelo",
+      "tipo": "ambos",
+      "parceiros": [
+       "Gogeta SS4"
+      ],
+      "escalaPor": "Gogeta SS4",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "(sem nome no jogo)",
+      "tipo": "ambos",
+      "parceiros": [
+       "Vegetto SSGSS"
+      ],
+      "escalaPor": "Vegetto SSGSS",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Poder dos Brincos Potara",
+      "tipo": "arma",
+      "item": "Emblema Saiyajin",
+      "stat": "PV",
+      "valor": 15
+     },
+     {
+      "nome": "Patrulha Espacial",
+      "tipo": "arma",
+      "item": "Esotérico de Serenidade",
+      "stat": "ATQ",
+      "valor": 15
+     },
+     {
+      "nome": "Duelo Supremo",
+      "tipo": "ambos",
+      "parceiros": [
+       "Jiren Poder Máximo"
+      ],
+      "escalaPor": "Jiren Poder Máximo",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Poder do Oozaru",
+      "tipo": "ambos",
+      "parceiros": [
+       "Super Mira"
+      ],
+      "escalaPor": "Super Mira",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Vontade Maligna",
+      "tipo": "ambos",
+      "parceiros": [
+       "Vegetto SSGSS"
+      ],
+      "escalaPor": "Vegetto SSGSS",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Poder do Oozaru",
+      "tipo": "ambos",
+      "parceiros": [
+       "Bardock Quebrador do Tempo"
+      ],
+      "escalaPor": "Bardock Quebrador do Tempo",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Malignos",
+      "tipo": "arma",
+      "item": "Emblema Gigante",
+      "stat": "PV",
+      "valor": 15
+     },
+     {
+      "nome": "Guerreiro Vilão",
+      "tipo": "arma",
+      "item": "Esotérico de Serenidade",
+      "stat": "ATQ",
+      "valor": 15
+     },
+     {
+      "nome": "Luz e Escuridão",
+      "tipo": "ambos",
+      "parceiros": [
+       "SSG Trunks"
+      ],
+      "escalaPor": "SSG Trunks",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Elegância e Confiança",
+      "tipo": "ambos",
+      "parceiros": [
+       "Super Mira"
+      ],
+      "escalaPor": "Super Mira",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Poder Supremo",
+      "tipo": "ambos",
+      "parceiros": [
+       "SSGSS Gogeta"
+      ],
+      "escalaPor": "SSGSS Gogeta",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Grande Vilão",
+      "tipo": "ambos",
+      "parceiros": [
+       "Moro"
+      ],
+      "escalaPor": "Moro",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Poder Ancestral",
+      "tipo": "arma",
+      "item": "Emblema Gigante",
+      "stat": "PV",
+      "valor": 15
+     },
+     {
+      "nome": "Vontade Maligna",
+      "tipo": "arma",
+      "item": "Esotérico de Energia Maligna",
+      "stat": "ATQ",
+      "valor": 15
+     },
+     {
+      "nome": "Raça Guerreira",
+      "tipo": "ambos",
+      "parceiros": [
+       "Vegeta SSGSS"
+      ],
+      "escalaPor": "Vegeta SSGSS",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Guerreiro Heroico",
+      "tipo": "ambos",
+      "parceiros": [
+       "Cumber"
+      ],
+      "escalaPor": "Cumber",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Poder da Justiça",
+      "tipo": "ambos",
+      "parceiros": [
+       "Jiren Poder Máximo"
+      ],
+      "escalaPor": "Jiren Poder Máximo",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Ódio de Extinção",
+      "tipo": "ambos",
+      "parceiros": [
+       "Goku SSGSS"
+      ],
+      "escalaPor": "Goku SSGSS",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Guerreiro Solitário",
+      "tipo": "arma",
+      "item": "Emblema Saiyajin",
+      "stat": "PV",
+      "valor": 15
+     },
+     {
+      "nome": "Salvador",
+      "tipo": "arma",
+      "item": "Esotérico de Violência",
+      "stat": "ATQ",
+      "valor": 15
+     },
+     {
+      "nome": "Limite dos Deuses",
+      "tipo": "ambos",
+      "parceiros": [
+       "Kefla"
+      ],
+      "escalaPor": "Kefla",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Duelo Supremo",
+      "tipo": "ambos",
+      "parceiros": [
+       "Jiren Poder Máximo"
+      ],
+      "escalaPor": "Jiren Poder Máximo",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Reino dos Super Deuses",
+      "tipo": "ambos",
+      "parceiros": [
+       "Vegetto SSGSS"
+      ],
+      "escalaPor": "Vegetto SSGSS",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Velocidade Suprema",
+      "tipo": "ambos",
+      "parceiros": [
+       "Beerus"
+      ],
+      "escalaPor": "Beerus",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Transcender o Instinto",
+      "tipo": "arma",
+      "item": "Emblema Saiyajin",
+      "stat": "PV",
+      "valor": 15
+     },
+     {
+      "nome": "Retorno ao Eu",
+      "tipo": "arma",
+      "item": "Esotérico de Serenidade",
+      "stat": "ATQ",
+      "valor": 15
+     },
+     {
+      "nome": "Luz Branca e Vermelha",
+      "tipo": "ambos",
+      "parceiros": [
+       "Goku Instinto"
+      ],
+      "escalaPor": "Goku Instinto",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Deus da Alma",
+      "tipo": "ambos",
+      "parceiros": [
+       "Kefla"
+      ],
+      "escalaPor": "Kefla",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Vontade dos Fortes",
+      "tipo": "ambos",
+      "parceiros": [
+       "Jiren"
+      ],
+      "escalaPor": "Jiren",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Campo de Energia Supremo",
+      "tipo": "ambos",
+      "parceiros": [
+       "Toppo"
+      ],
+      "escalaPor": "Toppo",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Chama Vermelha",
+      "tipo": "arma",
+      "item": "Emblema do Universo",
+      "stat": "PV",
+      "valor": 15
+     },
+     {
+      "nome": "Guerreiro Supremo",
+      "tipo": "arma",
+      "item": "Esotérico Enki",
+      "stat": "ATQ",
+      "valor": 15
+     },
+     {
+      "nome": "Guerreiro Lendário",
+      "tipo": "ambos",
+      "parceiros": [
+       "Vegetto SSGSS"
+      ],
+      "escalaPor": "Vegetto SSGSS",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Guerreiro de Fusão Supremo",
+      "tipo": "ambos",
+      "parceiros": [
+       "Jiren Poder Máximo"
+      ],
+      "escalaPor": "Jiren Poder Máximo",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Pico do Universo 6",
+      "tipo": "ambos",
+      "parceiros": [
+       "Goku Instinto"
+      ],
+      "escalaPor": "Goku Instinto",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Potencial Ilimitado",
+      "tipo": "ambos",
+      "parceiros": [
+       "Zamasu Fundido"
+      ],
+      "escalaPor": "Zamasu Fundido",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Sangue Fervente",
+      "tipo": "arma",
+      "item": "Emblema Divina",
+      "stat": "PV",
+      "valor": 15
+     },
+     {
+      "nome": "Controle de Fúria",
+      "tipo": "arma",
+      "item": "Esotérico de Serenidade",
+      "stat": "ATQ",
+      "valor": 15
+     },
+     {
+      "nome": "Confronto Final",
+      "tipo": "ambos",
+      "parceiros": [
+       "Jiren Poder Máximo"
+      ],
+      "escalaPor": "Jiren Poder Máximo",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Choque Sangue-Quente",
+      "tipo": "ambos",
+      "parceiros": [
+       "Broly (DBS)"
+      ],
+      "escalaPor": "Broly (DBS)",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Último Encontro",
+      "tipo": "ambos",
+      "parceiros": [
+       "Cumber"
+      ],
+      "escalaPor": "Cumber",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Força do Universo",
+      "tipo": "ambos",
+      "parceiros": [
+       "Goku Instinto"
+      ],
+      "escalaPor": "Goku Instinto",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Músculos Fortes",
+      "tipo": "arma",
+      "item": "Emblema do Universo",
+      "stat": "PV",
+      "valor": 15
+     },
+     {
+      "nome": "Calmo e Quieto",
+      "tipo": "arma",
+      "item": "Esotérico de Serenidade",
+      "stat": "ATQ",
+      "valor": 15
+     },
+     {
+      "nome": "Mudar o Espaço-Tempo",
+      "tipo": "ambos",
+      "parceiros": [
+       "Super Mira"
+      ],
+      "escalaPor": "Super Mira",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Mensageiro do Reino dos Demônios",
+      "tipo": "ambos",
+      "parceiros": [
+       "Demigra Demoníaco"
+      ],
+      "escalaPor": "Demigra Demoníaco",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Irmãos do Reino dos Demônios",
+      "tipo": "ambos",
+      "parceiros": [
+       "Dabura"
+      ],
+      "escalaPor": "Dabura",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Poder do Deus Demônio",
+      "tipo": "ambos",
+      "parceiros": [
+       "Cumber"
+      ],
+      "escalaPor": "Cumber",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Maligna e Sexy",
+      "tipo": "arma",
+      "item": "Emblema Atordoante",
+      "stat": "PV",
+      "valor": 15
+     },
+     {
+      "nome": "Cheio de Truques",
+      "tipo": "arma",
+      "item": "Esotérico de Energia Maligna",
+      "stat": "ATQ",
+      "valor": 15
+     },
+     {
+      "nome": "Ambos São Anjos",
+      "tipo": "ambos",
+      "parceiros": [
+       "Whis"
+      ],
+      "escalaPor": "Whis",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Destruição do Mestre Divino",
+      "tipo": "ambos",
+      "parceiros": [
+       "Goku Instinto"
+      ],
+      "escalaPor": "Goku Instinto",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Figura Perfeita",
+      "tipo": "ambos",
+      "parceiros": [
+       "Beerus"
+      ],
+      "escalaPor": "Beerus",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Vontade Angelical",
+      "tipo": "ambos",
+      "parceiros": [
+       "Zamasu Fundido"
+      ],
+      "escalaPor": "Zamasu Fundido",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Total Cortesia",
+      "tipo": "arma",
+      "item": "Emblema Atordoante",
+      "stat": "PV",
+      "valor": 15
+     },
+     {
+      "nome": "Travessa e Adorável",
+      "tipo": "arma",
+      "item": "Esotérico de Serenidade",
+      "stat": "ATQ",
+      "valor": 15
+     },
+     {
+      "nome": "Guerreiro Supremo",
+      "tipo": "ambos",
+      "parceiros": [
+       "Kefla"
+      ],
+      "escalaPor": "Kefla",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Fusão VS Fusão",
+      "tipo": "ambos",
+      "parceiros": [
+       "Broly (DBS)"
+      ],
+      "escalaPor": "Broly (DBS)",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Guerreiro Supremo",
+      "tipo": "ambos",
+      "parceiros": [
+       "Goku Instinto"
+      ],
+      "escalaPor": "Goku Instinto",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Poder dos Brincos Potara",
+      "tipo": "ambos",
+      "parceiros": [
+       "Zamasu Fundido"
+      ],
+      "escalaPor": "Zamasu Fundido",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Teleporte",
+      "tipo": "arma",
+      "item": "Emblema Saiyajin",
+      "stat": "PV",
+      "valor": 15
+     },
+     {
+      "nome": "Sopro Dourado",
+      "tipo": "arma",
+      "item": "Esotérico de Serenidade",
+      "stat": "ATQ",
+      "valor": 15
+     },
+     {
+      "nome": "Instinto Superior",
+      "tipo": "ambos",
+      "parceiros": [
+       "Goku Instinto"
+      ],
+      "escalaPor": "Goku Instinto",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Clã dos Anjos",
+      "tipo": "ambos",
+      "parceiros": [
+       "Vados"
+      ],
+      "escalaPor": "Vados",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Servos e Supervisores",
+      "tipo": "ambos",
+      "parceiros": [
+       "Beerus"
+      ],
+      "escalaPor": "Beerus",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Transmissão de Habilidade",
+      "tipo": "ambos",
+      "parceiros": [
+       "Vegeta SSGSS"
+      ],
+      "escalaPor": "Vegeta SSGSS",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Amante de Comida",
+      "tipo": "arma",
+      "item": "Emblema do Universo",
+      "stat": "PV",
+      "valor": 15
+     },
+     {
+      "nome": "Cavalheiro Elegante",
+      "tipo": "arma",
+      "item": "Esotérico de Serenidade",
+      "stat": "ATQ",
+      "valor": 15
+     }
+    ]
+   },
+   "almas": [
+    [
+     "Alma do Dragão Azul Avç.",
+     "Épico",
+     "Ganha inicialmente 115 de Fúria, recupera 40 de Fúria quando um Guerreiro aliado é derrotado, adicionalmente recupera 50 de Fúria ao atacar",
+     "Ganha inicialmente 400 de Fúria, recupera 192 de Fúria quando um Guerreiro aliado é derrotado, adicionalmente recupera 145 de Fúria ao atacar",
+     "7.290"
+    ],
+    [
+     "Alma da Chama",
+     "Épico+2",
+     "Nas duas arenas, aumenta em 5% a Porcentagem de PV do Guerreiro",
+     "Nas duas arenas, aumenta em 100% a Porcentagem de PV do Guerreiro",
+     "8.748"
+    ],
+    [
+     "Alma do Furacão",
+     "Épico+4",
+     "Em todas as funções, aumenta a chance de conjurar habilidade em 1%",
+     "Em todas as funções, aumenta a chance de conjurar habilidade em 9.55%",
+     "14.580"
+    ],
+    [
+     "Alma da Rocha",
+     "Lenda+1",
+     "Em todos os recursos, aumenta adicionalmente o PV do Guerreiro em 0.01",
+     "Em todos os recursos, aumenta adicionalmente o PV do Guerreiro em 0.0955",
+     "14.580"
+    ]
+   ],
+   "habilidadesCompletas": {
+    "nome": "Vegetto (SS4)",
+    "habilidade": {
+     "base": {
+      "nome": "Golpe Aéreo Divino",
+      "estrelas": 1,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/vegetto-ss4/Skill.png"
+     },
+     "max": {
+      "nome": "MAX. Golpe Divino do Vácuo",
+      "estrelas": 3,
+      "tipo": "Despertar",
+      "desc": "Ataca um único inimigo; aumenta o dano da habilidade em 35%; causa dano adicional de 50% do dano total desta habilidade à fileira onde o alvo está; com 50% de chance, reduz em 200 a raiva de 1 inimigo aleatório na fileira do alvo; aplica o efeito de Proteção Corporal nos Guerreiros da própria fileira (no portador, aumenta a redução de dano em 20%, recupera 10% da Vida Máxima a cada ataque recebido, desaparece após 1-3 ataques recebidos <quanto mais inimigos em campo, mais vezes>, não pode ser dissipado), com duração de 1 turno; no início do próximo turno aliado, consome o efeito de Proteção Corporal ainda existente e recupera 150 de raiva para o portador; o próprio personagem tem um aumento de 60% nos efeitos de recuperação de Vida e raiva obtidos através da Proteção Corporal.",
+      "icone": "ability-icons/Novos/vegetto-ss4/Skill.png",
+      "dano": "175%+15"
+     }
+    },
+    "suprema": {
+     "base": {
+      "nome": "Big Bang Attack",
+      "estrelas": 1,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/vegetto-ss4/Ultimate.png"
+     },
+     "max": {
+      "nome": "Big Bang Attack MÁX.",
+      "estrelas": 5,
+      "tipo": "Despertar (dourada)",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/vegetto-ss4/Ultimate.png",
+      "dano": "430%+24"
+     },
+     "smax": {
+      "nome": "SMAX. Ataque da Grande Explosão",
+      "estrelas": 5,
+      "tipo": "Despertar (azul)",
+      "desc": "Ataca o inimigo com maior Fúria, em seguida aumenta sua própria Taxa de Dano, Taxa de Redução de Dano em 35% e Taxa de Roubo de Vida em 50% por 1 turno; todos os seus ataques ignoram 70% da Defesa do alvo por 1 turno; causa até 70% de dano adicional com base na Fúria atual do alvo; absorve 200 de Fúria do alvo principal; tem 70% de chance de silenciar o alvo por 1 turno; quando esse efeito é dissipado, recupera imediatamente 200 de Fúria; remove os efeitos positivos do alvo; reduz a Força de Bloqueio e a Força de Crítico do alvo e dos inimigos ao redor em 35% por 1 turno; se o dano causado por este Golpe Especial for inferior a 40% da Vida Máxima do alvo, recupera imediatamente toda a Fúria; neste turno, o dano do Golpe Especial ativado desta forma não será reduzido e não aplicará o efeito de Silêncio; se este Golpe Especial não for ativado, toda a Fúria será reduzida no início do turno; este efeito só pode ser ativado uma vez por turno.",
+      "icone": "ability-icons/Novos/vegetto-ss4/Ultimate.png",
+      "dano": "450%+24"
+     }
+    },
+    "combinado": {
+     "nome": "Ataque de Perseguição",
+     "desc": "Sem descrição nos dados do jogo.",
+     "estrelas": 1,
+     "tipo": "Ativar",
+     "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+    },
+    "passivasHabilidade": [
+     {
+      "nome": "Ataque de Sequência Aprimorado",
+      "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+      "estrelas": 2,
+      "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+     }
+    ],
+    "passivasSupremo": [],
+    "passivaUnica": {
+     "base": {
+      "nome": "Lampejo do Tempo",
+      "estrelas": 3,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/vegetto-ss4/Passiva.png"
+     },
+     "max": {
+      "nome": "MÁX. Cintilação Temporal",
+      "estrelas": 6,
+      "tipo": "Despertar",
+      "desc": "Aumenta sua própria taxa de crítico e taxa de penetração, 30% de ataque e defesa e 30% de intensidade de crítico; cada Guerreiro de Fusão aliado aumenta em 15% a probabilidade de suas próprias habilidades menores; no início de cada turno aliado, 55% de chance (aumenta em 10% para cada guerreiro aliado em estado de controle) de remover imediatamente seus próprios estados negativos e petrificação, e aumenta seu próprio ataque em 30% (1 turno); ao ser atingido e com vida abaixo de 40%, desaparece instantaneamente do campo de batalha, retornando na próxima ação aliada, recuperando 50% da vida máxima e 300 de raiva, e aumentando o dano de habilidade definitiva em 25% (1 turno), além de aumentar permanentemente a resistência a habilidades definitivas e a resistência a habilidades menores em 15% (acumulável até 3 vezes, herdado após renascimento). Este efeito pode ser ativado no máximo 2 vezes por batalha; pode renascer uma vez, recuperando 60% da vida e herdando toda a raiva, e redefinindo o número de ativações do desaparecimento.",
+      "icone": "ability-icons/Novos/vegetto-ss4/Passiva MAX.png"
+     }
+    },
+    "passivaQuatroEstrelas": {
+     "nome": "Aprimoramento de PV e Ataque",
+     "estrelas": 4,
+     "tipo": "Ativar",
+     "desc": "Aumenta permanentemente o ATQ e PV próprios.",
+     "icone": "ability-icons/Passiva padrão/4 estrelas PV.png"
+    }
+   }
+  },
+  "Bardock SS4": {
+   "personagem": {
+    "id": "c_bardock-ss4",
+    "name": "Bardock SS4",
+    "element": "Saiyajin",
+    "gender": "Masculino",
+    "tags": [
+     "SS4",
+     "Guerreiro de ATQ"
+    ],
+    "rarity": "SSR [Ultimate]",
+    "type": "Ataque",
+    "affinity": "Raio",
+    "skill": {
+     "name": "Sem nome nos dados do jogo",
+     "desc": "Sem descrição nos dados do jogo.",
+     "effects": []
+    },
+    "supreme": {
+     "name": "Sem nome nos dados do jogo",
+     "desc": "Sem descrição nos dados do jogo.",
+     "effects": []
+    },
+    "combo": {
+     "name": "Ataque de Perseguição",
+     "desc": "",
+     "triggers": [],
+     "effects": []
+    },
+    "passive": {
+     "name": "",
+     "desc": "",
+     "effects": []
+    }
+   },
+   "habilidades": {
+    "habilidade": {
+     "base": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 1,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/bardock-ss4/Skill.png"
+     },
+     "max": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 3,
+      "tipo": "Despertar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/bardock-ss4/Skill.png"
+     }
+    },
+    "suprema": {
+     "base": {
+      "nome": "Onda de Choque Destrutiva MÁX.",
+      "estrelas": 1,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/bardock-ss4/Ultimate.png",
+      "dano": "430%+24"
+     },
+     "max": {
+      "nome": "Onda de Choque Destrutiva MÁX.",
+      "estrelas": 5,
+      "tipo": "Despertar (dourada)",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/bardock-ss4/Ultimate.png",
+      "dano": "430%+24",
+      "lv": "Dano: 430% → 492% + 24 → 3.000 fixo"
+     },
+     "smax": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 5,
+      "tipo": "Despertar (azul)",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/bardock-ss4/Ultimate.png"
+     }
+    },
+    "passiva": {
+     "nome": "Ataque de Sequência Aprimorado",
+     "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+     "estrelas": 2,
+     "icone": "ability-icons/Passiva padrão/2 estrelas.png",
+     "lv": "Dano de Perseguição: +25% → 56%"
+    },
+    "passivasSupremo": [],
+    "passivaUnica": {
+     "base": null,
+     "max": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 6,
+      "tipo": "Despertar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/bardock-ss4/Passiva MAX.png"
+     }
+    }
+   },
+   "vinculos": {
+    "papel": "Ataque",
+    "total": {
+     "atq": 63,
+     "pv": 63
+    },
+    "lista": [
+     {
+      "nome": "Vingança e Aliado",
+      "tipo": "todos",
+      "parceiros": [
+       "Goku",
+       "Vegeta"
+      ],
+      "escalaPor": "Vegeta",
+      "stat": "PV",
+      "niveis": [
+       8,
+       16,
+       24
+      ]
+     },
+     {
+      "nome": "Batalha de Rancor",
+      "tipo": "todos",
+      "parceiros": [
+       "Goku",
+       "Trunks do Futuro"
+      ],
+      "escalaPor": "Trunks do Futuro",
+      "stat": "PV",
+      "niveis": [
+       8,
+       16,
+       24
+      ]
+     },
+     {
+      "nome": "Amor Mútuo",
+      "tipo": "todos",
+      "parceiros": [
+       "Goku",
+       "Vegeta Base"
+      ],
+      "escalaPor": "Vegeta Base",
+      "stat": "ATQ",
+      "niveis": [
+       8,
+       16,
+       24
+      ]
+     },
+     {
+      "nome": "Despertar SS",
+      "tipo": "todos",
+      "parceiros": [
+       "Goku",
+       "Kuririn"
+      ],
+      "escalaPor": "Kuririn",
+      "stat": "ATQ",
+      "niveis": [
+       8,
+       16,
+       24
+      ]
+     },
+     {
+      "nome": "Treino de Carga",
+      "tipo": "arma",
+      "item": "Emblema Saiyajin",
+      "stat": "PV",
+      "valor": 15
+     },
+     {
+      "nome": "Fúria",
+      "tipo": "arma",
+      "item": "Esotérico Marcial",
+      "stat": "ATQ",
+      "valor": 15
+     }
+    ]
+   },
+   "almas": [
+    [
+     "Alma do Tigre",
+     "Épico",
+     "Recupera 40 de Fúria quando um aliado é derrotado; recupera 50% desse valor quando um inimigo é derrotado",
+     "Recupera 116 de Fúria quando um aliado é derrotado; recupera 50% desse valor quando um inimigo é derrotado",
+     "7.290"
+    ],
+    [
+     "Alma da Chama",
+     "Épico+2",
+     "Na Arena, aumenta em 5% a Porcentagem de PV do Guerreiro",
+     "Na Arena, aumenta em 100% a Porcentagem de PV do Guerreiro",
+     "8.748"
+    ],
+    [
+     "Alma do Furacão",
+     "Épico+4",
+     "Em todas as funções, aumenta a chance de conjurar habilidade em 1%",
+     "Em todas as funções, aumenta a chance de conjurar habilidade em 9.55%",
+     "14.580"
+    ],
+    [
+     "Alma da Rocha",
+     "Lenda+1",
+     "Em todos os recursos, aumenta adicionalmente o PV do Guerreiro em 0.01",
+     "Em todos os recursos, aumenta adicionalmente o PV do Guerreiro em 0.0955",
+     "14.580"
+    ]
+   ],
+   "habilidadesCompletas": {
+    "nome": "Bardock SS4",
+    "habilidade": {
+     "base": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 1,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/bardock-ss4/Skill.png"
+     },
+     "max": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 3,
+      "tipo": "Despertar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/bardock-ss4/Skill.png"
+     }
+    },
+    "suprema": {
+     "base": {
+      "nome": "Onda de Choque Destrutiva MÁX.",
+      "estrelas": 1,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/bardock-ss4/Ultimate.png",
+      "dano": "430%+24"
+     },
+     "max": {
+      "nome": "Onda de Choque Destrutiva MÁX.",
+      "estrelas": 5,
+      "tipo": "Despertar (dourada)",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/bardock-ss4/Ultimate.png",
+      "dano": "430%+24"
+     },
+     "smax": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 5,
+      "tipo": "Despertar (azul)",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/bardock-ss4/Ultimate.png"
+     }
+    },
+    "combinado": {
+     "nome": "Ataque de Perseguição",
+     "desc": "Sem descrição nos dados do jogo.",
+     "estrelas": 1,
+     "tipo": "Ativar",
+     "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+    },
+    "passivasHabilidade": [
+     {
+      "nome": "Ataque de Sequência Aprimorado",
+      "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+      "estrelas": 2,
+      "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+     }
+    ],
+    "passivasSupremo": [],
+    "passivaUnica": {
+     "base": null,
+     "max": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 6,
+      "tipo": "Despertar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/bardock-ss4/Passiva MAX.png"
+     }
+    }
+   }
+  },
+  "Goku & Vegeta SSGSS": {
+   "personagem": {
+    "id": "c_goku-vegeta-ssgss",
+    "name": "Goku & Vegeta SSGSS",
+    "element": "Saiyajin",
+    "gender": "Masculino",
+    "tags": [
+     "SSG",
+     "Guerreiro de ATQ"
+    ],
+    "rarity": "SSR [Ultimate]",
+    "type": "Ataque",
+    "affinity": "Raio",
+    "skill": {
+     "name": "Sem nome nos dados do jogo",
+     "desc": "Sem descrição nos dados do jogo.",
+     "effects": []
+    },
+    "supreme": {
+     "name": "Sem nome nos dados do jogo",
+     "desc": "Sem descrição nos dados do jogo.",
+     "effects": []
+    },
+    "combo": {
+     "name": "Ataque de Perseguição",
+     "desc": "Sem descrição nos dados do jogo.",
+     "triggers": [],
+     "effects": []
+    },
+    "passive": {
+     "name": "",
+     "desc": "",
+     "effects": []
+    }
+   },
+   "habilidades": {
+    "habilidade": {
+     "base": {
+      "nome": "Kienzan e Kamehameha",
+      "estrelas": 1,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/goku-vegeta-ssgss/Skill.png",
+      "dano": "160%+15",
+      "lv": "Dano: 160% → 172,4% + 15 → 1.875 fixo"
+     },
+     "max": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 3,
+      "tipo": "Despertar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/goku-vegeta-ssgss/Skill.png",
+      "dano": "170%+8",
+      "lv": "Dano: 170% → 182,4% + 8 → 1.000 fixo"
+     }
+    },
+    "suprema": {
+     "base": {
+      "nome": "Garlick Kamehameha",
+      "estrelas": 1,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/goku-vegeta-ssgss/Ultimate.png",
+      "dano": "224%+25",
+      "lv": "Dano: 224% → 248,8% + 25 → 3.125 fixo"
+     },
+     "max": {
+      "nome": "Garlick Kamehameha MÁX.",
+      "estrelas": 5,
+      "tipo": "Despertar (dourada)",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/goku-vegeta-ssgss/Ultimate.png",
+      "dano": "180%+25",
+      "lv": "Dano: 180% → 204,8% + 25 → 3.125 fixo"
+     },
+     "smax": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 5,
+      "tipo": "Despertar (azul)",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/goku-vegeta-ssgss/Ultimate.png",
+      "dano": "300%+18",
+      "lv": "Dano: 300% → 324,8% + 18 → 2.250 fixo"
+     }
+    },
+    "combinado": {
+     "nome": "Ataque de Perseguição",
+     "desc": "Sem descrição nos dados do jogo.",
+     "estrelas": 1,
+     "tipo": "Ativar",
+     "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+    },
+    "passiva": {
+     "nome": "Ataque de Sequência Aprimorado",
+     "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+     "estrelas": 2,
+     "icone": "ability-icons/Passiva padrão/2 estrelas.png",
+     "lv": "Dano de Perseguição: +25% → 56%"
+    },
+    "passivasSupremo": [],
+    "passivaUnica": {
+     "base": {
+      "nome": "Combo Invencível",
+      "estrelas": 3,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/goku-vegeta-ssgss/Passiva.png",
+      "lv": "DEF (redução): +5% → 11,2%"
+     },
+     "max": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 6,
+      "tipo": "Despertar",
+      "desc": "Aumenta a própria Defesa. Quando Brian entra em campo, se o Trio AllStar (Harvey D, Brian, Rocky) estiver presente, aumenta adicionalmente a própria Defesa em 25% (2 turnos). Ao ser derrotado, aumenta a velocidade de recuperação de Raiva do Trio AllStar em 30% (2 turnos) e a Redução de Dano em 10% (2 turnos).",
+      "icone": "ability-icons/Novos/goku-vegeta-ssgss/Passiva MAX.png",
+      "lv": "DEF: +0% → 3,8%"
+     }
+    },
+    "passivaQuatroEstrelas": {
+     "nome": "Aprimoramento de PV e Ataque",
+     "estrelas": 4,
+     "tipo": "Ativar",
+     "desc": "Sem descrição nos dados do jogo.",
+     "icone": "ability-icons/Passiva padrão/4 estrelas ATQ+PV.png",
+     "lv": "ATQ: +5% → 11,2% · PV: +5% → 11,2%"
+    }
+   },
+   "vinculos": {
+    "papel": "Ataque",
+    "total": {
+     "atq": 75,
+     "pv": 75
+    },
+    "lista": [
+     {
+      "nome": "Cooperação Ganha-Ganha",
+      "tipo": "ambos",
+      "parceiros": [
+       "Yamcha"
+      ],
+      "escalaPor": "Yamcha",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Guerreiro de Fusão",
+      "tipo": "ambos",
+      "parceiros": [
+       "Gohan Místico"
+      ],
+      "escalaPor": "Gohan Místico",
+      "stat": "ATQ",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "2P vs 2P",
+      "tipo": "ambos",
+      "parceiros": [
+       "Bulma"
+      ],
+      "escalaPor": "Bulma",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Combo Invencível",
+      "tipo": "ambos",
+      "parceiros": [
+       "Gotenks"
+      ],
+      "escalaPor": "Gotenks",
+      "stat": "PV",
+      "niveis": [
+       10,
+       20,
+       30
+      ]
+     },
+     {
+      "nome": "Sem Recuo",
+      "tipo": "arma",
+      "item": "Emblema Conjunta",
+      "stat": "PV",
+      "valor": 15
+     },
+     {
+      "nome": "Evolução SSGSS",
+      "tipo": "arma",
+      "item": "Esotérico Conjunto",
+      "stat": "ATQ",
+      "valor": 15
+     }
+    ]
+   },
+   "almas": [
+    [
+     "Alma do Tigre Branco Avç.",
+     "Épico",
+     "Em todos os recursos, quando um Guerreiro é morto, ganha 40 Pontos de Fúria; ganha Pontos de Fúria extras ao atacar.",
+     "Em todos os recursos, quando um Guerreiro é morto, ganha 192 Pontos de Fúria; ganha Pontos de Fúria extras ao atacar.",
+     "7.290"
+    ],
+    [
+     "Alma da Chama",
+     "Épico+2",
+     "Na Arena e Arena Multisservidor, aumenta em 5% a Porcentagem de PV do Guerreiro",
+     "Na Arena e Arena Multisservidor, aumenta em 100% a Porcentagem de PV do Guerreiro",
+     "8.748"
+    ],
+    [
+     "Alma do Furacão",
+     "Épico+4",
+     "Em todas as funções, aumenta a chance de conjurar habilidade em 1%",
+     "Em todas as funções, aumenta a chance de conjurar habilidade em 9.55%",
+     "14.580"
+    ],
+    [
+     "Alma da Rocha",
+     "Lenda+1",
+     "Em todos os recursos, aumenta adicionalmente o PV do Guerreiro em 0.01",
+     "Em todos os recursos, aumenta adicionalmente o PV do Guerreiro em 0.0955",
+     "14.580"
+    ]
+   ],
+   "habilidadesCompletas": {
+    "nome": "Goku & Vegeta SSGSS",
+    "habilidade": {
+     "base": {
+      "nome": "Kienzan e Kamehameha",
+      "estrelas": 1,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/goku-vegeta-ssgss/Skill.png",
+      "dano": "160%+15"
+     },
+     "max": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 3,
+      "tipo": "Despertar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/goku-vegeta-ssgss/Skill.png",
+      "dano": "170%+8"
+     }
+    },
+    "suprema": {
+     "base": {
+      "nome": "Garlick Kamehameha",
+      "estrelas": 1,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/goku-vegeta-ssgss/Ultimate.png",
+      "dano": "224%+25"
+     },
+     "max": {
+      "nome": "Garlick Kamehameha MÁX.",
+      "estrelas": 5,
+      "tipo": "Despertar (dourada)",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/goku-vegeta-ssgss/Ultimate.png",
+      "dano": "180%+25"
+     },
+     "smax": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 5,
+      "tipo": "Despertar (azul)",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/goku-vegeta-ssgss/Ultimate.png",
+      "dano": "300%+18"
+     }
+    },
+    "combinado": {
+     "nome": "Ataque de Perseguição",
+     "desc": "Sem descrição nos dados do jogo.",
+     "estrelas": 1,
+     "tipo": "Ativar",
+     "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+    },
+    "passivasHabilidade": [
+     {
+      "nome": "Ataque de Sequência Aprimorado",
+      "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+      "estrelas": 2,
+      "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+     }
+    ],
+    "passivasSupremo": [],
+    "passivaUnica": {
+     "base": {
+      "nome": "Combo Invencível",
+      "estrelas": 3,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/goku-vegeta-ssgss/Passiva.png"
+     },
+     "max": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 6,
+      "tipo": "Despertar",
+      "desc": "Aumenta a própria Defesa. Quando Brian entra em campo, se o Trio AllStar (Harvey D, Brian, Rocky) estiver presente, aumenta adicionalmente a própria Defesa em 25% (2 turnos). Ao ser derrotado, aumenta a velocidade de recuperação de Raiva do Trio AllStar em 30% (2 turnos) e a Redução de Dano em 10% (2 turnos).",
+      "icone": "ability-icons/Novos/goku-vegeta-ssgss/Passiva MAX.png"
+     }
+    },
+    "passivaQuatroEstrelas": {
+     "nome": "Aprimoramento de PV e Ataque",
+     "estrelas": 4,
+     "tipo": "Ativar",
+     "desc": "Sem descrição nos dados do jogo.",
+     "icone": "ability-icons/Passiva padrão/4 estrelas ATQ+PV.png"
+    }
+   }
+  },
+  "Granola": {
+   "personagem": {
+    "id": "c_granola",
+    "name": "Granola",
+    "element": "Nenhum",
+    "gender": "Masculino",
+    "tags": [
+     "TEC de Guerreiro"
+    ],
+    "rarity": "SSR [Ultimate]",
+    "type": "Habilidade",
+    "affinity": "Raio",
+    "skill": {
+     "name": "Sem nome nos dados do jogo",
+     "desc": "Sem descrição nos dados do jogo.",
+     "effects": []
+    },
+    "supreme": {
+     "name": "Sem nome nos dados do jogo",
+     "desc": "Sem descrição nos dados do jogo.",
+     "effects": []
+    },
+    "combo": {
+     "name": "Sem nome nos dados do jogo",
+     "desc": "Sem descrição nos dados do jogo.",
+     "triggers": [],
+     "effects": []
+    },
+    "passive": {
+     "name": "",
+     "desc": "",
+     "effects": []
+    }
+   },
+   "habilidades": {
+    "habilidade": {
+     "base": {
+      "nome": "Metralhadora de Dedos",
+      "estrelas": 1,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/granola/Skill.png",
+      "dano": "160%+15",
+      "lv": "Dano: 160% → 172,4% + 15 → 1.875 fixo"
+     },
+     "max": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 3,
+      "tipo": "Despertar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/granola/Skill.png"
+     }
+    },
+    "suprema": {
+     "base": {
+      "nome": "Ataque Autossacrificial",
+      "estrelas": 1,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/granola/Ultimate.png",
+      "dano": "400%+24",
+      "lv": "Dano: 400% → 462% + 24 → 3.000 fixo"
+     },
+     "max": {
+      "nome": "Ataque Autossacrificial MÁX.",
+      "estrelas": 5,
+      "tipo": "Despertar (dourada)",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/granola/Ultimate.png",
+      "dano": "430%+24",
+      "lv": "Dano: 430% → 492% + 24 → 3.000 fixo"
+     },
+     "smax": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 5,
+      "tipo": "Despertar (azul)",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/granola/Ultimate.png"
+     }
+    },
+    "combinado": {
+     "nome": "Sem nome nos dados do jogo",
+     "desc": "Sem descrição nos dados do jogo.",
+     "estrelas": 1,
+     "tipo": "Ativar",
+     "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+    },
+    "passiva": {
+     "nome": "Ataque de Sequência Aprimorado",
+     "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+     "estrelas": 2,
+     "icone": "ability-icons/Passiva padrão/2 estrelas.png",
+     "lv": "Dano de Perseguição: +25% → 56%"
+    },
+    "passivasSupremo": [],
+    "passivaUnica": {
+     "base": {
+      "nome": "Poder do Maior do Universo",
+      "estrelas": 3,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/granola/Passiva.png",
+      "lv": "Defesa contra Habilidade: +5% → 11,2% · Defesa contra Supremo: +5% → 11,2%"
+     },
+     "max": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 6,
+      "tipo": "Despertar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/granola/Passiva MAX.png"
+     }
+    },
+    "passivaQuatroEstrelas": {
+     "nome": "Aprimoramento de PV e Ataque",
+     "estrelas": 4,
+     "tipo": "Ativar",
+     "desc": "Sem descrição nos dados do jogo.",
+     "icone": "ability-icons/Passiva padrão/4 estrelas ATQ+PV.png",
+     "lv": "ATQ: +5% → 11,2% · PV: +5% → 11,2%"
+    }
+   },
+   "vinculos": {
+    "papel": "Habilidade",
+    "total": {
+     "atq": 63,
+     "pv": 63
+    },
+    "lista": [
+     {
+      "nome": "Bem Combinado",
+      "tipo": "ambos",
+      "parceiros": [
+       "Caulifla"
+      ],
+      "escalaPor": "Caulifla",
+      "stat": "ATQ",
+      "niveis": [
+       8,
+       16,
+       24
+      ]
+     },
+     {
+      "nome": "Desejo de Fortalecimento",
+      "tipo": "todos",
+      "parceiros": [
+       "Beerus",
+       "Goku SSGSS"
+      ],
+      "escalaPor": "Beerus",
+      "stat": "PV",
+      "niveis": [
+       8,
+       16,
+       24
+      ]
+     },
+     {
+      "nome": "Caça ao Ponto Fraco",
+      "tipo": "todos",
+      "parceiros": [
+       "Boo Puro"
+      ],
+      "escalaPor": "Boo Puro",
+      "stat": "PV",
+      "niveis": [
+       8,
+       16,
+       24
+      ]
+     },
+     {
+      "nome": "Caçador de Recompensas",
+      "tipo": "sozinho",
+      "parceiros": [],
+      "escalaPor": null,
+      "stat": "ATQ",
+      "niveis": [
+       8,
+       16,
+       24
+      ]
+     },
+     {
+      "nome": "Instinto de Atirador",
+      "tipo": "arma",
+      "item": "Emblema do Universo",
+      "stat": "PV",
+      "valor": 15
+     },
+     {
+      "nome": "Espírito de Luta Destemido",
+      "tipo": "arma",
+      "item": "Esotérico de Serenidade",
+      "stat": "ATQ",
+      "valor": 15
+     }
+    ]
+   },
+   "almas": [
+    [
+     "Alma da Fênix Avç.",
+     "Épico",
+     "Em todos os recursos, após o início da batalha, aumenta em 85 os Pontos de Fúria Iniciais, e depois disso ganha muitos Pontos de Fúria no início de cada rodada.",
+     "Em todos os recursos, após o início da batalha, aumenta em 180 os Pontos de Fúria Iniciais, e depois disso ganha muitos Pontos de Fúria no início de cada rodada.",
+     "7.290"
+    ],
+    [
+     "Alma da Chama",
+     "Épico+2",
+     "Na Arena, aumenta em 5% a Porcentagem de PV do Guerreiro",
+     "Na Arena, aumenta em 100% a Porcentagem de PV do Guerreiro",
+     "8.748"
+    ],
+    [
+     "Alma do Furacão",
+     "Épico+4",
+     "Em todas as funções, aumenta a chance de conjurar habilidade em 1%",
+     "Em todas as funções, aumenta a chance de conjurar habilidade em 9.55%",
+     "14.580"
+    ],
+    [
+     "Alma da Rocha",
+     "Lenda+1",
+     "Em todos os recursos, aumenta adicionalmente o PV do Guerreiro em 0.01",
+     "Em todos os recursos, aumenta adicionalmente o PV do Guerreiro em 0.0955",
+     "14.580"
+    ]
+   ],
+   "habilidadesCompletas": {
+    "nome": "Granola",
+    "habilidade": {
+     "base": {
+      "nome": "Metralhadora de Dedos",
+      "estrelas": 1,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/granola/Skill.png",
+      "dano": "160%+15"
+     },
+     "max": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 3,
+      "tipo": "Despertar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/granola/Skill.png"
+     }
+    },
+    "suprema": {
+     "base": {
+      "nome": "Ataque Autossacrificial",
+      "estrelas": 1,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/granola/Ultimate.png",
+      "dano": "400%+24"
+     },
+     "max": {
+      "nome": "Ataque Autossacrificial MÁX.",
+      "estrelas": 5,
+      "tipo": "Despertar (dourada)",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/granola/Ultimate.png",
+      "dano": "430%+24"
+     },
+     "smax": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 5,
+      "tipo": "Despertar (azul)",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/granola/Ultimate.png"
+     }
+    },
+    "combinado": {
+     "nome": "Sem nome nos dados do jogo",
+     "desc": "Sem descrição nos dados do jogo.",
+     "estrelas": 1,
+     "tipo": "Ativar",
+     "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+    },
+    "passivasHabilidade": [
+     {
+      "nome": "Ataque de Sequência Aprimorado",
+      "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+      "estrelas": 2,
+      "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+     }
+    ],
+    "passivasSupremo": [],
+    "passivaUnica": {
+     "base": {
+      "nome": "Poder do Maior do Universo",
+      "estrelas": 3,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/granola/Passiva.png"
+     },
+     "max": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 6,
+      "tipo": "Despertar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/granola/Passiva MAX.png"
+     }
+    },
+    "passivaQuatroEstrelas": {
+     "nome": "Aprimoramento de PV e Ataque",
+     "estrelas": 4,
+     "tipo": "Ativar",
+     "desc": "Sem descrição nos dados do jogo.",
+     "icone": "ability-icons/Passiva padrão/4 estrelas ATQ+PV.png"
+    }
+   }
+  },
+  "Vegetto e Gogeta": {
+   "personagem": {
+    "id": "c_vegetto-e-gogeta",
+    "name": "Vegetto e Gogeta",
+    "element": "Saiyajin",
+    "gender": "Masculino",
+    "tags": [
+     "Guerreiro de Fusão",
+     "TEC de Guerreiro"
+    ],
+    "rarity": "SSR [Ultimate]",
+    "type": "Habilidade",
+    "affinity": "Raio",
+    "skill": {
+     "name": "Sem nome nos dados do jogo",
+     "desc": "Sem descrição nos dados do jogo.",
+     "effects": []
+    },
+    "supreme": {
+     "name": "Sem nome nos dados do jogo",
+     "desc": "Sem descrição nos dados do jogo.",
+     "effects": []
+    },
+    "combo": {
+     "name": "Sem nome nos dados do jogo",
+     "desc": "Sem descrição nos dados do jogo.",
+     "triggers": [],
+     "effects": []
+    },
+    "passive": {
+     "name": "",
+     "desc": "",
+     "effects": []
+    }
+   },
+   "habilidades": {
+    "habilidade": {
+     "base": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 1,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/vegetto-e-gogeta/Skill.png"
+     },
+     "max": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 3,
+      "tipo": "Despertar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/vegetto-e-gogeta/Skill.png"
+     }
+    },
+    "suprema": {
+     "base": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 1,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/vegetto-e-gogeta/Ultimate.png"
+     },
+     "max": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 5,
+      "tipo": "Despertar (dourada)",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/vegetto-e-gogeta/Ultimate.png",
+      "dano": "280%+15",
+      "lv": "Dano: 280% → 304,8% + 15 → 1.875 fixo"
+     },
+     "smax": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 5,
+      "tipo": "Despertar (azul)",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/vegetto-e-gogeta/Ultimate.png"
+     }
+    },
+    "combinado": {
+     "nome": "Sem nome nos dados do jogo",
+     "desc": "Sem descrição nos dados do jogo.",
+     "estrelas": 1,
+     "tipo": "Ativar",
+     "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+    },
+    "passiva": {
+     "nome": "Ataque de Sequência Aprimorado",
+     "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+     "estrelas": 2,
+     "icone": "ability-icons/Passiva padrão/2 estrelas.png",
+     "lv": "Dano de Perseguição: +25% → 56%"
+    },
+    "passivasSupremo": [],
+    "passivaUnica": {
+     "base": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 3,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/vegetto-e-gogeta/Passiva.png"
+     },
+     "max": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 6,
+      "tipo": "Despertar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/vegetto-e-gogeta/Passiva MAX.png"
+     }
+    },
+    "passivaQuatroEstrelas": {
+     "nome": "Sem nome nos dados do jogo",
+     "estrelas": 4,
+     "tipo": "Ativar",
+     "desc": "Sem descrição nos dados do jogo.",
+     "icone": "ability-icons/Passiva padrão/4 estrelas PV.png"
+    }
+   },
+   "vinculos": {
+    "papel": "Habilidade",
+    "total": {
+     "atq": 63,
+     "pv": 63
+    },
+    "lista": [
+     {
+      "nome": "(sem nome no jogo)",
+      "tipo": "ambos",
+      "parceiros": [
+       "Goku Black"
+      ],
+      "escalaPor": "Goku Black",
+      "stat": "ATQ",
+      "niveis": [
+       8,
+       16,
+       24
+      ]
+     },
+     {
+      "nome": "(sem nome no jogo)",
+      "tipo": "ambos",
+      "parceiros": [
+       "Piccolo Laranja"
+      ],
+      "escalaPor": "Piccolo Laranja",
+      "stat": "ATQ",
+      "niveis": [
+       8,
+       16,
+       24
+      ]
+     },
+     {
+      "nome": "(sem nome no jogo)",
+      "tipo": "ambos",
+      "parceiros": [
+       "Goku SS4"
+      ],
+      "escalaPor": "Goku SS4",
+      "stat": "PV",
+      "niveis": [
+       8,
+       16,
+       24
+      ]
+     },
+     {
+      "nome": "(sem nome no jogo)",
+      "tipo": "ambos",
+      "parceiros": [
+       "Vegeta SS4"
+      ],
+      "escalaPor": "Vegeta SS4",
+      "stat": "PV",
+      "niveis": [
+       8,
+       16,
+       24
+      ]
+     },
+     {
+      "nome": "(sem nome no jogo)",
+      "tipo": "arma",
+      "item": "Emblema Atordoante",
+      "stat": "PV",
+      "valor": 15
+     },
+     {
+      "nome": "(sem nome no jogo)",
+      "tipo": "arma",
+      "item": "Esotérico Enki",
+      "stat": "ATQ",
+      "valor": 15
+     }
+    ]
+   },
+   "almas": [
+    [
+     "Alma de Guerra do Pássaro Vermilion",
+     "Épico",
+     "Em todos os recursos, aumenta em 240 a Fúria Inicial no início da batalha",
+     "Em todos os recursos, aumenta em 1000 a Fúria Inicial no início da batalha",
+     "7.290"
+    ],
+    [
+     "Alma de Guerra de Goumang",
+     "Épico+2",
+     "Na Arena, aumenta em 5% a Porcentagem de PV do Guerreiro",
+     "Na Arena, aumenta em 100% a Porcentagem de PV do Guerreiro",
+     "8.748"
+    ],
+    [
+     "Alma de Guerra de Zhurong",
+     "Épico+4",
+     "Em todas as funções, aumenta a chance de conjurar habilidade em 1%",
+     "Em todas as funções, aumenta a chance de conjurar habilidade em 9.55%",
+     "14.580"
+    ],
+    [
+     "Alma de Guerra de Houtu",
+     "Lenda+1",
+     "Em todos os recursos, aumenta adicionalmente o PV do Guerreiro em 0.01",
+     "Em todos os recursos, aumenta adicionalmente o PV do Guerreiro em 0.0955",
+     "14.580"
+    ]
+   ],
+   "habilidadesCompletas": {
+    "nome": "Vegetto e Gogeta",
+    "habilidade": {
+     "base": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 1,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/vegetto-e-gogeta/Skill.png"
+     },
+     "max": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 3,
+      "tipo": "Despertar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/vegetto-e-gogeta/Skill.png"
+     }
+    },
+    "suprema": {
+     "base": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 1,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/vegetto-e-gogeta/Ultimate.png"
+     },
+     "max": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 5,
+      "tipo": "Despertar (dourada)",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/vegetto-e-gogeta/Ultimate.png",
+      "dano": "280%+15"
+     },
+     "smax": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 5,
+      "tipo": "Despertar (azul)",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/vegetto-e-gogeta/Ultimate.png"
+     }
+    },
+    "combinado": {
+     "nome": "Sem nome nos dados do jogo",
+     "desc": "Sem descrição nos dados do jogo.",
+     "estrelas": 1,
+     "tipo": "Ativar",
+     "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+    },
+    "passivasHabilidade": [
+     {
+      "nome": "Ataque de Sequência Aprimorado",
+      "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+      "estrelas": 2,
+      "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+     }
+    ],
+    "passivasSupremo": [],
+    "passivaUnica": {
+     "base": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 3,
+      "tipo": "Ativar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/vegetto-e-gogeta/Passiva.png"
+     },
+     "max": {
+      "nome": "Sem nome nos dados do jogo",
+      "estrelas": 6,
+      "tipo": "Despertar",
+      "desc": "Sem descrição nos dados do jogo.",
+      "icone": "ability-icons/Novos/vegetto-e-gogeta/Passiva MAX.png"
+     }
+    },
+    "passivaQuatroEstrelas": {
+     "nome": "Sem nome nos dados do jogo",
+     "estrelas": 4,
+     "tipo": "Ativar",
+     "desc": "Sem descrição nos dados do jogo.",
+     "icone": "ability-icons/Passiva padrão/4 estrelas PV.png"
+    }
+   }
+  }
+ }
+}
