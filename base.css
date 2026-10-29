@@ -1419,6 +1419,9 @@ a.kz-donate-cta{text-decoration:none;}
 .cdp-soul-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px;margin-top:16px;}
 .cdp-soul{display:flex;flex-direction:column;gap:8px;padding:16px;border-radius:12px;border:1px solid var(--line-soft);background:rgba(20,20,34,.6);}
 .cdp-soul-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.cdp-soul-ico{width:44px;height:44px;flex:0 0 auto;display:block;}
+.cdp-soul-ico img{width:100%;height:100%;object-fit:contain;display:block;}
+.cdp-soul-pop .kz-popup-art img{object-fit:contain;}
 .cdp-soul-head h3{margin:0;font-size:17px;flex:1 1 auto;min-width:0;}
 .cdp-soul-n{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#ff6a13;color:#0a0606;font-weight:900;font-size:14px;}
 .cdp-soul-lib{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#ffc21a;}
