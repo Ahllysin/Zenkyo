@@ -2477,15 +2477,37 @@ function bondAvatarHtml(nome){
 }
 function bondStatLabel(s){ return s === 'PV' ? kzt('vinc.pv') : kzt('vinc.atq'); }
 function bondListaNomes(nomes){ return nomes.map(n=>`<b>${escapeHtml(kzNome(n))}</b>`).join(', '); }
+// Item (Medula) que desperta a Arma Exclusiva: chave = campo `item` dos vínculos de arma em js/vinculos.js.
+const BOND_ITEMS = {
+  'Emblema Saiyajin': { nome: 'Medula do Emblema Saiyajin', icone: 'medula-saiyajin' },
+  'Emblema Extraordinária': { nome: 'Medula do Emblema Extraordinário', icone: 'medula-extraordinario' },
+  'Emblema do Universo': { nome: 'Medula do Emblema do Universo', icone: 'medula-universo' },
+  'Emblema Divina': { nome: 'Medula do Emblema Divino', icone: 'medula-divino' },
+  'Emblema Gigante': { nome: 'Medula do Emblema Gigante', icone: 'medula-gigante' },
+  'Emblema Atordoante': { nome: 'Medula do Emblema Atordoante', icone: 'medula-atordoante' },
+  'Esotérico Marcial': { nome: 'Medula do Esotérico Marcial', icone: 'medula-marcial' },
+  'Esotérico de Serenidade': { nome: 'Medula do Esotérico de Serenidade', icone: 'medula-serenidade' },
+  'Esotérico Enki': { nome: 'Medula do Esotérico Enki', icone: 'medula-enki' },
+  'Esotérico Explosão de Ki': { nome: 'Medula do Esotérico Explosão de Ki', icone: 'medula-explosao-de-ki' },
+  'Esotérico Sobrenatural': { nome: 'Medula do Esotérico do Poder Sobrenatural', icone: 'medula-poder-sobrenatural' },
+  'Esotérico da Magia': { nome: 'Medula do Esotérico da Luz Mágica', icone: 'medula-luz-magica' },
+  'Esotérico de Violência': { nome: 'Medula do Esotérico da Violência', icone: 'medula-violencia' },
+  'Esotérico de Energia Maligna': { nome: 'Medula do Esotérico da Energia Maligna', icone: 'medula-energia-maligna' }
+};
 function bondRowHtml(c, b){
   const nome = b.nome ? escapeHtml(kzTrad(b.nome)) : `<span class="inactive-tag">${kzt('vinc.semNome')}</span>`;
   if(b.tipo === 'arma'){
+    const it = BOND_ITEMS[b.item];
+    const itemNome = it ? it.nome : b.item;
+    const itemAvatar = it
+      ? `<div class="cdp-bond-avatar cdp-bond-item" title="${escapeAttr(kzTrad(it.nome))}"><img src="icones-itens/${it.icone}.webp" alt="" loading="lazy" decoding="async" data-onerr="hide"></div>`
+      : `<div class="cdp-bond-avatar cdp-bond-weapon" aria-hidden="true"><span>武</span></div>`;
     return `<div class="cdp-bond-row">
-      <div class="cdp-bond-partner"><div class="cdp-bond-avatar">${portraitInner(c)}</div><div class="cdp-bond-avatar cdp-bond-weapon" aria-hidden="true"><span>武</span></div></div>
+      <div class="cdp-bond-partner"><div class="cdp-bond-avatar">${portraitInner(c)}</div>${itemAvatar}</div>
       <div class="cdp-bond-info">
         <div class="cdp-bond-skill">${nome}</div>
         <div class="cdp-bond-req">${kzt('vinc.reqArma')}</div>
-        <div class="cdp-bond-lv"><span class="fixo">${escapeHtml(kzTrad(b.item))} · ${bondStatLabel(b.stat)} +${+b.valor}%</span></div>
+        <div class="cdp-bond-lv"><span class="fixo">${escapeHtml(kzTrad(itemNome))} · ${bondStatLabel(b.stat)} +${+b.valor}%</span></div>
         <div class="cdp-bond-note">${kzt('vinc.fixo')}</div>
       </div>
     </div>`;

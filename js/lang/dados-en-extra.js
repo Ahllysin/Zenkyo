@@ -1,6 +1,21 @@
 // Extra game text in English (loaded only on /en/): synergy notes, affinity gift names and sources.
 // Same format as dados-en.js (that file is generated; this one is edited by hand).
 kzAddDados({
+  // Marrow items that awaken Exclusive Weapons (BOND_ITEMS in js/app.js)
+  "Medula do Emblema Saiyajin": "Saiyan Emblem Marrow",
+  "Medula do Emblema Extraordinário": "Extraordinary Emblem Marrow",
+  "Medula do Emblema do Universo": "Universe Emblem Marrow",
+  "Medula do Emblema Divino": "Divine Emblem Marrow",
+  "Medula do Emblema Gigante": "Giant Emblem Marrow",
+  "Medula do Emblema Atordoante": "Stunning Emblem Marrow",
+  "Medula do Esotérico Marcial": "Martial Esoteric Marrow",
+  "Medula do Esotérico de Serenidade": "Serenity Esoteric Marrow",
+  "Medula do Esotérico Enki": "Enki Esoteric Marrow",
+  "Medula do Esotérico Explosão de Ki": "Ki Explosion Esoteric Marrow",
+  "Medula do Esotérico do Poder Sobrenatural": "Supernatural Power Esoteric Marrow",
+  "Medula do Esotérico da Luz Mágica": "Magic Light Esoteric Marrow",
+  "Medula do Esotérico da Violência": "Violence Esoteric Marrow",
+  "Medula do Esotérico da Energia Maligna": "Evil Energy Esoteric Marrow",
   // Synergy notes (SYNERGY_RULES in js/app.js)
   "libera o Supremo combinado com Vegeta SS4": "unlocks the combined Supreme with Vegeta SS4",
   "libera o Supremo combinado com Goku SS4": "unlocks the combined Supreme with Goku SS4",
