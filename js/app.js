@@ -1379,6 +1379,7 @@ function render(){
 }
 
 function goTab(tab){
+  if(tab === 'chars' && state.tab !== 'chars'){ state.heroCharId = null; heroSorteadoId = null; }
   state.tab = tab;
   state.viewingCharId = null;
   state.communityOpenPost = null;
@@ -1444,8 +1445,15 @@ const LIST_FILTER_GROUPS = [
   [kzt('filtro.afinidade'),'affinity',AFFINITIES],
   [kzt('filtro.raca'),'element',ELEMENTS],
 ];
+// Destaque do topo de Personagens: sorteia um guerreiro cada vez que a aba é aberta (sem ficar preso a um só).
+let heroSorteadoId = null;
 function defaultHeroChar(){
-  return state.characters.find(c=>c.name==='Cooler Dourado') || state.characters[0];
+  let c = state.characters.find(x=>x.id === heroSorteadoId);
+  if(!c && state.characters.length){
+    c = state.characters[Math.floor(Math.random() * state.characters.length)];
+    heroSorteadoId = c.id;
+  }
+  return c || state.characters[0];
 }
 
 function renderCharsTab(){
