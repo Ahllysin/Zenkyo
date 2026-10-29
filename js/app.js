@@ -2554,6 +2554,8 @@ function soulLevelText(base, max, n){
   });
 }
 // Ícone da alma (icones-almas/<nome>.webp, 5º campo de cada alma em js/almas.js); sem ícone, mostra o número da alma.
+// EXP vem como "14.580" (ponto de milhar do português); em inglês vira "14,580".
+function soulExp(exp){ return typeof KZ_LANG !== 'undefined' && KZ_LANG === 'en' ? String(exp).replace(/\./g, ',') : exp; }
 function soulIconHtml(icone, n){
   if(!icone) return `<span class="cdp-soul-n">${n}</span>`;
   return `<span class="cdp-soul-ico"><img src="icones-almas/${escapeAttr(icone)}.webp" alt="" loading="lazy" decoding="async" data-onerr="hide"></span>`;
@@ -2565,12 +2567,12 @@ function renderCharSoulsSection(c){
   return `<div class="cdp-aff-block"><p class="cdp-soul-intro">${kzt('almas.intro')}</p></div>
     <div class="cdp-soul-list">${lista.map(([nome, libera, base, max, exp, icone], i)=>`
       <article class="cdp-soul">
-        <div class="cdp-soul-head">${soulIconHtml(icone, i + 1)}<h3>${escapeHtml(kzTrad(nome)) || kzt('almas.alma', { n: i + 1 })}</h3><span class="cdp-soul-lib">${kzt('almas.libera', { v: escapeHtml(libera) })}</span></div>
+        <div class="cdp-soul-head">${soulIconHtml(icone, i + 1)}<h3>${escapeHtml(kzTrad(nome)) || kzt('almas.alma', { n: i + 1 })}</h3><span class="cdp-soul-lib">${kzt('almas.libera', { v: escapeHtml(kzTrad(libera)) })}</span></div>
         ${base ? `<p class="cdp-soul-lv"><b>${kzt('almas.nv1')}</b> ${escapeHtml(kzTrad(base))}</p>` : ''}
         ${max ? `<p class="cdp-soul-lv"><b>${kzt('almas.nv20')}</b> ${escapeHtml(kzTrad(max))}</p>` : ''}
         ${base && max && soulLevelText(kzTrad(base), kzTrad(max), 20) !== null ? `<button type="button" class="kz-btn kz-btn-sm cdp-soul-open" data-soul-open="${i}">${kzt('almas.verNiveis')}</button>` : ''}
         ${!base && !max ? `<p class="cdp-soul-lv mut">${kzt('almas.semEfeito')}</p>` : ''}
-        ${exp ? `<p class="cdp-soul-exp">${kzt('almas.exp', { n: escapeHtml(exp) })}</p>` : ''}
+        ${exp ? `<p class="cdp-soul-exp">${kzt('almas.exp', { n: escapeHtml(soulExp(exp)) })}</p>` : ''}
       </article>`).join('')}</div>`;
 }
 function renderCharBondsSection(c){
@@ -2944,13 +2946,13 @@ function soulPopupHtml(p){
         <div class="kz-popup-art">${icone ? `<img src="icones-almas/${escapeAttr(icone)}.webp" alt="">` : portraitInner(c)}</div>
         <div class="kz-popup-title">
           <div class="kz-popup-name">${escapeHtml(kzTrad(nome)) || kzt('almas.alma', { n: p.i + 1 })}</div>
-          <div class="kz-popup-level"><span class="lbl">${escapeHtml(kzNome(c.name))} · ${kzt('almas.libera', { v: escapeHtml(libera) })}</span></div>
+          <div class="kz-popup-level"><span class="lbl">${escapeHtml(kzNome(c.name))} · ${kzt('almas.libera', { v: escapeHtml(kzTrad(libera)) })}</span></div>
         </div>
         <button class="kz-close-btn" id="closeSoulPopupBtn" aria-label="${kzt('comum.fechar')}">✕</button>
       </div>
       <div class="kz-popup-body">
         <table class="cdp-soul-table"><thead><tr><th scope="col">${kzt('almas.colNivel')}</th><th scope="col">${kzt('almas.colEfeito')}</th></tr></thead><tbody>${linhas.join('')}</tbody></table>
-        ${exp ? `<p class="cdp-soul-exp">${kzt('almas.exp', { n: escapeHtml(exp) })}</p>` : ''}
+        ${exp ? `<p class="cdp-soul-exp">${kzt('almas.exp', { n: escapeHtml(soulExp(exp)) })}</p>` : ''}
       </div>
     </div>
   </div>`;
