@@ -1,6 +1,18 @@
 // Extra game text in English (loaded only on /en/): synergy notes, affinity gift names and sources.
 // Same format as dados-en.js (that file is generated; this one is edited by hand).
 kzAddDados({
+  // War Soul names and effects (js/almas.js)
+  "Alma da Chama": "Soul of Flame",
+  "Alma do Furacão": "Soul of Hurricane",
+  "Alma da Rocha": "Soul of Rock",
+  "Alma do Tigre Branco Avç.": "Adv. White Tiger Soul",
+  "Alma da Tartaruga Negra Avç.": "Adv. Black Tortoise Soul",
+  "Em todas as funções, aumenta a chance de conjurar habilidade em 1%": "In all features, increases the probability of casting skill by 1%",
+  "Em todas as funções, aumenta a chance de conjurar habilidade em 9.55%": "In all features, increases the probability of casting skill by 9.55%",
+  "Em todos os modos de jogo, adicionalmente ganha 10 de Fúria ao ser atingido, ganha inicialmente 115 de Fúria": "In all gameplay modes, restores 10 Rage when hit, initially gains 115 Rage",
+  "Em todos os modos de jogo, adicionalmente ganha 48 de Fúria ao ser atingido, ganha inicialmente 400 de Fúria": "In all gameplay modes, restores 48 Rage when hit, initially gains 400 Rage",
+  "Em todos os modos de jogo, ganha inicialmente 115 de Fúria, recupera 20 de Fúria ao ser atingido, recupera 20 de Fúria quando um Guerreiro inimigo ou aliado é derrotado": "In all gameplay modes, initially gain 115 Rage. Restore 20 Rage when hit, restore 20 Rage when an enemy or allied warrior is defeated",
+  "Em todos os modos de jogo, ganha inicialmente 400 de Fúria, recupera 96 de Fúria ao ser atingido, recupera 96 de Fúria quando um Guerreiro inimigo ou aliado é derrotado": "In all gameplay modes, initially gain 400 Rage. Restore 96 Rage when hit, restore 96 Rage when an enemy or allied warrior is defeated",
   // Marrow items that awaken Exclusive Weapons (BOND_ITEMS in js/app.js)
   "Medula do Emblema Saiyajin": "Saiyan Emblem Marrow",
   "Medula do Emblema Extraordinário": "Extraordinary Emblem Marrow",
