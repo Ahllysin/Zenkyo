@@ -2469,11 +2469,13 @@ function renderCharFoodSection(c){
 }
 
 // Avatar de um parceiro de vínculo: no site (retrato), fora do site mas com ícone, ou só as iniciais.
+// Nos vínculos usamos o ícone pequeno (icones/<slug>.webp); sem ícone, cai no retrato.
 function bondAvatarHtml(nome){
+  const ico = iconeSrcNome(nome);
+  if(ico) return `<div class="cdp-bond-avatar cdp-bond-ico" title="${escapeAttr(kzNome(nome))}"><img src="${ico}" alt="" loading="lazy" decoding="async" data-onerr="hide"></div>`;
   const o = state.characters.find(x=>x.name === nome);
   if(o) return `<div class="cdp-bond-avatar" title="${escapeAttr(kzNome(nome))}">${portraitInner(o)}</div>`;
-  const ico = iconeSrcNome(nome);
-  return `<div class="cdp-bond-avatar" title="${escapeAttr(kzNome(nome))}">${ico ? `<img src="${ico}" alt="" loading="lazy" decoding="async" data-onerr="hide">` : ''}<span class="avatar-fallback"${ico ? ' style="display:none;"' : ''}>${escapeHtml(initials(nome))}</span></div>`;
+  return `<div class="cdp-bond-avatar" title="${escapeAttr(kzNome(nome))}"><span class="avatar-fallback">${escapeHtml(initials(nome))}</span></div>`;
 }
 function bondStatLabel(s){ return s === 'PV' ? kzt('vinc.pv') : kzt('vinc.atq'); }
 function bondListaNomes(nomes){ return nomes.map(n=>`<b>${escapeHtml(kzNome(n))}</b>`).join(', '); }
@@ -2503,7 +2505,7 @@ function bondRowHtml(c, b){
       ? `<div class="cdp-bond-avatar cdp-bond-item" title="${escapeAttr(kzTrad(it.nome))}"><img src="icones-itens/${it.icone}.webp" alt="" loading="lazy" decoding="async" data-onerr="hide"></div>`
       : `<div class="cdp-bond-avatar cdp-bond-weapon" aria-hidden="true"><span>武</span></div>`;
     return `<div class="cdp-bond-row">
-      <div class="cdp-bond-partner"><div class="cdp-bond-avatar">${portraitInner(c)}</div>${itemAvatar}</div>
+      <div class="cdp-bond-partner">${itemAvatar}</div>
       <div class="cdp-bond-info">
         <div class="cdp-bond-skill">${nome}</div>
         <div class="cdp-bond-req">${kzt('vinc.reqArma')}</div>
@@ -2517,7 +2519,7 @@ function bondRowHtml(c, b){
   const niveis = b.niveis.map((v, i)=>`<span>${kzt('vinc.nv', { n: i + 1 })} <b>${bondStatLabel(b.stat)} +${+v}%</b></span>`).join('');
   const nota = b.escalaPor ? kzt('vinc.sobeCom', { nome: escapeHtml(kzNome(b.escalaPor)) }) : kzt('vinc.semParceiro');
   return `<div class="cdp-bond-row">
-      <div class="cdp-bond-partner"><div class="cdp-bond-avatar">${portraitInner(c)}</div>${parceiros.map(bondAvatarHtml).join('')}</div>
+      <div class="cdp-bond-partner">${bondAvatarHtml(c.name)}${parceiros.map(bondAvatarHtml).join('')}</div>
       <div class="cdp-bond-info">
         <div class="cdp-bond-skill">${nome}</div>
         <div class="cdp-bond-req">${req}</div>
