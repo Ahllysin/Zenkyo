@@ -501,6 +501,10 @@ input::placeholder,textarea::placeholder{color:var(--text-faint);}
 .kz-filter-panel{display:flex;flex-direction:column;gap:12px;padding:18px 20px;border-radius:14px;border:1.5px solid var(--line);background:var(--panel);}
 .kz-filter-top{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
 .kz-filter-top .kz-input{flex:1;min-width:200px;}
+.kz-tier-filter{padding:8px 12px;gap:8px;margin:6px 0 10px;}
+.kz-tier-filter .kz-filter-top{flex-wrap:nowrap;gap:8px;}
+.kz-tier-filter .kz-filter-top .kz-input{min-width:0;padding:7px 12px;font-size:14px;}
+.kz-tier-filter .kz-fchip{white-space:nowrap;flex:none;}
 .kz-owned-toggle{
   display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:10px;border:1.5px solid rgba(255,255,255,.2);
   background:rgba(8,7,14,.75);color:#dcd6c6;font-size:14px;font-weight:700;

@@ -292,7 +292,7 @@ let state = {
   communityOpenPost: null, communityProfileUser: null,   // post aberto na aba Comunidade / perfil de autor aberto no popup
   communityFilter: 'all', communitySort: 'recent', communitySearch: '', communityCompose: null,
   sf: { chars:{tags:[],trig:[],eff:[]}, coll:{tags:[],trig:[],eff:[]}, roster:{tags:[],trig:[],eff:[]}, tier:{tags:[],trig:[],eff:[]}, open:{} },
-  tierSearch: '', tierRarity: '', tierType: '', tierAffinity: '',   // filtro do "Sem tier" na Tier List (não é salvo)   // filtro de pesquisa por tags + o que o Ataque Combinado persegue/causa, um por aba
+  tierSearch: '', tierRarity: '', tierType: '', tierAffinity: '', tierFiltersOpen: false,   // filtro do "Sem tier" na Tier List (não é salvo)   // filtro de pesquisa por tags + o que o Ataque Combinado persegue/causa, um por aba
   editingChar: null,                // character object being edited in modal, or null
   ioModalOpen: false,               // import/export JSON modal
   pickerSlot: null,                 // slot index currently choosing a warrior for, or null
@@ -2999,18 +2999,23 @@ function tierPoolItemsHtml(){
 }
 function tierFilterHtml(){
   const groups = [[kzt('filtro.raridade'),'tierRarity',TIER_RARITY_CHIPS],[kzt('filtro.tipo'),'tierType',TYPES],[kzt('filtro.afinidade'),'tierAffinity',AFFINITIES]];
+  const n = TIER_FILTER_KEYS.filter(k=>state[k]).length + sfCount(state.sf.tier);
+  const open = !!state.tierFiltersOpen;
+  // fechado por padrão: só uma linha (busca + botão), pra não empurrar a lista pra baixo na hora de arrastar
   return `
   <div class="kz-filter-panel kz-tier-filter">
     <div class="kz-filter-top">
       <input type="text" class="kz-input" id="tierSearch" placeholder="${escapeAttr(kzt('tier.buscar'))}" value="${escapeAttr(state.tierSearch||'')}" autocomplete="off" aria-label="${escapeAttr(kzt('tier.buscar'))}">
+      <button type="button" class="kz-fchip ${n ? 'active' : ''}" id="tierFiltersBtn" aria-expanded="${open}">${kzt('chars.filtros')}${n ? ` (${n})` : ''} ${open ? '▲' : '▼'}</button>
       ${tierFilterActive() ? `<button type="button" class="kz-link-btn" id="tierFilterClear">${kzt('filtro.limparTudo')}</button>` : ''}
     </div>
+    ${open ? `
     ${groups.map(([label,key,vals])=>`
     <div class="kz-filter-row">
       <span class="kz-filter-label">${label}</span>
       ${vals.map(v=>`<button type="button" class="kz-fchip ${state[key]===v?'active':''}" data-tfilter="${key}" data-val="${escapeAttr(v)}" aria-pressed="${state[key]===v}">${escapeHtml(kzTermo(v))}</button>`).join('')}
     </div>`).join('')}
-    ${renderSF('tier')}
+    ${renderSF('tier')}` : ''}
   </div>`;
 }
 function renderTierRow(t, i, all){
@@ -3142,6 +3147,8 @@ function attachTierListHandlers(){
     state[key] = state[key] === val ? '' : val;
     render();
   }));
+  const tBtn = document.getElementById('tierFiltersBtn');
+  if(tBtn) tBtn.addEventListener('click', ()=>{ state.tierFiltersOpen = !state.tierFiltersOpen; render(); });
   const tClear = document.getElementById('tierFilterClear');
   if(tClear) tClear.addEventListener('click', ()=>{
     state.tierSearch = state.tierRarity = state.tierType = state.tierAffinity = '';
