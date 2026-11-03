@@ -501,6 +501,21 @@ input::placeholder,textarea::placeholder{color:var(--text-faint);}
 .kz-filter-panel{display:flex;flex-direction:column;gap:12px;padding:18px 20px;border-radius:14px;border:1.5px solid var(--line);background:var(--panel);}
 .kz-filter-top{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
 .kz-filter-top .kz-input{flex:1;min-width:200px;}
+/* Tier List: ranks à esquerda e, à direita, a barra lateral "Sem tier" (fixa na tela, como o elenco do montador de times) */
+.kz-tier-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;align-items:start;}
+.kz-tier-main{display:flex;flex-direction:column;gap:12px;min-width:0;}
+.tier-pool.kz-tier-side{position:sticky;top:16px;max-height:calc(100vh - 32px);padding:14px;gap:10px;}
+.kz-tier-side .tier-pool-items{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-content:start;gap:10px;overflow-y:auto;overflow-x:hidden;padding:2px 4px 2px 2px;flex:1;min-height:110px;}
+.kz-tier-side .tier-item{width:100%;}
+.kz-tier-side .kz-tier-filter{padding:0;border:0;background:none;margin:0;}
+.kz-tier-side .kz-tier-filter .kz-filter-row{flex-wrap:wrap;gap:6px;}
+.kz-tier-side .kz-tier-filter .kz-filter-label{width:100%;}
+.kz-tier-side .kz-empty{grid-column:1/-1;font-size:13px;}
+@media (max-width:1100px){
+  .kz-tier-layout{grid-template-columns:minmax(0,1fr);}
+  .tier-pool.kz-tier-side{position:static;max-height:none;}
+  .kz-tier-side .tier-pool-items{grid-template-columns:repeat(auto-fill,minmax(70px,1fr));max-height:340px;}
+}
 .kz-tier-filter{padding:8px 12px;gap:8px;margin:6px 0 10px;}
 .kz-tier-filter .kz-filter-top{flex-wrap:nowrap;gap:8px;}
 .kz-tier-filter .kz-filter-top .kz-input{min-width:0;padding:7px 12px;font-size:14px;}

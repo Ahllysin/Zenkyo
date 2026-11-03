@@ -855,6 +855,11 @@ html.vis-novo .kz-nvt .tier-remove-btn:hover{color:#FF6B5A;}
 html.vis-novo .kz-nvt-add{width:100%;min-height:54px;margin-top:20px;font-size:17px;font-weight:900;}
 html.vis-novo .kz-nvt .tier-pool{position:relative;margin-top:26px;padding:22px;border:0;border-radius:0;background:#120A08;box-shadow:inset 0 0 0 1.5px #3A1E16;}
 html.vis-novo .kz-nvt .tier-pool::before{content:'';position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#E8261B,#FF6A13,#FFC21A);}
+html.vis-novo .kz-nvt .kz-tier-layout{margin-top:24px;gap:28px;grid-template-columns:minmax(0,1fr) 320px;}
+html.vis-novo .kz-nvt .kz-tier-layout .kz-tier-rows{margin-top:0;}
+html.vis-novo .kz-nvt .tier-pool.kz-tier-side{margin-top:0;padding:18px;}
+html.vis-novo .kz-nvt .kz-tier-side .tier-item{width:100%;height:auto;aspect-ratio:3/4;}
+@media (max-width:1100px){ html.vis-novo .kz-nvt .kz-tier-layout{grid-template-columns:minmax(0,1fr);} html.vis-novo .kz-nvt .tier-pool.kz-tier-side{position:static;max-height:none;} }
 .kz-nvt-poolhead{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
 html.vis-novo .kz-nvt-poolhead .kz-label{font-size:16px;}
 .kz-nvt-hint{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-style:italic;font-size:15px;text-transform:uppercase;color:#C9B7A6;}

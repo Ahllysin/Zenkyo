@@ -3043,12 +3043,16 @@ function renderTierListTabNovo(){
     ${nvPageHeadHtml({ key:'tierlist', kanji:'番', tag:kzt('deco.tierlist'), title:kzt('nav.tierlist'), kanjiStyle:'right:22%;top:-60px;font-size:380px',
       sub:`${kzt('tier.subNovo')} ${state.discordUser ? kzt('coll.sync') : kzt('coll.local')}`,
       side:`<button class="kz-btn" id="tierSuggestBtn">${kzt('tier.sugestao')}</button><button class="kz-btn" id="tierListResetBtn">${kzt('tier.esvaziar')}</button><button class="kz-btn kz-btn-primary" id="tierListExportBtn">${dl}${kzt('tier.exportar')}</button>` })}
-    <div class="kz-tier-rows">${state.tierList.tiers.map((t,i,a)=>renderTierRow(t,i,a)).join('')}</div>
-    <button class="kz-btn kz-nvt-add" id="tierAddBtn">${kzt('tier.adicionarRank')}</button>
-    <div class="tier-pool">
-      <div class="kz-nvt-poolhead"><span class="kz-label">${kzt('tier.semTier', { n: unrankedChars.length })}</span><span class="kz-nvt-hint">${kzt('tier.arrasteDaqui')}</span></div>
-      ${tierFilterHtml()}
-      <div class="tier-pool-items" data-tier="unranked">${tierPoolItemsHtml()}</div>
+    <div class="kz-tier-layout">
+      <div class="kz-tier-main">
+        <div class="kz-tier-rows">${state.tierList.tiers.map((t,i,a)=>renderTierRow(t,i,a)).join('')}</div>
+        <button class="kz-btn kz-nvt-add" id="tierAddBtn">${kzt('tier.adicionarRank')}</button>
+      </div>
+      <aside class="tier-pool kz-tier-side">
+        <div class="kz-nvt-poolhead"><span class="kz-label">${kzt('tier.semTier', { n: unrankedChars.length })}</span><span class="kz-nvt-hint">${kzt('tier.arrasteDaqui')}</span></div>
+        ${tierFilterHtml()}
+        <div class="tier-pool-items" data-tier="unranked">${tierPoolItemsHtml()}</div>
+      </aside>
     </div>
   </section>`;
 }
@@ -3068,12 +3072,16 @@ function renderTierListTab(){
         <button class="kz-btn" id="tierListExportBtn">${kzt('tier.exportar')}</button>
       </div>
     </div>
-    <div class="kz-tier-rows">${state.tierList.tiers.map((t,i,a)=>renderTierRow(t,i,a)).join('')}</div>
-    <button class="kz-btn kz-btn-sm" id="tierAddBtn" style="align-self:flex-start;">${kzt('tier.adicionarRank')}</button>
-    <div class="tier-pool">
-      <span class="kz-label">${kzt('tier.semTier', { n: unrankedChars.length })}</span>
-      ${tierFilterHtml()}
-      <div class="tier-pool-items" data-tier="unranked">${tierPoolItemsHtml()}</div>
+    <div class="kz-tier-layout">
+      <div class="kz-tier-main">
+        <div class="kz-tier-rows">${state.tierList.tiers.map((t,i,a)=>renderTierRow(t,i,a)).join('')}</div>
+        <button class="kz-btn kz-btn-sm" id="tierAddBtn" style="align-self:flex-start;">${kzt('tier.adicionarRank')}</button>
+      </div>
+      <aside class="tier-pool kz-tier-side">
+        <span class="kz-label">${kzt('tier.semTier', { n: unrankedChars.length })}</span>
+        ${tierFilterHtml()}
+        <div class="tier-pool-items" data-tier="unranked">${tierPoolItemsHtml()}</div>
+      </aside>
     </div>
   </section>`;
 }

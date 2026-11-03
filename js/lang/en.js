@@ -213,7 +213,7 @@ kzAddLang('en', {
   'tier.adicionarRank': '+ Add rank',
   'tier.semTier': 'Unranked ({n})',
   'tier.arrasteDaqui': 'Drag from here to a rank',
-  'tier.buscar': 'Search "Unranked": character or skill…',
+  'tier.buscar': 'Search character…',
   'tier.nenhumFiltro': 'No unranked warrior matches these filters.',
   'tier.subAntigo': 'Drag the warriors between ranks. Reorder the ranks with the ⋮⋮ handle (or the ▲▼ arrows) and click a rank\'s name to rename it. Saved on this device.',
   'tier.sugestaoConfirma': 'Rearrange the tier list by rarity (Limited → 1st rank, SSR → 2nd, SR → 3rd, R → 4th)? This replaces the current arrangement.',
