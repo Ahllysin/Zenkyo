@@ -291,7 +291,8 @@ let state = {
   communityMyLikes: [], communityReported: [],
   communityOpenPost: null, communityProfileUser: null,   // post aberto na aba Comunidade / perfil de autor aberto no popup
   communityFilter: 'all', communitySort: 'recent', communitySearch: '', communityCompose: null,
-  sf: { chars:{tags:[],trig:[],eff:[]}, coll:{tags:[],trig:[],eff:[]}, roster:{tags:[],trig:[],eff:[]}, open:{} },   // filtro de pesquisa por tags + o que o Ataque Combinado persegue/causa, um por aba
+  sf: { chars:{tags:[],trig:[],eff:[]}, coll:{tags:[],trig:[],eff:[]}, roster:{tags:[],trig:[],eff:[]}, tier:{tags:[],trig:[],eff:[]}, open:{} },
+  tierSearch: '', tierRarity: '', tierType: '', tierAffinity: '',   // filtro do "Sem tier" na Tier List (não é salvo)   // filtro de pesquisa por tags + o que o Ataque Combinado persegue/causa, um por aba
   editingChar: null,                // character object being edited in modal, or null
   ioModalOpen: false,               // import/export JSON modal
   pickerSlot: null,                 // slot index currently choosing a warrior for, or null
@@ -2975,6 +2976,43 @@ const SHOW_ABILITY_ICONS = true;
 function renderTierItem(c){
   return `<div class="tier-item" draggable="true" data-id="${c.id}" title="${escapeAttr(kzNome(c.name))}">${portraitInner(c)}</div>`;
 }
+// Filtro do "Sem tier": busca + raridade/tipo/afinidade + o filtro de tags/efeitos das outras abas.
+// Mexe só na lista de baixo (os ranks continuam como estão). A lista sempre sai na ordem
+// Ultimate > Lendário > Limitado > SSR > SR > R (o índice de cada chip é o próprio rarityRank).
+const TIER_RARITY_CHIPS = ['Ultimate','Lendário','Limitado','SSR','SR','R'];
+const TIER_FILTER_KEYS = ['tierRarity','tierType','tierAffinity'];
+function matchesTierFilter(c){
+  if(state.tierSearch && !charMatchesText(c, state.tierSearch)) return false;
+  if(state.tierRarity && rarityRank(c.rarity) !== TIER_RARITY_CHIPS.indexOf(state.tierRarity)) return false;
+  if(state.tierType && c.type !== state.tierType) return false;
+  if(state.tierAffinity && c.affinity !== state.tierAffinity) return false;
+  return matchSF(c, state.sf.tier);
+}
+function tierFilterActive(){ return !!(state.tierSearch || state.tierRarity || state.tierType || state.tierAffinity || sfCount(state.sf.tier)); }
+function getTierPoolChars(){
+  return sortByRarity((state.tierList.unranked||[]).map(getChar).filter(Boolean).filter(matchesTierFilter));
+}
+function tierPoolItemsHtml(){
+  const chars = getTierPoolChars();
+  if(!chars.length && (state.tierList.unranked||[]).length) return `<div class="kz-empty">${kzt('tier.nenhumFiltro')}</div>`;
+  return chars.map(renderTierItem).join('');
+}
+function tierFilterHtml(){
+  const groups = [[kzt('filtro.raridade'),'tierRarity',TIER_RARITY_CHIPS],[kzt('filtro.tipo'),'tierType',TYPES],[kzt('filtro.afinidade'),'tierAffinity',AFFINITIES]];
+  return `
+  <div class="kz-filter-panel kz-tier-filter">
+    <div class="kz-filter-top">
+      <input type="text" class="kz-input" id="tierSearch" placeholder="${escapeAttr(kzt('tier.buscar'))}" value="${escapeAttr(state.tierSearch||'')}" autocomplete="off" aria-label="${escapeAttr(kzt('tier.buscar'))}">
+      ${tierFilterActive() ? `<button type="button" class="kz-link-btn" id="tierFilterClear">${kzt('filtro.limparTudo')}</button>` : ''}
+    </div>
+    ${groups.map(([label,key,vals])=>`
+    <div class="kz-filter-row">
+      <span class="kz-filter-label">${label}</span>
+      ${vals.map(v=>`<button type="button" class="kz-fchip ${state[key]===v?'active':''}" data-tfilter="${key}" data-val="${escapeAttr(v)}" aria-pressed="${state[key]===v}">${escapeHtml(kzTermo(v))}</button>`).join('')}
+    </div>`).join('')}
+    ${renderSF('tier')}
+  </div>`;
+}
 function renderTierRow(t, i, all){
   const chars = t.items.map(getChar).filter(Boolean);
   const n = (all || state.tierList.tiers).length;
@@ -2994,7 +3032,7 @@ function renderTierRow(t, i, all){
 // "+ Adicionar rank" largo e o bloco "Sem tier". Mantém os ids/data-* que attachTierListHandlers usa.
 function renderTierListTabNovo(){
   const unrankedChars = (state.tierList.unranked||[]).map(getChar).filter(Boolean);
-  const dl = `<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg>`;
+  const dl =`<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg>`;
   return `
   <section class="kz-page kz-nvp kz-nvt">
     ${nvPageHeadHtml({ key:'tierlist', kanji:'番', tag:kzt('deco.tierlist'), title:kzt('nav.tierlist'), kanjiStyle:'right:22%;top:-60px;font-size:380px',
@@ -3004,7 +3042,8 @@ function renderTierListTabNovo(){
     <button class="kz-btn kz-nvt-add" id="tierAddBtn">${kzt('tier.adicionarRank')}</button>
     <div class="tier-pool">
       <div class="kz-nvt-poolhead"><span class="kz-label">${kzt('tier.semTier', { n: unrankedChars.length })}</span><span class="kz-nvt-hint">${kzt('tier.arrasteDaqui')}</span></div>
-      <div class="tier-pool-items" data-tier="unranked">${unrankedChars.map(renderTierItem).join('')}</div>
+      ${tierFilterHtml()}
+      <div class="tier-pool-items" data-tier="unranked">${tierPoolItemsHtml()}</div>
     </div>
   </section>`;
 }
@@ -3028,7 +3067,8 @@ function renderTierListTab(){
     <button class="kz-btn kz-btn-sm" id="tierAddBtn" style="align-self:flex-start;">${kzt('tier.adicionarRank')}</button>
     <div class="tier-pool">
       <span class="kz-label">${kzt('tier.semTier', { n: unrankedChars.length })}</span>
-      <div class="tier-pool-items" data-tier="unranked">${unrankedChars.map(renderTierItem).join('')}</div>
+      ${tierFilterHtml()}
+      <div class="tier-pool-items" data-tier="unranked">${tierPoolItemsHtml()}</div>
     </div>
   </section>`;
 }
@@ -3088,6 +3128,27 @@ function fitTierLabelFont(el){
 function attachTierListHandlers(){
   const view = document.getElementById('view');
   if(!view || state.tab !== 'tierlist') return;
+
+  const tSearch = document.getElementById('tierSearch');
+  if(tSearch) tSearch.addEventListener('input', e=>{   // refaz a aba e devolve o foco/cursor ao campo
+    state.tierSearch = e.target.value;
+    const pos = e.target.selectionStart;
+    render();
+    const novo = document.getElementById('tierSearch');
+    if(novo){ novo.focus(); try{ novo.setSelectionRange(pos, pos); }catch(_){} }
+  });
+  view.querySelectorAll('.kz-fchip[data-tfilter]').forEach(chip=>chip.addEventListener('click', ()=>{
+    const key = chip.dataset.tfilter, val = chip.dataset.val;
+    state[key] = state[key] === val ? '' : val;
+    render();
+  }));
+  const tClear = document.getElementById('tierFilterClear');
+  if(tClear) tClear.addEventListener('click', ()=>{
+    state.tierSearch = state.tierRarity = state.tierType = state.tierAffinity = '';
+    state.sf.tier = {tags:[],trig:[],eff:[]};
+    render();
+  });
+  attachSF('tier', view, render);
 
   view.querySelectorAll('.tier-item').forEach(item=>{
     item.addEventListener('dragstart', e=>{

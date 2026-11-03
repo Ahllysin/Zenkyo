@@ -213,6 +213,8 @@ kzAddLang('pt', {
   'tier.adicionarRank': '+ Adicionar rank',
   'tier.semTier': 'Sem tier ({n})',
   'tier.arrasteDaqui': 'Arraste daqui pra um rank',
+  'tier.buscar': 'Buscar no "Sem tier": personagem ou habilidade…',
+  'tier.nenhumFiltro': 'Nenhum guerreiro do "Sem tier" bate com esses filtros.',
   'tier.subAntigo': 'Arraste os guerreiros entre os ranks. Reorganize os ranks pela alça ⋮⋮ (ou pelas setas ▲▼) e clique no nome de um rank pra renomear. Fica salvo neste aparelho.',
   'tier.sugestaoConfirma': 'Reorganizar a tier list pela raridade (Limitado → 1º rank, SSR → 2º, SR → 3º, R → 4º)? Isso substitui a organização atual.',
   'tier.esvaziarConfirma': 'Esvaziar a tier list e voltar todos os personagens pra "Sem tier"?',
