@@ -3985,6 +3985,30 @@ const DESC_NEG = KZ_LANG === 'en'
   ? /\b(sem|exceto|menos|nao quero|nem|tirando|fora|without|except|excluding|dont want|do not want|no|not|avoid|exclude)\b/
   : /\b(sem|exceto|menos|nao quero|nem|tirando|fora|without|except|excluding|dont want|do not want)\b/;
 const DESC_GERAL = /melhor time|time forte|time completo|equilibrad|qualquer time|time bom|monte um time|monta um time|me ajuda|me sugere|sugest|best team|strong team|complete team|balanced|any team|good team|build a team|help me|suggest/;
+// Fase do jogo / perfil de gasto: "early", "mid", "late game", "comp free" (F2P) e "comp cash". Valem pela raridade dos guerreiros
+// (rarityRank: 0 Ultimate, 1 Lend\u00e1rio, 2 Limitado, 3 SSR...): free e early quase n\u00e3o t\u00eam Limitado/Lend\u00e1rio/Ultimate (no m\u00e1x. 1 Limitado,
+// e SSR normal \u00e9 o que mais aparece); mid aceita alguns (at\u00e9 3 raros, no m\u00e1x. 1 Ultimate); late n\u00e3o limita; cash j\u00e1 usa os raros e d\u00e1 prefer\u00eancia a eles.
+// Quem a pessoa citou pelo nome sempre entra, seja qual for a raridade.
+const FASES = {
+  early: { ban:[0, 1], teto:1, ssr:true },
+  free:  { ban:[0, 1], teto:1, ssr:true },
+  mid:   { ban:[], teto:3, tetoUlt:1 },
+  late:  {},
+  cash:  { raros:true },
+};
+const DESC_FASES = [
+  ['free', /\bfree\b|\bf2p\b|free ?to ?play|gratuit|sem gastar|sem pagar|sem cash|nao gast|nao pag/],
+  ['cash', /\bcash(?:er|ier)?\b|\bcasher\b|\bp2w\b|pay ?to ?win|pagante|\bwhale|\bbaleia|\bdolfin/],
+  ['early', /early ?game|\bearly\b|inicio (do|de) jogo|comeco do jogo|comecando|iniciante|novato|\bnoob|beginner|new player|starter/],
+  ['mid', /mid ?game|\bmid\b|meio (do|de) jogo|intermediari|jogo medio/],
+  ['late', /late ?game|\blate\b|end ?game|endgame|(fim|final) (do|de) jogo|avancado/],
+];
+// Texto j\u00e1 sem acento: a fase que aparece primeiro vence ("comp free no early" \u2192 free).
+function descFase(t){
+  let melhor = null;
+  DESC_FASES.forEach(([k, re]) => { const m = re.exec(t); if(m && (!melhor || m.index < melhor.i)) melhor = { k, i:m.index }; });
+  return melhor ? melhor.k : '';
+}
 function descNorm(s){ return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
 // Lê um trecho do texto (já sem acento) e devolve os filtros encontrados.
 function descLerTrecho(t){
@@ -4047,8 +4071,10 @@ function parseTeamPrompt(text){
   crit.names = crit.names.filter(id => { const c = getChar(id), nn = c ? descNorm(c.name) : ''; return !(nn && !nn.includes(' ') && crit.refs.includes(nn)); });
   crit.refs.forEach(w => { crit.labels.push(kzt('desc.citado', { w: w.charAt(0).toUpperCase() + w.slice(1) })); });
   crit.geral = DESC_GERAL.test(pos);
+  crit.fase = descFase(t);   // lê o texto inteiro: "sem gastar" também é "comp free"
+  if(crit.fase) crit.labels.push(kzt('desc.fase.' + crit.fase));
   crit.vazio = !(crit.mechs.length || crit.roles.length || crit.types.length || crit.genders.length || crit.races.length || crit.tags.length
-    || crit.affs.length || crit.rars.length || crit.names.length || crit.refs.length || crit.excl || crit.geral);
+    || crit.affs.length || crit.rars.length || crit.names.length || crit.refs.length || crit.excl || crit.geral || crit.fase);
   return crit;
 }
 function descCasa(c, f){
@@ -4108,7 +4134,9 @@ function buildDescribedTeams(crit, maxOptions){
     .sort((a, b) => rarityRank(a.rarity) - rarityRank(b.rarity)).slice(0, 3).forEach(c => crit._refOk.add(c.id)));
   const info = new Map();
   state.characters.forEach(c => info.set(c.id, descRelevance(c, crit)));
-  const hardPool = state.characters.filter(c => descHardOk(c, crit) || crit.names.includes(c.id));
+  const fz = FASES[crit.fase] || {};
+  const raro = c => rarityRank(c.rarity) <= 2, ult = c => rarityRank(c.rarity) === 0;
+  const hardPool = state.characters.filter(c => crit.names.includes(c.id) || (descHardOk(c, crit) && !(fz.ban || []).includes(rarityRank(c.rarity))));
   const byRel = [...hardPool].sort((a, b) => info.get(b.id).rel - info.get(a.id).rel || rarityRank(a.rarity) - rarityRank(b.rarity));
   const relevantN = hasSoft ? byRel.filter(c => info.get(c.id).rel > 0).length : byRel.length;
   // se faltar gente com o efeito pedido, completa a equipe com os melhores do filtro
@@ -4125,7 +4153,17 @@ function buildDescribedTeams(crit, maxOptions){
     const rel = ids.reduce((s, id) => s + info.get(id).rel, 0) / Math.max(ids.length, 1);
     const com = crit._com ? ids.reduce((s2, id) => s2 + Math.min(1, (crit._com.get(id) || 0) / 2), 0) / Math.max(ids.length, 1) : 0;
     const sc = hasSoft ? 0.55 * rel + 0.45 * o.score : o.score;
-    return { ...o, rel, score: sc + 0.08 * com };   // times da Comunidade parecidos com o pedido dão um empurrãozinho
+    // free/early: prefere SSR normal; cash: prefere os raros (Limitado/Lendário/Ultimate)
+    const cs = ids.map(getChar).filter(Boolean);
+    const fase = fz.ssr ? 0.06 * cs.filter(c => rarityRank(c.rarity) === 3).length / Math.max(cs.length, 1)
+      : fz.raros ? 0.05 * cs.filter(raro).length / Math.max(cs.length, 1) : 0;
+    return { ...o, rel, score: sc + 0.08 * com + fase };   // times da Comunidade parecidos com o pedido dão um empurrãozinho
+  };
+  // teto de raros do mid/free/early: só vale pra quem entra por escolha (os citados pelo nome contam, mas nunca são barrados)
+  const cabe = ids => {
+    const cs = ids.map(getChar).filter(Boolean);
+    return !(fz.teto != null && cs.filter(raro).length > Math.max(fz.teto, forced.filter(id => raro(getChar(id))).length))
+      && !(fz.tetoUlt != null && cs.filter(ult).length > Math.max(fz.tetoUlt, forced.filter(id => ult(getChar(id))).length));
   };
   const steps = Math.min(6 - forced.length, pool.length - forced.length);
   let beam = [{ team:base, obj:objective(base) }];
@@ -4137,6 +4175,7 @@ function buildDescribedTeams(crit, maxOptions){
       pool.forEach(c => {
         if(used.has(c.id)) return;
         const t = [...st.team]; t[slot] = c.id;
+        if(!cabe(t.filter(Boolean))) return;
         const key = t.filter(Boolean).sort().join(',');
         const obj = objective(t);
         const prev = seen.get(key);
@@ -4256,8 +4295,9 @@ function descMesclarIa(crit, ia, porNome){
   (ia.principais || []).forEach(n => { const id = porNome.get(n); if(id && !crit.names.includes(id)) crit.names.push(id); });
   crit.principais = (ia.principais || []).map(n => porNome.get(n)).filter(Boolean);
   if(crit.mode === 'equilibrado' && ia.foco && ia.foco !== 'equilibrado') crit.mode = ia.foco;
+  if(!crit.fase && FASES[ia.fase]){ crit.fase = ia.fase; crit.labels.push(kzt('desc.fase.' + ia.fase)); }
   crit.vazio = !(crit.mechs.length || crit.roles.length || crit.types.length || crit.genders.length || crit.races.length || crit.tags.length
-    || crit.affs.length || crit.rars.length || crit.names.length || crit.refs.length || crit.excl || crit.geral);
+    || crit.affs.length || crit.rars.length || crit.names.length || crit.refs.length || crit.excl || crit.geral || crit.fase);
   return crit;
 }
 // Resumo dos times (só dados do site) que vai para a IA escrever a explicação.
@@ -4265,7 +4305,8 @@ function iaTimesPayload(list, crit){
   return list.map(o => {
     const pil = teamPillars(o.team);
     return {
-      membros: o.team.filter(Boolean).map(id => { const c = getChar(id); return { nome: kzNome(c.name), papeis: rolesOf(c).slice(0, 3).map(r => ROLE_INFO[r].label), principal: crit.names.includes(id) }; }),
+      membros: o.team.filter(Boolean).map(id => { const c = getChar(id); return { nome: kzNome(c.name), papeis: rolesOf(c).slice(0, 3).map(r => ROLE_INFO[r].label), principal: crit.names.includes(id), raridade: c.rarity || '' }; }),
+      fase: crit.fase || '',
       pilares: Object.fromEntries(PILLAR_ORDER.map(k => [PILLARS[k].label, Math.round(pil[k] * 10) / 10])),
       faltam: missingPillars(o.team).map(k => PILLARS[k].label),
       combos: o.combos, maiorCadeia: (o.longest || 0) + 1,
@@ -5554,30 +5595,49 @@ function comboCountHtml(teamArg){
   return `<div class="kz-combo-count" title="${escapeAttr(tip)}"><span class="big"><b>${s.total}</b> ${kzt(s.total>1 ? 'cb.combosMinN' : 'cb.combosMin1')}<span class="max"> / ${m.max}</span></span><span class="sub">${kzt('cb.subResumo', { inicios: kzt(s.starts>1 ? 'cb.inicioMinN' : 'cb.inicioMin1', { n: '<b>' + s.starts + '</b>' }), starters: startersTxt, hits: '<b>' + kzt('com.maiorCadeia', { n: s.best.n+1 }) + '</b>', nome: escapeHtml(kzNome(bc.name)), hab: ABILITY_LABEL[s.best.key] })}</span></div>`;
 }
 // Reordena SÓ quem já está em campo (as mesmas casas ocupadas) testando todas as ordens possíveis
-// — no máx. 6! = 720. Vence a que soma mais encadeamentos; empate: a cadeia mais longa; empate de novo:
-// a que mexe em menos guerreiros em relação à ordem atual.
+// — no máx. 6! = 720. A linha de frente (Casas 1 a 3) fica com quem aguenta mais (tank, defesa, autocura): entre as
+// ordens que rendem pelo menos FRONT_COMBO_TOLERANCE do máximo de encadeamentos, vence a que põe mais "tank" na frente;
+// empate: mais encadeamentos; depois a cadeia mais longa; por fim a que mexe em menos guerreiros em relação à ordem atual.
+// Sem nenhum tank no time, o critério é o de sempre (máximo de encadeamentos).
+const FRONT_SLOTS = [0, 1, 2];
+const FRONT_COMBO_TOLERANCE = 0.85;
+function frontScore(id){
+  const c = id && getChar(id);
+  return c ? analyzeRoles(c).pillars.tank : 0;   // tank + sobrevivência (ver ROLE_INFO[...].pillar)
+}
 function optimizeTeamOrder(teamArg){
   const team = [...(teamArg || state.team)];
   const slots = team.map((id,i)=>id ? i : -1).filter(i=>i>-1);
   if(slots.length < 2) return null;
   const ids = slots.map(i=>team[i]);
   const before = comboStatsFor(team);
-  let best = null;
+  const tanque = new Map(ids.map(id => [id, frontScore(id)]));
+  const todas = [];
   const perm = (arr, rest) => {
     if(!rest.length){
       const t = [...team];
       slots.forEach((s,k)=>{ t[s] = arr[k]; });
       const st = comboStatsFor(t);
       const moved = arr.reduce((n,id,k)=> n + (id !== ids[k] ? 1 : 0), 0);
-      if(!best || st.total > best.st.total || (st.total === best.st.total && (st.longest > best.st.longest || (st.longest === best.st.longest && moved < best.moved)))){
-        best = { team:t, st, moved };
-      }
+      const front = slots.reduce((n, s, k) => n + (FRONT_SLOTS.includes(s) ? tanque.get(arr[k]) : 0), 0);
+      todas.push({ team:t, st, moved, front });
       return;
     }
     rest.forEach((id,i)=> perm([...arr, id], [...rest.slice(0,i), ...rest.slice(i+1)]));
   };
   perm([], ids);
-  return { team:best.team, before, after:best.st, changed: best.moved > 0 };
+  const max = todas.reduce((m, x) => Math.max(m, x.st.total), 0);
+  const piso = Math.floor(max * FRONT_COMBO_TOLERANCE);
+  const melhor = (a, b) => {
+    const df = Math.round((a.front - b.front) * 1000);
+    if(df) return df > 0;
+    if(a.st.total !== b.st.total) return a.st.total > b.st.total;
+    if(a.st.longest !== b.st.longest) return a.st.longest > b.st.longest;
+    return a.moved < b.moved;
+  };
+  let best = null;
+  todas.forEach(x => { if(x.st.total >= piso && (!best || melhor(x, best))) best = x; });
+  return { team:best.team, before, after:best.st, changed: best.moved > 0, max };
 }
 function canUndoOptimize(){
   const u = state.optUndo;
@@ -5595,7 +5655,9 @@ function runOptimizeTeam(){
   const prev = [...state.team];
   commitTeam(r.team);
   state.optUndo = { before:prev, after:[...r.team] };
-  state.optInfo = r.after.total > r.before.total
+  state.optInfo = r.after.total < r.max
+    ? kzt('cb.ordemTanks', { a: r.after.total, m: r.max, h: r.after.longest + 1 })   // abriu mão de alguns encadeamentos pra pôr os tanks na frente
+    : r.after.total > r.before.total
     ? kzt('cb.novaOrdem', { a: r.after.total, b: r.before.total, h: r.after.longest + 1 })
     : kzt('cb.jaMaxima', { a: r.after.total, h: r.after.longest + 1 });
   render();

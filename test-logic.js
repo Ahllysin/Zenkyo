@@ -443,6 +443,47 @@ async function main(){
     assert.strictEqual(r.solo, null, 'com 1 guerreiro não há o que reordenar');
   });
 
+  await test('"Gerar melhor ordem": tank vai pra frente (Casas 1 a 3) sem abrir mão de muitos combos; sem tank, ordem de sempre', () => {
+    const r = evalIn(sandbox, `(() => {
+      const bk = [state.characters, state.team];
+      const mk = (id, type, skillEff, trig, eff) => ({ id, name:id.toUpperCase(), type, tags:[], rarity:'R', skill:{name:'S'+id, effects:skillEff}, supreme:{name:'U'+id, effects:[]}, combo:{name:'C'+id, triggers:trig, effects:eff} });
+      // a puxa b e c: sem tank o melhor é a primeiro; t (Defesa) não participa de combos e deve ir pra frente
+      state.characters = [ mk('a','Ataque',['derrubada'],[],[]), mk('b','Ataque',[],['derrubada'],['empurrao']), mk('c','Ataque',[],['empurrao'],[]), mk('t','Defesa',[],[],[]) ];
+      state.team = ['a','b','c',null,null,'t'];
+      const res = optimizeTeamOrder();
+      const frente = res.team.slice(0, 3);
+      const semTank = (() => { state.characters.forEach(c => { c.type = 'Ataque'; }); _roleCache.clear(); const x = optimizeTeamOrder(['a','b','c',null,null,'t']); return x.after.total === x.max; })();
+      state.characters = bk[0]; state.team = bk[1]; _roleCache.clear();
+      return { frente, tankNaFrente: frente.includes('t'), depois: res.after.total, max: res.max, tolerancia: res.after.total >= Math.floor(res.max * FRONT_COMBO_TOLERANCE), semTank };
+    })()`);
+    assert.ok(r.tankNaFrente, 'o tank foi pra uma das Casas 1 a 3: ' + r.frente);
+    assert.ok(r.tolerancia, 'ficou dentro da tolerância de combos (' + r.depois + ' de ' + r.max + ')');
+    assert.ok(r.semTank, 'sem tank, a ordem continua a que rende o máximo de encadeamentos');
+  });
+
+  await test('IA/leitura local entende early/mid/late game e "comp free"/"comp cash"; free/early quase não usam raros, cash usa', () => {
+    const r = evalIn(sandbox, `(() => {
+      const f = t => parseTeamPrompt(t).fase;
+      const raros = o => o.team.filter(Boolean).map(getChar).filter(c => rarityRank(c.rarity) <= 2);
+      const crit = k => parseTeamPrompt('monte uma comp ' + k);
+      const free = buildDescribedTeams(crit('free'), 3), early = buildDescribedTeams(crit('early game'), 3), mid = buildDescribedTeams(crit('mid game'), 3), cash = buildDescribedTeams(crit('cash'), 3);
+      return {
+        fases: [f('comp free'), f('time f2p'), f('sem gastar nada'), f('comp casher'), f('comp cash'), f('time de early game'), f('mid game'), f('late game'), f('endgame'), f('time de queimadura')],
+        vazioFree: parseTeamPrompt('comp free').vazio,
+        freeRaros: free.list.map(o => raros(o).length), freeUlt: free.list.some(o => raros(o).some(c => rarityRank(c.rarity) < 2)),
+        earlyRaros: early.list.map(o => raros(o).length), midRaros: mid.list.map(o => raros(o).length), midUlt: mid.list.map(o => o.team.filter(Boolean).map(getChar).filter(c => rarityRank(c.rarity) === 0).length),
+        cashRaros: cash.list.map(o => raros(o).length), n: free.list.length,
+      };
+    })()`);
+    assert.deepStrictEqual(r.fases, ['free', 'free', 'free', 'cash', 'cash', 'early', 'mid', 'late', 'late', '']);
+    assert.strictEqual(r.vazioFree, false, 'pedir só "comp free" já é um pedido válido');
+    assert.ok(r.n >= 1);
+    assert.ok(r.freeRaros.every(n => n <= 1) && !r.freeUlt, 'free: no máx. 1 Limitado e nenhum Lendário/Ultimate: ' + r.freeRaros);
+    assert.ok(r.earlyRaros.every(n => n <= 1), 'early: no máx. 1 raro: ' + r.earlyRaros);
+    assert.ok(r.midRaros.every(n => n <= 3) && r.midUlt.every(n => n <= 1), 'mid: até 3 raros e 1 Ultimate: ' + r.midRaros);
+    assert.ok(Math.max(...r.cashRaros) >= 3, 'cash usa bastante raro: ' + r.cashRaros);
+  });
+
   await test('comboSummary conta os encadeamentos, os inícios com combo e a maior cadeia da equipe', () => {
     const r = evalIn(sandbox, `(() => {
       const bk = [state.characters, state.team];
