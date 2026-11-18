@@ -5628,7 +5628,17 @@ const FRONT_SLOTS = [0, 1, 2];
 const FRONT_COMBO_TOLERANCE = 0.5;   // 0,85 deixava tank atrás em alguns times; com 0,5 a perda média de encadeamentos fica em ~5%
 function frontScore(id){
   const c = id && getChar(id);
-  return c ? analyzeRoles(c).pillars.tank : 0;   // tank + sobrevivência (ver ROLE_INFO[...].pillar)
+  if(!c) return 0;
+  const a = analyzeRoles(c);
+  // tank + sobrevivência (ver ROLE_INFO[...].pillar); quem tem o PAPEL Tank na ficha ("tank de ofício") ganha um bônus grande,
+  // pra sempre passar na frente de quem só tem autocura (ex.: Broly DBS com Tank em 3º papel valia menos que um Goku SS4 com sobrevivência)
+  let s = a.pillars.tank;
+  if(a.roles.includes('tank')) s += 2;
+  // sem o papel Tank: habilidades de resistência (reduzir dano, esquiva, escudo...) pesam em proporção ao que a leitura achou
+  else s += Math.min(a.score.tank / ROLE_INFO.tank.thr, 1) * 0.8;
+  // reviver ou autocura de verdade (papel Sobrevivência) também puxa pra frente, logo atrás dos tanks de ofício
+  if(a.roles.includes('sobrevivencia')) s += 0.5;
+  return s;
 }
 function optimizeTeamOrder(teamArg){
   const team = [...(teamArg || state.team)];

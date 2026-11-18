@@ -464,6 +464,17 @@ async function main(){
     assert.ok(r.semTank, 'sem tank, a ordem continua a que rende o máximo de encadeamentos');
   });
 
+  await test('"Gerar melhor ordem" com guerreiros reais: tank de ofício (papel Tank, mesmo em 3º papel) vai pra frente; sem tank, quem tem sobrevivência/reviver vai pra frente', () => {
+    const r = evalIn(sandbox, `(() => {
+      const nm = n => state.characters.find(c => c.name === n).id, nome = i => getChar(i).name;
+      const a = optimizeTeamOrder([nm('Goku SS4'), nm('Vegeta SSG'), nm('Gogeta SS4'), nm('Broly (DBS)'), nm('Kefla'), nm('Beerus')]);
+      const b = optimizeTeamOrder([nm('Goku SSJ Deus'), nm('Android 18'), nm('Goku Black (Rose)'), nm('Janemba'), nm('Goku SSGSS'), nm('Goku SS4')]);
+      return { a: a.team.slice(0, 3).map(nome), b: b.team.slice(0, 3).map(nome) };
+    })()`);
+    assert.ok(r.a.includes('Broly (DBS)'), 'Broly (DBS) tem o papel Tank e vai pra frente: ' + r.a);
+    assert.ok(r.b.includes('Goku SS4'), 'sem tank, Goku SS4 (sobrevivência) vai pra frente: ' + r.b);
+  });
+
   await test('IA/leitura local entende early/mid/late game e "comp free"/"comp cash"; free/early quase não usam raros, cash usa', () => {
     const r = evalIn(sandbox, `(() => {
       const f = t => parseTeamPrompt(t).fase;
