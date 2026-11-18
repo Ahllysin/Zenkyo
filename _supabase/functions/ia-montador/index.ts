@@ -115,6 +115,29 @@ Deno.serve(async (req: Request) => {
 
   let body: Record<string, any> = {};
   try { const bruto = await req.text(); if (bruto.length > 12000) return responder(413, { erro: "Pedido grande demais." }); body = JSON.parse(bruto); } catch { return responder(400, { erro: "Pedido inválido." }); }
+  // "registrar" e "votar" não chamam a IA nem gastam a cota dela: só guardam o pedido (sem IP e sem conta) e o 👍/👎 da pessoa.
+  if (body.acao === "registrar" || body.acao === "votar") {
+    const adm = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false, autoRefreshToken: false } });
+    try {
+      if (body.acao === "votar") {
+        const id = String(body.id ?? "");
+        if (!/^[0-9a-f-]{36}$/i.test(id) || ![1, -1].includes(Number(body.voto))) return responder(400, { erro: "Voto inválido." });
+        const { data } = await adm.rpc("ia_votar_pedido", { p_id: id, p_voto: Number(body.voto) });
+        return responder(200, { ok: data === true });
+      }
+      const txt = limpa(body.texto, 200);
+      if (txt.length < 3) return responder(400, { erro: "Pedido vazio." });
+      const ip = (req.headers.get("cf-connecting-ip") ?? req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "desconhecido";
+      const quem = await sha256(ip + "|" + (Deno.env.get("IA_SAL") ?? "zenkyo"));
+      const entendido = (Array.isArray(body.entendido) ? body.entendido : []).slice(0, 16).map((s: unknown) => limpa(s, 40)).filter(Boolean);
+      const { data } = await adm.rpc("ia_registrar_pedido", {
+        p_quem: quem, p_idioma: body.idioma === "en" ? "en" : "pt", p_texto: txt, p_fonte: body.fonte === "ia" ? "ia" : "local",
+        p_vazio: body.vazio === true, p_fase: FASES.includes(String(body.fase)) ? String(body.fase) : "", p_entendido: entendido,
+        p_n_times: Math.max(0, Math.min(3, Math.round(Number(body.nTimes) || 0))), p_limite: 60,
+      });
+      return responder(200, { id: data ?? null });
+    } catch (e) { console.error("ia-montador: registrar/votar falhou", e); return responder(200, { id: null }); }
+  }
   const acao = body.acao === "explicar" ? "explicar" : body.acao === "interpretar" ? "interpretar" : null;
   if (!acao) return responder(400, { erro: "Ação inválida." });
   const idioma = body.idioma === "en" ? "inglês" : "português do Brasil";

@@ -58,6 +58,8 @@ IA DO MONTADOR DE TIME (Descreva o time; Gemini, plano gratuito)
 ================================================================
   - Função ia-montador → duas ações: "interpretar" (pedido → filtros e guerreiro principal) e "explicar" (explica os times que o
                          SITE montou, só com os dados que o site mandou). A IA nunca escolhe guerreiros. Publicar SEM verificação de JWT.
+  - Ações "registrar" e "votar" (sem gastar cota da IA): guardam o pedido do "Descreva o time" (sem IP e sem conta) e o 👍/👎 na tabela ia_pedidos
+    (migrations/20261117_ia_pedidos.sql). O dono vê tudo na aba Admin → "Pedidos do montador" (admin_ia_pedidos). Nada vira regra sozinho.
   - Banco: migrations/20261028_ia_montador.sql (tabelas ia_uso e ia_avisos + funções ia_consumir, ia_devolver, ia_avisar, ia_tem_aviso).
   - Aberta a qualquer visitante (sem login). Limites por dia: IA_LIMITE_VISITANTE (padrão 12 chamadas) e IA_LIMITE_GLOBAL (padrão 200).
     Cada pedido do site usa 2 chamadas (interpretar + explicar). O visitante é contado por um hash do IP, nunca pelo IP.

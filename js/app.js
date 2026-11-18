@@ -4344,6 +4344,29 @@ async function iaExplicarTimes(r){
   else { r.iaEstado = 'falhou'; r.iaMsg = state.iaAviso || ''; }
   render();
 }
+// Guarda o pedido (texto, o que o site entendeu, se foi IA ou leitura local; sem conta e sem IP) para o dono ver o que as pessoas pedem.
+// Nunca atrapalha: se falhar, a pessoa nem percebe. O id volta para o 👍/👎.
+async function iaRegistrarPedido(r){
+  if(!isSupabaseConfigured() || !window.__sb || !window.__sb.client || !r || r.pedidoId) return;
+  try{
+    const entendido = r.crit.labels.concat((r.crit.names || []).map(id => { const c = getChar(id); return c ? kzNome(c.name) : ''; }).filter(Boolean));
+    const { data } = await window.__sb.client.functions.invoke(IA_FUNCAO, { body: { acao:'registrar', idioma: KZ_LANG, texto: r.texto, fonte: r.usouIa ? 'ia' : 'local', vazio: !!r.vazio, fase: r.crit.fase || '', entendido, nTimes: r.list.length } });
+    if(data && data.id){ r.pedidoId = data.id; if(state.descRes === r) render(); }
+  }catch(e){}
+}
+async function iaVotarPedido(voto){
+  const r = state.descRes;
+  if(!r || !r.pedidoId || r.voto) return;
+  r.voto = voto; render();
+  try{ await window.__sb.client.functions.invoke(IA_FUNCAO, { body: { acao:'votar', id: r.pedidoId, voto } }); }catch(e){}
+}
+function renderDescVoto(r){
+  if(!r.pedidoId) return '';
+  if(r.voto) return `<p class="kz-desc-voto done">${kzt('desc.votoObg')}</p>`;
+  return `<div class="kz-desc-voto"><span>${kzt('desc.votoPerg')}</span>
+    <button type="button" class="kz-btn kz-btn-sm" data-desc-voto="1" aria-label="${escapeAttr(kzt('desc.votoSim'))}" title="${escapeAttr(kzt('desc.votoSim'))}">👍</button>
+    <button type="button" class="kz-btn kz-btn-sm" data-desc-voto="-1" aria-label="${escapeAttr(kzt('desc.votoNao'))}" title="${escapeAttr(kzt('desc.votoNao'))}">👎</button></div>`;
+}
 async function runDescribeTeam(text){
   const txt = String(text || '').trim().slice(0, 200);
   state.descText = txt;
@@ -4361,7 +4384,7 @@ async function runDescribeTeam(text){
   // ideias da Comunidade: carrega os posts se ainda não vieram
   if(isSupabaseConfigured() && !state.communityLoaded && !state.communityLoading){ try{ await refreshCommunity(); }catch(e){} }
   const coms = descPostsParecidos(crit, txt);
-  if(crit.vazio){ state.descRes = { texto:txt, crit, vazio:true, list:[], com:coms }; render(); return; }
+  if(crit.vazio){ const rv = { texto:txt, crit, vazio:true, list:[], com:coms, usouIa }; state.descRes = rv; render(); iaRegistrarPedido(rv); return; }
   crit._com = descPostsBonus(coms);
   showToast(kzt('desc.montandoToast'));
   setTimeout(() => {
@@ -4369,6 +4392,7 @@ async function runDescribeTeam(text){
     const res = { texto:txt, crit, ...r, com:coms, usouIa, iaEstado: '', iaMsg: state.iaAviso || '' };
     state.descRes = res;
     render();
+    iaRegistrarPedido(res);
     iaExplicarTimes(res);
   }, 30);
 }
@@ -4414,6 +4438,7 @@ function renderDescribePanel(){
         ${r.list.length ? `<div class="kz-auto-rows">${r.list.map((o, i) => renderDescOptionRow(o, i, r)).join('')}</div>` : ''}
         ${renderDescComunidade(r.com)}`;
     }
+    out += renderDescVoto(r);
   }
   return `<section class="kz-desc" aria-label="${kzt('desc.titulo')}">
     <div class="kz-desc-head"><span class="kz-label">${kzt('desc.titulo')}</span><span class="kz-desc-sub">${kzt('desc.sub')}</span></div>
@@ -5853,6 +5878,7 @@ function attachCombosHandlers(){
   view.querySelectorAll('[data-desc-ex]').forEach(b=>b.addEventListener('click', ()=> runDescribeTeam(b.dataset.descEx)));
   view.querySelectorAll('[data-desc-apply]').forEach(b=>b.addEventListener('click', ()=> applyDescOption(parseInt(b.dataset.descApply, 10))));
   view.querySelectorAll('[data-desc-com]').forEach(b=>b.addEventListener('click', ()=> useCommunityTeam(b.dataset.descCom)));
+  view.querySelectorAll('[data-desc-voto]').forEach(b=>b.addEventListener('click', ()=> iaVotarPedido(parseInt(b.dataset.descVoto, 10))));
   const descClear = document.getElementById('descClear');
   if(descClear) descClear.addEventListener('click', ()=>{ state.descText = ''; state.descRes = null; render(); });
   view.querySelectorAll('[data-auto-apply]').forEach(b=>b.addEventListener('click', ()=> applyAutoOption(parseInt(b.dataset.autoApply, 10))));
@@ -7785,6 +7811,10 @@ function renderAdminTab(){
       <div id="admIa">${admIaHtml()}</div>
     </div>
     <div class="kz-nva-sec">
+      <h2 class="kz-nva-h2">Pedidos do montador</h2>
+      <div id="admPedidos">${admPedidosHtml()}</div>
+    </div>
+    <div class="kz-nva-sec">
       <h2 class="kz-nva-h2">Mural e apoiadores <small>${noMural} no mural</small></h2>
       <div class="kz-nva-aviso kz-nva-dica">Aqui você adiciona apoios recebidos por fora (Pix direto, por exemplo), concede Honras e ajusta quem já está. Clique num nome para abrir o perfil e editar ou remover.</div>
       ${donors.length ? `<div class="kz-nva-mural">${donors.map(d=>{
@@ -7887,11 +7917,69 @@ function attachAdminConferir(view){
     btn.disabled = false;
   });
 }
+/* ---------- Pedidos do montador no Admin: o que as pessoas pedem, o que não foi entendido e os 👍/👎 ---------- */
+const ADM_PED_FILTROS = [['todos', 'Todos'], ['vazios', 'Não entendidos'], ['neg', '👎 Não era isso'], ['pos', '👍 Era isso']];
+async function carregarPedidosAdmin(){
+  const a = state.admin;
+  if(!isSupabaseConfigured() || !window.__sb || !window.__sb.client || !state.discordUser) return;
+  try{
+    const { data, error } = await window.__sb.client.rpc('admin_ia_pedidos', { p_dias: 30 });
+    if(error) throw error;
+    a.ped = data || null; a.pedErro = '';
+  }catch(e){
+    console.error('Não consegui carregar os pedidos do montador', e);
+    a.pedErro = 'Não consegui carregar os pedidos agora.';
+  }
+}
+function admPedidosHtml(){
+  const a = state.admin, p = a.ped;
+  if(a.pedErro) return `<div class="kz-nva-aviso err">${escapeHtml(a.pedErro)} <button type="button" class="kz-link-btn" id="admPedRecarregar">Tentar de novo</button></div>`;
+  if(!p) return `<div class="kz-nva-aviso">Carregando os pedidos…</div>`;
+  const f = a.pedFiltro || 'todos';
+  const todos = p.recentes || [];
+  const vis = todos.filter(x => f === 'vazios' ? x.vazio : f === 'neg' ? x.voto === -1 : f === 'pos' ? x.voto === 1 : true);
+  const rep = new Map();
+  todos.filter(x => x.vazio || x.voto === -1).forEach(x => { const k = String(x.texto).toLowerCase().replace(/\s+/g, ' ').trim(); rep.set(k, (rep.get(k) || 0) + 1); });
+  const top = [...rep.entries()].sort((x, y) => y[1] - x[1]).slice(0, 8);
+  const linha = x => `<tr>
+    <td>${admDataHtml(x.criado_em)}</td>
+    <td>${escapeHtml(String(x.idioma).toUpperCase())}</td>
+    <td>${escapeHtml(x.texto)}${x.fase ? ` <small class="mut">[${escapeHtml(x.fase)}]</small>` : ''}</td>
+    <td>${x.vazio ? '<span class="kz-nva-st err">não entendeu</span>' : (x.entendido || []).map(l => `<span class="kz-desc-chip">${escapeHtml(l)}</span>`).join(' ')}<small class="mut"> ${x.fonte === 'ia' ? 'IA' : 'local'}</small></td>
+    <td>${x.voto === 1 ? '👍' : x.voto === -1 ? '👎' : ''}</td>
+    <td><button type="button" class="kz-btn kz-btn-sm" data-adm-ped-del="${escapeAttr(x.id)}" title="Apagar este pedido" aria-label="Apagar este pedido">🗑</button></td></tr>`;
+  return `<div class="kz-nva-cards">
+      <div class="kz-nva-card"><span>Pedidos (30 dias)</span><b>${Number(p.total) || 0}</b><small>guardados sem conta e sem IP</small></div>
+      <div class="kz-nva-card"><span>Não entendidos</span><b>${Number(p.vazios) || 0}</b><small>candidatos a novas palavras-chave</small></div>
+      <div class="kz-nva-card"><span>👍 / 👎</span><b>${Number(p.positivos) || 0} / ${Number(p.negativos) || 0}</b><small>votos das pessoas</small></div>
+    </div>
+    ${top.length ? `<div class="kz-nva-aviso kz-nva-dica"><b>O que mais falhou:</b> ${top.map(([t, n]) => `“${escapeHtml(t)}”${n > 1 ? ` ×${n}` : ''}`).join(' · ')}</div>` : ''}
+    <div class="kz-nva-bar"><div class="kz-nva-filtros">${ADM_PED_FILTROS.map(([k, l]) => `<button type="button" class="kz-fchip${f === k ? ' active' : ''}" data-adm-ped-filtro="${k}" aria-pressed="${f === k}">${l}</button>`).join('')}</div>
+      <button type="button" class="kz-btn kz-btn-sm" id="admPedRecarregar">↻ Atualizar</button></div>
+    ${vis.length ? `<div class="kz-nva-tabela"><table><thead><tr><th>Data</th><th>Idioma</th><th>Pedido</th><th>O site entendeu</th><th></th><th></th></tr></thead><tbody>${vis.map(linha).join('')}</tbody></table></div>`
+                 : `<div class="kz-nva-aviso">Nenhum pedido neste filtro.</div>`}
+    <p class="kz-nva-nota">Mostra os 200 pedidos mais recentes. O texto é livre: nunca vira regra sozinho, só entra no site depois que você revisar. Pedidos com mais de 180 dias são apagados sozinhos.</p>`;
+}
+function refreshAdminPedidos(){
+  const box = document.getElementById('admPedidos');
+  if(!box || state.tab !== 'admin') return;
+  box.innerHTML = admPedidosHtml();
+  box.querySelectorAll('#admPedRecarregar').forEach(b => b.addEventListener('click', async () => { state.admin.pedErro = ''; state.admin.ped = null; refreshAdminPedidos(); await carregarPedidosAdmin(); refreshAdminPedidos(); }));
+  box.querySelectorAll('[data-adm-ped-filtro]').forEach(b => b.addEventListener('click', () => { state.admin.pedFiltro = b.dataset.admPedFiltro; refreshAdminPedidos(); }));
+  box.querySelectorAll('[data-adm-ped-del]').forEach(b => b.addEventListener('click', async () => {
+    if(!confirm('Apagar este pedido?')) return;
+    try{ const { error } = await window.__sb.client.rpc('admin_ia_pedido_apagar', { p_id: b.dataset.admPedDel }); if(error) throw error; }catch(e){ showToast('Não consegui apagar agora.'); return; }
+    if(state.admin.ped) state.admin.ped.recentes = state.admin.ped.recentes.filter(x => x.id !== b.dataset.admPedDel);
+    refreshAdminPedidos();
+  }));
+}
 function attachAdminHandlers(){
   const view = document.getElementById('view');
   if(!view || state.tab !== 'admin' || !isDonorAdmin()) return;
   attachAdminConferir(view);
   attachAdminDoacoesHandlers(view);
+  refreshAdminPedidos();
+  if(!state.admin.ped && !state.admin.pedErro && !state.admin.pedCarregando){ state.admin.pedCarregando = true; carregarPedidosAdmin().then(() => { state.admin.pedCarregando = false; refreshAdminPedidos(); }); }
   refreshAdminIa();
   if(!state.admin.ia && !state.admin.iaErro && state.admin.iaVerificado) carregarIaAdmin().then(refreshAdminIa);
   if(!state.admin.lista && !state.admin.carregando && !state.admin.erro) loadAdminDoacoes();

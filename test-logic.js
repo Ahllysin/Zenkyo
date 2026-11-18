@@ -202,6 +202,7 @@ async function main(){
       window.__sb = { client: { functions: { invoke: (f, o) => {
         chamadas.push([f, o.body.acao, o.body]);
         if(o.body.acao === 'interpretar') return Promise.resolve({ data: { vazio: false, crit: { efeitos: [], papeis: ['controle'], tipos: [], generos: [], racas: [], grupos: [], afinidades: [], raridades: [], principais: [kzNome(principal.name)], excluir: {}, foco: 'equilibrado' } }, error: null });
+        if(o.body.acao === 'registrar') return Promise.resolve({ data: { id: '11111111-2222-3333-4444-555555555555' }, error: null });
         const n = o.body.times.length;
         return Promise.resolve({ data: { times: Array.from({ length: n }, (_, i) => ({ titulo: 'Estilo ' + (i + 1), resumo: 'Resumo ' + (i + 1), como_jogar: 'Jogue assim', pontos_fortes: ['forte A'], pontos_fracos: ['fraco B'] })) }, error: null });
       } } } };
@@ -210,11 +211,11 @@ async function main(){
       const r1 = state.descRes;
       const html1 = renderDescribePanel();
       const out = {
-        chamadas: chamadas.map(c => c[1]), elenco: chamadas[0] && chamadas[0][2].elenco.length, total: state.characters.length,
+        chamadas: chamadas.map(c => c[1]).filter(a => a !== 'registrar'), registro: (chamadas.find(c => c[1] === 'registrar') || [])[2], pedidoId: r1.pedidoId, votoHtml: /data-desc-voto="-1"/.test(html1), elenco: chamadas[0] && chamadas[0][2].elenco.length, total: state.characters.length,
         temPrincipal: r1.crit.names.includes(principal.id), principais: (r1.crit.principais || []).length, papel: r1.crit.roles.includes('controle'),
         timeTemPrincipal: r1.list.length > 0 && r1.list.every(o => o.team.includes(principal.id)),
         estado: r1.iaEstado, nIa: r1.ia && r1.ia.length, nList: r1.list.length,
-        payloadNomes: chamadas[1] ? chamadas[1][2].times[0].membros.map(m => m.nome) : [], payloadPrincipal: chamadas[1] ? chamadas[1][2].times[0].membros.some(m => m.principal) : null,
+        payloadPrincipal: (() => { const e = chamadas.find(c => c[1] === 'explicar'); return e ? e[2].times[0].membros.some(m => m.principal) : null; })(),
         htmlIa: /kz-ia-tag/.test(html1) && html1.includes('Resumo 1') && html1.includes('forte A'),
       };
       // limite gratuito do dia acabou: a função responde 429 com limite "diario"; o site para de chamar e usa as regras
@@ -231,6 +232,8 @@ async function main(){
     const r = evalIn(sandbox, 'window.__iaRes') || {};
     assert.ok(!r.erro, r.erro);
     assert.deepStrictEqual(r.chamadas, ['interpretar', 'explicar'], 'primeiro interpreta o pedido, depois pede a explicação dos times montados');
+    assert.ok(r.registro && r.registro.fonte === 'ia' && r.registro.texto === 'time com Gogeta SS4 como principal' && r.registro.entendido.length && r.registro.nTimes > 0, 'o pedido é registrado (texto, o que entendeu, fonte) sem conta nem IP');
+    assert.ok(r.pedidoId && r.votoHtml, 'depois do registro aparecem os botões 👍/👎');
     assert.strictEqual(r.elenco, r.total, 'manda o elenco inteiro para a IA escolher o principal pelo nome');
     assert.ok(r.temPrincipal && r.principais === 1, 'o guerreiro principal entra obrigatório no time');
     assert.ok(r.papel, 'filtros da IA são somados ao que a leitura local entendeu');

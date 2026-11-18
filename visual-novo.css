@@ -1379,6 +1379,8 @@ html.vis-novo .kz-mp-pixdica b{color:#FFC21A;}
 .kz-desc-exbtn:hover{background:rgba(255,106,19,.26);color:#FFF4E6;}
 .kz-desc-understood{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:13.5px;color:#C9B8A6;}
 .kz-desc-chip{padding:3px 10px;background:rgba(255,194,26,.14);box-shadow:inset 0 0 0 1px #8a6a12;color:#FFD86B;font-weight:700;}
+.kz-desc-voto{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 0;font-size:13px;color:#E2D2C2;}
+.kz-desc-voto.done{color:#9FD8A8;}
 .kz-desc-msg{margin:0;padding:10px 14px;font-size:14px;line-height:1.45;color:#E2D2C2;box-shadow:inset 4px 0 0 #FFC21A;background:rgba(255,194,26,.08);}
 .kz-desc-whys{flex-basis:100%;display:flex;flex-wrap:wrap;gap:4px 18px;font-size:12.5px;color:#B9A998;}
 .kz-desc-why b{color:#FFE9CF;}
