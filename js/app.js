@@ -5625,7 +5625,7 @@ function comboCountHtml(teamArg){
 // empate: mais encadeamentos; depois a cadeia mais longa; por fim a que mexe em menos guerreiros em relação à ordem atual.
 // Sem nenhum tank no time, o critério é o de sempre (máximo de encadeamentos).
 const FRONT_SLOTS = [0, 1, 2];
-const FRONT_COMBO_TOLERANCE = 0.85;
+const FRONT_COMBO_TOLERANCE = 0.5;   // 0,85 deixava tank atrás em alguns times; com 0,5 a perda média de encadeamentos fica em ~5%
 function frontScore(id){
   const c = id && getChar(id);
   return c ? analyzeRoles(c).pillars.tank : 0;   // tank + sobrevivência (ver ROLE_INFO[...].pillar)
