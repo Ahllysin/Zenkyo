@@ -9122,7 +9122,26 @@
           "icone": "ability-icons/Passiva padrão/2 estrelas.png"
         }
       ],
-      "passivasSupremo": [],
+      "passivasSupremo": [
+        {
+          "nome": "Aura de Ki",
+          "desc": "Aumenta a própria vida e o ataque em 5%.",
+          "icone": "ability-icons/Suprema/1.png",
+          "nivel_visto": 0
+        },
+        {
+          "nome": "Punho de Ar",
+          "desc": "Aumenta a própria chance de crítico em 3%.",
+          "icone": "ability-icons/Suprema/2.png",
+          "nivel_visto": 0
+        },
+        {
+          "nome": "Kamehameha Supremo",
+          "desc": "Após cada uso da técnica suprema, aumenta permanentemente o próprio ataque e a defesa em 7%, acumulando até 2 vezes.",
+          "icone": "ability-icons/Suprema/3.png",
+          "nivel_visto": 0
+        }
+      ],
       "passivaUnica": {
         "base": {
           "nome": "Refino do Espaço-Tempo",

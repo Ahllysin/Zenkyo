@@ -1643,4 +1643,10 @@ kzAddDados({
   "Patrulha do Espaço-Tempo": "Space-Time Patrol",
   "[Ataque Físico] Ataca um único inimigo, segue com [Elevação Baixa], causa [Derrubada]. Para cada [Guerreiro de Fusão] aliado em campo, aumenta em 15% a Taxa de Crítico e o Dano Crítico deste ataque.": "[Physical Attack] Attacks a single enemy, follows up with [Low Launch], causes [Knockdown]. For each allied [Fusion Warrior] on the field, raises this attack's Crit Rate and Crit Damage by 15%.",
   "[Ataque Físico] Ataca um único inimigo, segue com [Elevação Baixa], causa [Derrubada]. Para cada [Guerreiro de Fusão] aliado em campo, aumenta em 15% a Taxa de Crítico e o Dano Crítico deste ataque. Causa 75%+8 de dano ao alvo.": "[Physical Attack] Attacks a single enemy, follows up with [Low Launch], causes [Knockdown]. For each allied [Fusion Warrior] on the field, raises this attack's Crit Rate and Crit Damage by 15%. Deals 75%+8 damage to the target.",
+  "Aura de Ki": "Ki Aura",
+  "Aumenta a própria vida e o ataque em 5%.": "Raises its own HP and ATK by 5%.",
+  "Punho de Ar": "Air Fist",
+  "Aumenta a própria chance de crítico em 3%.": "Raises its own Crit Rate by 3%.",
+  "Kamehameha Supremo": "Supreme Kamehameha",
+  "Após cada uso da técnica suprema, aumenta permanentemente o próprio ataque e a defesa em 7%, acumulando até 2 vezes.": "After each use of the supreme technique, permanently raises its own ATK and DEF by 7%, stacking up to 2 times.",
 });
