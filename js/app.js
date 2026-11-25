@@ -3977,7 +3977,7 @@ const DESC_RACES = [['Saiyajin', /saiyajin|saiyan|sayajin|saiya\b/], ['Androide'
 const DESC_TAGS = [
   ['Guerreiro Maligno', /malign|\bvila(o|s|oes)\b|do mal\b|sombri|trevas|\bevil\b|villain/], ['Guerreiro de Fusão', /fusa|fusion|fundid/], ['Guerreiro Dourado', /dourad|golden/],
   ['Artista Marcial', /artista marcial|artistas marciais|lutador|martial art/], ['Anjo', /\banjos?\b|\bangels?\b/], ['SSG', /\bssg\b|super saiyajin god|deus saiyajin/],
-  ['SS4', /\bss4\b|\bssj4\b|super saiyajin 4/], ['Tropa do Orgulho', /orgulho|pride/], ['Deus da Destruição', /deus(es)? da destrui|\bhakai\b|gods? of destruction/],
+  ['SS4', /\bss ?4\b|\bssj ?-?4\b|(super )?(saiyajin|saiyan|sayajin|saiya) ?4\b/], ['Tropa do Orgulho', /orgulho|pride/], ['Deus da Destruição', /deus(es)? da destrui|\bhakai\b|gods? of destruction/],
 ];
 const DESC_AFFS = [['Fogo', /\bfogo\b|vermelh|\bred\b|\bfire\b/], ['Raio', /\braio\b|eletric|amarel|\byellow\b|lightning|thunder/], ['Pedra', /\bpedra\b|\bterra\b|\bverde\b|\bgreen\b|\brock\b|\bstone\b|\bearth\b/], ['Luz', /\bluz\b|branc|\bwhite\b|\blight\b/]];
 // em inglês "no tanks" nega; em português "no ar" / "no time" não (por isso o "no" só vale em /en/)
@@ -3993,9 +3993,11 @@ const FASES = {
   early: { ban:[0, 1], teto:1, ssr:true },
   free:  { ban:[0, 1], teto:1, ssr:true },
   mid:   { ban:[], teto:3, tetoUlt:1 },
-  late:  {},
-  cash:  { raros:true },
+  // late e cash: nunca SR/R (só se a pessoa citar pelo nome) e os raros pesam bastante: Ultimate > Lendário > Limitado > SSR normal
+  late:  { ban:[4, 5], pref:1 },
+  cash:  { ban:[4, 5], pref:1.3 },
 };
+const RAR_PTS = [1, 0.9, 0.8, 0.25, 0, 0];   // por rarityRank: 0 Ultimate, 1 Lendário, 2 Limitado, 3 SSR, 4 SR, 5 R
 const DESC_FASES = [
   ['free', /\bfree\b|\bf2p\b|free ?to ?play|gratuit|sem gastar|sem pagar|sem cash|nao gast|nao pag/],
   ['cash', /\bcash(?:er|ier)?\b|\bcasher\b|\bp2w\b|pay ?to ?win|pagante|\bwhale|\bbaleia|\bdolfin/],
@@ -4077,10 +4079,14 @@ function parseTeamPrompt(text){
     || crit.affs.length || crit.rars.length || crit.names.length || crit.refs.length || crit.excl || crit.geral || crit.fase);
   return crit;
 }
+// Tem o grupo? Pela tag; o grupo SS4 também vale pelo nome ("Vegetto (SS4)", "Goku SS4"), caso a tag falte no cadastro.
+function descTemTag(c, g){
+  return (c.tags || []).includes(g) || (g === 'SS4' && /\bss4\b|\bssj4\b/i.test(c.name || ''));
+}
 function descCasa(c, f){
   if(f.genders.length && f.genders.includes(c.gender)) return true;
   if(f.races.length && f.races.includes(c.element)) return true;
-  if(f.tags.length && f.tags.some(g => (c.tags || []).includes(g))) return true;
+  if(f.tags.length && f.tags.some(g => descTemTag(c, g))) return true;
   if(f.affs.length && f.affs.includes(c.affinity)) return true;
   if(f.rars.length && f.rars.some(r => r === 'SSR' ? rarityLabel(c.rarity) === 'SSR' : c.rarity === r)) return true;
   if(f.types.length && f.types.includes(c.type)) return true;
@@ -4089,15 +4095,18 @@ function descCasa(c, f){
 function descHardOk(c, crit){
   if(crit.genders.length && !crit.genders.includes(c.gender)) return false;
   if(crit.races.length && !crit.races.includes(c.element)) return false;
-  if(crit.tags.length && !crit.tags.some(g => (c.tags || []).includes(g))) return false;
+  if(crit.tags.length && !crit.tags.some(g => descTemTag(c, g))) return false;
   if(crit.affs.length && !crit.affs.includes(c.affinity)) return false;
   if(crit.rars.length && !crit.rars.some(r => r === 'SSR' ? rarityLabel(c.rarity) === 'SSR' : c.rarity === r)) return false;
-  if(crit.excl){
-    if(descCasa(c, crit.excl)) return false;
-    if(crit.excl.mechs.length || crit.excl.roles.length){
-      const e = descRelevance(c, { mechs:crit.excl.mechs, roles:crit.excl.roles, types:[], refs:[] });
-      if(e.rel > 0) return false;
-    }
+  return descExclOk(c, crit);
+}
+// O que a pessoa NÃO quer ("sem tank", "sem Malignos"): vale também para quem completa a equipe quando o filtro tem poucos guerreiros.
+function descExclOk(c, crit){
+  if(!crit.excl) return true;
+  if(descCasa(c, crit.excl)) return false;
+  if(crit.excl.mechs.length || crit.excl.roles.length){
+    const e = descRelevance(c, { mechs:crit.excl.mechs, roles:crit.excl.roles, types:[], refs:[] });
+    if(e.rel > 0) return false;
   }
   return true;
 }
@@ -4137,12 +4146,25 @@ function buildDescribedTeams(crit, maxOptions){
   const fz = FASES[crit.fase] || {};
   const raro = c => rarityRank(c.rarity) <= 2, ult = c => rarityRank(c.rarity) === 0;
   const hardPool = state.characters.filter(c => crit.names.includes(c.id) || (descHardOk(c, crit) && !(fz.ban || []).includes(rarityRank(c.rarity))));
-  const byRel = [...hardPool].sort((a, b) => info.get(b.id).rel - info.get(a.id).rel || rarityRank(a.rarity) - rarityRank(b.rarity));
+  // late/cash: a raridade entra na ordem do conjunto de candidatos, senão os raros ficam de fora quando o pedido tem outros filtros
+  const rarPts = c => RAR_PTS[rarityRank(c.rarity)] || 0;
+  const chave = c => info.get(c.id).rel + (fz.pref ? 1.5 * fz.pref * rarPts(c) : 0);
+  const byRel = [...hardPool].sort((a, b) => chave(b) - chave(a) || rarityRank(a.rarity) - rarityRank(b.rarity));
   const relevantN = hasSoft ? byRel.filter(c => info.get(c.id).rel > 0).length : byRel.length;
   // se faltar gente com o efeito pedido, completa a equipe com os melhores do filtro
   const pool = byRel.slice(0, hasSoft ? Math.max(relevantN + 8, 16) : 40).slice(0, 36);
   // quem a pessoa citou pelo nome sempre entra no conjunto, mesmo sem combinar com os outros filtros do pedido
   crit.names.forEach(id => { const c = hardPool.find(x => x.id === id); if(c && !pool.includes(c)) pool.push(c); });
+  // filtro com menos de 6 guerreiros (ex.: só existem 5 SS4): a equipe nunca fica incompleta. Entram primeiro todos os que atendem
+  // e as vagas que sobram são completadas pelos melhores do resto (respeitando "sem X", a fase pedida e quem combina mais com o pedido)
+  const hardSet = new Set(hardPool.map(c => c.id));
+  const falta = hardPool.length < 6;
+  if(falta){
+    const ban = fz.ban || [];
+    state.characters.filter(c => !hardSet.has(c.id) && !ban.includes(rarityRank(c.rarity)) && descExclOk(c, crit))
+      .sort((a, b) => (descCasa(b, crit) ? 1 : 0) - (descCasa(a, crit) ? 1 : 0) || chave(b) - chave(a) || rarityRank(a.rarity) - rarityRank(b.rarity))
+      .slice(0, 16).forEach(c => { if(!pool.includes(c)) pool.push(c); });
+  }
   if(!pool.length) return { list:[], hardN:hardPool.length, relevantN:0, hasSoft };
   const forced = crit.names.filter(id => pool.some(c => c.id === id)).slice(0, 6);
   const base = [null, null, null, null, null, null];
@@ -4156,8 +4178,10 @@ function buildDescribedTeams(crit, maxOptions){
     // free/early: prefere SSR normal; cash: prefere os raros (Limitado/Lendário/Ultimate)
     const cs = ids.map(getChar).filter(Boolean);
     const fase = fz.ssr ? 0.06 * cs.filter(c => rarityRank(c.rarity) === 3).length / Math.max(cs.length, 1)
-      : fz.raros ? 0.05 * cs.filter(raro).length / Math.max(cs.length, 1) : 0;
-    return { ...o, rel, score: sc + 0.08 * com + fase };   // times da Comunidade parecidos com o pedido dão um empurrãozinho
+      : fz.pref ? fz.pref * cs.reduce((s2, c) => s2 + rarPts(c), 0) / Math.max(cs.length, 1) : 0;
+    // quando o filtro tem menos de 6 guerreiros, quem atende o filtro entra sempre antes de quem só completa a vaga
+    const dentro = falta ? 1.2 * ids.filter(id => hardSet.has(id)).length / Math.max(ids.length, 1) : 0;
+    return { ...o, rel, score: sc + 0.08 * com + fase + dentro };   // times da Comunidade parecidos com o pedido dão um empurrãozinho
   };
   // teto de raros do mid/free/early: só vale pra quem entra por escolha (os citados pelo nome contam, mas nunca são barrados)
   const cabe = ids => {
@@ -4198,7 +4222,7 @@ function buildDescribedTeams(crit, maxOptions){
       why: team.filter(Boolean).map(id => ({ id, tags: info.get(id).tags })),
       match: team.filter(Boolean).filter(id => !hasSoft || info.get(id).rel > 0).length };
   }).sort((a, b) => b.score - a.score);
-  return { list, hardN:hardPool.length, relevantN, hasSoft };
+  return { list, hardN:hardPool.length, relevantN, hasSoft, filled:falta };
 }
 // Times da Comunidade que combinam com o pedido: pelo que a descrição/título fala, pelo que os guerreiros do time fazem e pelas curtidas.
 function descPostsParecidos(crit, texto){
@@ -4429,7 +4453,7 @@ function renderDescribePanel(){
         : `<p class="kz-desc-msg warn">${kzt('desc.naoEntendi')}</p>`) + renderDescComunidade(r.com);
     } else {
       const chips = r.crit.labels.concat(r.crit.names.map(id => { const c = getChar(id); return c ? kzNome(c.name) : ''; }).filter(Boolean)).map(l => `<span class="kz-desc-chip">${escapeHtml(l)}</span>`).join('');
-      const aviso = !r.list.length ? kzt('desc.nenhumAtende')
+      const aviso = !r.list.length || r.hardN === 0 ? kzt('desc.nenhumAtende')
         : (r.hasSoft && r.relevantN < 6) ? kzt(r.relevantN === 1 ? 'desc.poucos1' : 'desc.poucosN', { n: r.relevantN })
         : (!r.hasSoft && r.hardN < 6) ? kzt(r.hardN === 1 ? 'desc.filtros1' : 'desc.filtrosN', { n: r.hardN }) : '';
       out = `<div class="kz-desc-understood"><span>${kzt('desc.entendi')}</span>${chips}</div>

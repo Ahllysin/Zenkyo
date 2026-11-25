@@ -475,6 +475,47 @@ async function main(){
     assert.ok(r.b.includes('Goku SS4'), 'sem tank, Goku SS4 (sobrevivência) vai pra frente: ' + r.b);
   });
 
+  await test('late game e cash: nunca SR/R e quase só raros (Limitado/Lenda/Ultimate); grupo SS4 vale por "ss4", "ssj 4", "super saiyajin 4" e pelo nome', () => {
+    const r = evalIn(sandbox, `(() => {
+      const q = t => buildDescribedTeams(parseTeamPrompt(t), 3).list.map(o => o.team.filter(Boolean).map(getChar));
+      const late = q('monte uma comp late game'), cash = q('monte uma comp cash'), lateQ = q('late game de queimadura');
+      const nRaros = l => l.map(tm => tm.filter(c => rarityRank(c.rarity) <= 2).length);
+      const tem = l => l.some(tm => tm.some(c => rarityRank(c.rarity) >= 4));
+      const ss4 = t => parseTeamPrompt(t).tags.includes('SS4');
+      const todosSS4 = buildDescribedTeams(parseTeamPrompt('time de ssj 4'), 3).hardN;
+      const porNome = state.characters.filter(c => /\\bss4\\b/i.test(c.name)).every(c => descHardOk(c, { genders:[], races:[], tags:['SS4'], affs:[], rars:[] }));
+      return { lateRaros: nRaros(late), cashRaros: nRaros(cash), lateQRaros: nRaros(lateQ), srLate: tem(late) || tem(cash) || tem(lateQ),
+        ss4: ['time de ss4', 'time de ssj 4', 'time de ssj4', 'time de super saiyajin 4', 'time de saiyajin 4'].map(ss4), todosSS4, nSS4: state.characters.filter(c => (c.tags || []).includes('SS4')).length, porNome };
+    })()`);
+    assert.ok(!r.srLate, 'late/cash nunca trazem SR ou R');
+    assert.ok(r.lateRaros.every(n => n >= 4) && r.cashRaros.every(n => n >= 4), 'late e cash: pelo menos 4 raros por time: ' + r.lateRaros + ' / ' + r.cashRaros);
+    assert.ok(r.lateQRaros.every(n => n >= 3), 'late game com outro filtro ainda usa bastante raro: ' + r.lateQRaros);
+    assert.ok(r.ss4.every(Boolean), 'todas as grafias de SS4 são reconhecidas');
+    assert.strictEqual(r.todosSS4, r.nSS4, 'o filtro SS4 pega todos os guerreiros SS4 do site');
+    assert.ok(r.porNome, 'o grupo SS4 também vale pelo nome do guerreiro');
+  });
+
+  await test('filtro com poucos guerreiros (ex.: só 5 SS4) nunca deixa a equipe incompleta: entram todos do filtro e o resto é completado, respeitando "sem X" e a fase', () => {
+    const r = evalIn(sandbox, `(() => {
+      const q = t => { const cr = parseTeamPrompt(t); const b = buildDescribedTeams(cr, 3); return { b, cr }; };
+      const tam = o => o.list.map(x => x.team.filter(Boolean).length);
+      const ss4 = q('time de ss4'), tag = new Set(state.characters.filter(c => (c.tags || []).includes('SS4')).map(c => c.id));
+      const todosDentro = ss4.b.list.every(o => [...tag].every(id => o.team.includes(id)));
+      const cash = q('comp cash de ss4'), semAtaque = q('time de ss4 sem tipo ataque');
+      const raro = q('so feminino ss4');
+      const chars = o => o.list.flatMap(x => x.team.filter(Boolean).map(getChar));
+      return { ss4: tam(ss4.b), todosDentro, cash: tam(cash.b), cashSemSR: chars(cash.b).every(c => rarityRank(c.rarity) <= 3),
+        sem: tam(semAtaque.b), semSemAtaque: chars(semAtaque.b).filter(c => !(c.tags || []).includes('SS4')).every(c => c.type !== 'Ataque'),
+        nada: tam(raro.b), nadaHard: raro.b.hardN, filled: ss4.b.filled };
+    })()`);
+    assert.ok(r.ss4.length && r.ss4.every(n => n === 6), 'SS4: todas as equipes com 6 guerreiros: ' + r.ss4);
+    assert.ok(r.todosDentro, 'os 5 SS4 entram em todas as opções');
+    assert.ok(r.filled);
+    assert.ok(r.cash.every(n => n === 6) && r.cashSemSR, 'cash + SS4: completa sem SR/R');
+    assert.ok(r.sem.every(n => n === 6) && r.semSemAtaque, 'o que a pessoa não quer ("sem tipo ataque") continua valendo nas vagas completadas');
+    assert.ok(r.nada.length && r.nada.every(n => n === 6), 'mesmo sem nenhum guerreiro no filtro, a equipe sai completa: ' + r.nada + ' (hardN ' + r.nadaHard + ')');
+  });
+
   await test('IA/leitura local entende early/mid/late game e "comp free"/"comp cash"; free/early quase não usam raros, cash usa', () => {
     const r = evalIn(sandbox, `(() => {
       const f = t => parseTeamPrompt(t).fase;
@@ -811,18 +852,20 @@ async function main(){
     assert.ok(r.femTodas && r.femTam === 6);
   });
 
-  await test('filtro que ninguém atende não quebra e avisa; painel renderiza e Usar aplica o time', () => {
+  await test('filtro que ninguém atende não quebra e avisa (e ainda monta equipes completas); painel renderiza e Usar aplica o time', () => {
     const r = evalIn(sandbox, `(() => {
       const nenhum = buildDescribedTeams(parseTeamPrompt('time feminino de androides lendario'), 3);
+      const nenhumTam = nenhum.list.map(o => o.team.filter(Boolean).length);
       const crit = parseTeamPrompt('time de queimadura');
       state.descRes = { texto:'time de queimadura', crit, ...buildDescribedTeams(crit, 3) };
       const html = renderDescribePanel();
       applyDescOption(0);
       const depois = state.team.filter(Boolean).length;
       state.team = [null,null,null,null,null,null]; state.descRes = null; state.descText = '';
-      return { nenhum: nenhum.list.length, painel: html.includes('data-desc-apply') && html.includes('Entendi'), depois };
+      return { nenhum: nenhum.hardN, nenhumTam, painel: html.includes('data-desc-apply') && html.includes('Entendi'), depois };
     })()`);
-    assert.strictEqual(r.nenhum, 0);
+    assert.strictEqual(r.nenhum, 0, 'ninguém atende o filtro');
+    assert.ok(r.nenhumTam.length && r.nenhumTam.every(n => n === 6), 'mesmo assim as equipes saem completas: ' + r.nenhumTam);
     assert.ok(r.painel);
     assert.strictEqual(r.depois, 6);
   });
