@@ -9059,6 +9059,91 @@
         "desc": "Aumenta permanentemente o ATQ e PV próprios.",
         "icone": "ability-icons/Passiva padrão/4 estrelas ATQ+PV.png"
       }
+    },
+    "79": {
+      "nome": "Vegetto (SS4)",
+      "habilidade": {
+        "base": {
+          "nome": "Golpe do Vazio Divino",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "[Ataque Especial] Aumenta o dano da habilidade em 30% e ataca um único inimigo. Se o alvo estiver com mais de 40% de vida, causa dano adicional equivalente a 10% da vida máxima dele. Aplica [Proteção] em si mesmo por 1 turno. No início do próximo turno aliado, consome a proteção restante e recupera 150 de Fúria. Enquanto estiver protegido, sempre que recuperar vida, também recupera 50 de Fúria adicionais. [Proteção]: Aumenta a redução de dano em 30%. Cada vez que recebe um ataque de habilidade ou uma técnica suprema, recupera 5% da própria vida máxima. Desaparece após receber de 1 a 6 ataques: quanto mais inimigos houver em campo, mais ataques a proteção suporta. Não pode ser dissipada nem acumulada. Dura 1 turno.",
+          "icone": "ability-icons/Novos/vegetto-ss4/Skill.png",
+          "dano": "160%+15"
+        },
+        "max": {
+          "nome": "MAX. Golpe do Vazio Divino",
+          "estrelas": 3,
+          "tipo": "Despertar",
+          "desc": "[Ataque Especial] Aumenta o dano da habilidade em 50% e ataca uma fileira inimiga. 50% de chance de reduzir em 200 a Fúria de um inimigo aleatório dessa fileira. Contra alvos com mais de 40% de vida, causa dano adicional equivalente a 10% da vida máxima do alvo. Aplica [Proteção] em si mesmo e em 1 aliado aleatório da categoria [Guerreiro de Fusão] por 1 turno. No início do próximo turno aliado, consome a proteção restante e recupera 150 de Fúria para cada portador. Enquanto estiver sob [Proteção], o usuário recebe, por ataque, no máximo 40% da própria vida máxima em dano e recupera 50 de Fúria adicionais sempre que recupera vida. [Proteção]: Aumenta a redução de dano em 30%. Ao receber um ataque de habilidade ou uma técnica suprema, recupera 5% da própria vida máxima. Desaparece após receber de 1 a 6 ataques: quanto mais inimigos houver em campo, mais ataques suporta. Não pode ser dissipada nem acumulada. Dura 1 turno.",
+          "icone": "ability-icons/Novos/vegetto-ss4/Skill.png",
+          "dano": "175%+15"
+        }
+      },
+      "suprema": {
+        "base": {
+          "nome": "Big Bang Attack",
+          "estrelas": 1,
+          "tipo": "Ativar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/vegetto-ss4/Ultimate.png"
+        },
+        "max": {
+          "nome": "Big Bang Attack MÁX.",
+          "estrelas": 5,
+          "tipo": "Despertar (dourada)",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/vegetto-ss4/Ultimate.png",
+          "dano": "430%+24"
+        },
+        "smax": {
+          "nome": "SMAX. Ataque da Grande Explosão",
+          "estrelas": 5,
+          "tipo": "Despertar (azul)",
+          "desc": "Ataca o inimigo com maior Fúria, em seguida aumenta sua própria Taxa de Dano, Taxa de Redução de Dano em 35% e Taxa de Roubo de Vida em 50% por 1 turno; todos os seus ataques ignoram 70% da Defesa do alvo por 1 turno; causa até 70% de dano adicional com base na Fúria atual do alvo; absorve 200 de Fúria do alvo principal; tem 70% de chance de silenciar o alvo por 1 turno; quando esse efeito é dissipado, recupera imediatamente 200 de Fúria; remove os efeitos positivos do alvo; reduz a Força de Bloqueio e a Força de Crítico do alvo e dos inimigos ao redor em 35% por 1 turno; se o dano causado por este Golpe Especial for inferior a 40% da Vida Máxima do alvo, recupera imediatamente toda a Fúria; neste turno, o dano do Golpe Especial ativado desta forma não será reduzido e não aplicará o efeito de Silêncio; se este Golpe Especial não for ativado, toda a Fúria será reduzida no início do turno; este efeito só pode ser ativado uma vez por turno.",
+          "icone": "ability-icons/Novos/vegetto-ss4/Ultimate.png",
+          "dano": "450%+24"
+        }
+      },
+      "combinado": {
+        "nome": "Ataque de Perseguição",
+        "desc": "Sem descrição nos dados do jogo.",
+        "estrelas": 1,
+        "tipo": "Ativar",
+        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+      },
+      "passivasHabilidade": [
+        {
+          "nome": "Ataque de Sequência Aprimorado",
+          "desc": "O dano do ataque de sequência do Guerreiro é aumentado, causando mais dano ao alvo.",
+          "estrelas": 2,
+          "icone": "ability-icons/Passiva padrão/2 estrelas.png"
+        }
+      ],
+      "passivasSupremo": [],
+      "passivaUnica": {
+        "base": {
+          "nome": "Lampejo do Tempo",
+          "estrelas": 3,
+          "tipo": "Ativar",
+          "desc": "Sem descrição nos dados do jogo.",
+          "icone": "ability-icons/Novos/vegetto-ss4/Passiva.png"
+        },
+        "max": {
+          "nome": "MÁX. Cintilação Temporal",
+          "estrelas": 6,
+          "tipo": "Despertar",
+          "desc": "Aumenta sua própria taxa de crítico e taxa de penetração, 30% de ataque e defesa e 30% de intensidade de crítico; cada Guerreiro de Fusão aliado aumenta em 15% a probabilidade de suas próprias habilidades menores; no início de cada turno aliado, 55% de chance (aumenta em 10% para cada guerreiro aliado em estado de controle) de remover imediatamente seus próprios estados negativos e petrificação, e aumenta seu próprio ataque em 30% (1 turno); ao ser atingido e com vida abaixo de 40%, desaparece instantaneamente do campo de batalha, retornando na próxima ação aliada, recuperando 50% da vida máxima e 300 de raiva, e aumentando o dano de habilidade definitiva em 25% (1 turno), além de aumentar permanentemente a resistência a habilidades definitivas e a resistência a habilidades menores em 15% (acumulável até 3 vezes, herdado após renascimento). Este efeito pode ser ativado no máximo 2 vezes por batalha; pode renascer uma vez, recuperando 60% da vida e herdando toda a raiva, e redefinindo o número de ativações do desaparecimento.",
+          "icone": "ability-icons/Novos/vegetto-ss4/Passiva MAX.png"
+        }
+      },
+      "passivaQuatroEstrelas": {
+        "nome": "Aprimoramento de PV e Ataque",
+        "estrelas": 4,
+        "tipo": "Ativar",
+        "desc": "Aumenta permanentemente o ATQ e PV próprios.",
+        "icone": "ability-icons/Passiva padrão/4 estrelas PV.png"
+      }
     }
   }
 }
