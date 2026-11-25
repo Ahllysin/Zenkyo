@@ -9108,10 +9108,11 @@
       },
       "combinado": {
         "nome": "Ataque de Perseguição",
-        "desc": "Sem descrição nos dados do jogo.",
+        "desc": "[Ataque Físico] Ataca um único inimigo, segue com [Elevação Baixa], causa [Derrubada]. Para cada [Guerreiro de Fusão] aliado em campo, aumenta em 15% a Taxa de Crítico e o Dano Crítico deste ataque.",
         "estrelas": 1,
         "tipo": "Ativar",
-        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png"
+        "icone": "ability-icons/Passiva padrão/ATQ Combinado.png",
+        "dano": "75%+8"
       },
       "passivasHabilidade": [
         {
