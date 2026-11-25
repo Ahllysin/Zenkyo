@@ -151,6 +151,7 @@ async function paginas(){
     const hab = [['Habilidade', c.skill], ['Suprema', c.supreme], ['Ataque combinado', c.combo]].filter(([, a]) => a && (a.name || a.desc))
       .map(([r, a]) => `<h2>${r}${a.name ? ': ' + esc(a.name) : ''}</h2><p>${esc(a.desc)}</p>`).join('\n');
     const temRetrato = fs.existsSync(path.join(ROOT, 'portraits', c.slug + '.webp'));
+    const temOg = fs.existsSync(path.join(ROOT, 'og', c.slug + '.jpg'));   // imagem de preview do link (gerar-previas.js)
     const url = `${SITE}/p/${c.slug}.html`;
     const meta = `${c.nome} (${desc}) em Dragon Ball: habilidades, supremo e combo. Veja a ficha completa no Zenkyo.`;
     const pagina = `<!doctype html>
@@ -164,7 +165,9 @@ async function paginas(){
 <link rel="canonical" href="${url}">
 <meta property="og:type" content="website"><meta property="og:site_name" content="Zenkyo">
 <meta property="og:title" content="${esc(c.nome)} — Zenkyo"><meta property="og:description" content="${esc(meta)}">
-<meta property="og:url" content="${url}">${temRetrato ? `\n<meta property="og:image" content="${SITE}/portraits/${c.slug}.webp">` : ''}
+<meta property="og:url" content="${url}">${temOg
+    ? `\n<meta property="og:image" content="${SITE}/og/${c.slug}.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="${esc(c.nome)}">\n<meta name="twitter:card" content="summary_large_image">`
+    : temRetrato ? `\n<meta property="og:image" content="${SITE}/portraits/${c.slug}.webp">` : ''}
 <link rel="stylesheet" href="../fonts/fonts.css">
 <link rel="icon" href="../assets/icone-192.png">
 <style>body{margin:0;background:#0a0606;color:#f1e6d8;font:16px/1.55 'Barlow',system-ui,sans-serif}main{max-width:760px;margin:0 auto;padding:28px 18px 60px}

@@ -477,9 +477,15 @@ function setRouteHash(){
   }
   rotaPronta = true;
 }
+// Guerreiros do site: o link vai para a página própria (p/<nome>.html, p/en/<nome>.html), que tem título, descrição e imagem de
+// preview só dele quando o link é colado no WhatsApp/Discord/Telegram (essas apps não leem o que vem depois do "#").
+// Dali, o botão abre a ficha completa. Guerreiro criado pelo dono (sem página) mantém o link com "#".
 function charShareUrl(id){
   const ch = getChar(id);
-  return ch ? location.origin + location.pathname + '#/guerreiro/' + slug(ch.name) : '';
+  if(!ch) return '';
+  const raiz = location.origin + location.pathname.replace(/\/(en\/)?(index\.html)?$/, '/');
+  const doSite = typeof DEFAULT_CHARACTERS !== 'undefined' && DEFAULT_CHARACTERS.some(c => c.id === ch.id);
+  return doSite ? raiz + 'p/' + (KZ_LANG === 'en' ? 'en/' : '') + slug(ch.name) + '.html' : location.origin + location.pathname + '#/guerreiro/' + slug(ch.name);
 }
 async function copyCharLink(id){
   const url = charShareUrl(id);

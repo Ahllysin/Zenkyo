@@ -2429,6 +2429,25 @@ async function main(){
     assert.deepStrictEqual(r.limpo, { c_ok: { x:100, y:0, z:4 } }, 'só números válidos, dentro dos limites');
   });
 
+  await test('Copiar link do guerreiro: vai para a página própria (p/<nome>.html, preview no WhatsApp/Discord) e cada página tem imagem de preview 1200x630', () => {
+    const fs = require('fs'), path = require('path');
+    const r = evalIn(sandbox, `(() => {
+      const tinha = typeof location !== 'undefined';
+      if(!tinha) globalThis.location = { origin: 'https://zenkyo.com.br', pathname: '/' };
+      const c = state.characters.find(x => x.name === 'Vegetto (SS4)');
+      const u = charShareUrl(c.id);
+      const criado = { id: 'c_custom_xyz', name: 'Teste Do Dono', rarity: 'SR', type: 'Ataque', tags: [], skill: {}, supreme: {}, combo: {} };
+      state.characters.push(criado); const uc = charShareUrl('c_custom_xyz'); state.characters.pop();
+      if(!tinha) delete globalThis.location;
+      return { u, uc };
+    })()`);
+    assert.ok(/\/p\/vegetto-ss4\.html$/.test(r.u), 'link do guerreiro do site aponta para a página própria: ' + r.u);
+    assert.ok(/#\/guerreiro\/teste-do-dono$/.test(r.uc), 'guerreiro criado pelo dono (sem página) mantém o link com #: ' + r.uc);
+    const html = fs.readFileSync(path.join(__dirname, 'p', 'vegetto-ss4.html'), 'utf8');
+    assert.ok(html.includes('og:image" content="https://zenkyo.com.br/og/vegetto-ss4.jpg"') && html.includes('twitter:card'), 'a página usa og/<nome>.jpg e twitter:card');
+    assert.ok(fs.existsSync(path.join(__dirname, 'og', 'vegetto-ss4.jpg')));
+  });
+
   await test('Guias do jogo: lista, busca, leitura de cada guia e HTML escapado', () => {
     const fs = require('fs'), path = require('path');
     const json = fs.readFileSync(path.join(__dirname, 'guias', 'guias.json'), 'utf8');
