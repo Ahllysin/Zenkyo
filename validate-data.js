@@ -102,7 +102,7 @@ async function main(){
     let j = null;
     try{ j = JSON.parse(fs.readFileSync(path.join(ROOT, 'guias', 'guias.json'), 'utf8')); }catch(e){ fail('guias/guias.json não abre: ' + e.message); }
     if(j){
-      if(!Array.isArray(j.guias) || j.guias.length !== 12) fail('esperava 12 guias, achei ' + (j.guias && j.guias.length));
+      if(!Array.isArray(j.guias) || j.guias.length !== 13) fail('esperava 13 guias, achei ' + (j.guias && j.guias.length));
       const ids = new Set();
       (j.guias || []).forEach(g => {
         const tag = `guia ${g.n} "${g.titulo}"`;

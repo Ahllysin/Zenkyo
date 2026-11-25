@@ -271,7 +271,7 @@ let state = {
   myProfile: null,                  // rascunho do próprio perfil (aba Perfil), carregado após login
   profiles: [],                     // cache dos perfis públicos (pra enriquecer o mural da Aliança Z)
   navCompact: typeof window !== 'undefined' && (window.innerWidth || 1200) < 900,   // no celular a barra já começa recolhida (sem "piscar" na carga)                // barra lateral recolhida (só ícones)
-  guiasView: 'sistemas',            // 'sistemas' (12 guias do jogo) | 'combos' (como o site monta combos)
+  guiasView: 'sistemas',            // 'sistemas' (13 guias do jogo) | 'combos' (como o site monta combos)
   guideId: null,                    // guia aberto na leitura, ou null
   guideQuery: '',                   // busca na lista de guias
   crashLog: null,                   // log de erros carregado no painel do dono (aba Perfil)
@@ -6106,7 +6106,7 @@ function renderGuiasCombos(){
     </div>`;
 }
 
-// ---- Guias do jogo: 12 sistemas (guias/guias.json, carregado só quando a aba é aberta) ----
+// ---- Guias do jogo: 13 guias (guias/guias.json, carregado só quando a aba é aberta) ----
 let guiasData = null, guiasLoading = false, guiasError = false;
 function guideBySlug(id){ return guiasData ? guiasData.guias.find(g=>g.id === id) : null; }
 async function loadGuias(){
