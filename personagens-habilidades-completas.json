@@ -9159,11 +9159,12 @@
         }
       },
       "passivaQuatroEstrelas": {
-        "nome": "Aprimoramento de PV e Ataque",
+        "nome": "Fortalecimento de Vida e Ataque",
         "estrelas": 4,
         "tipo": "Ativar",
-        "desc": "Aumenta permanentemente o ATQ e PV próprios.",
-        "icone": "ability-icons/Passiva padrão/4 estrelas PV.png"
+        "desc": "Aumenta permanentemente o próprio ataque e a vida.",
+        "icone": "ability-icons/Passiva padrão/4 estrelas ATQ+PV.png",
+        "lv": "ATQ: +5% → 11,2% · PV: +5% → 11,2%"
       }
     }
   }

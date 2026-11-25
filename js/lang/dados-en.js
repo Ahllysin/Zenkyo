@@ -1649,4 +1649,6 @@ kzAddDados({
   "Aumenta a própria chance de crítico em 3%.": "Raises its own Crit Rate by 3%.",
   "Kamehameha Supremo": "Supreme Kamehameha",
   "Após cada uso da técnica suprema, aumenta permanentemente o próprio ataque e a defesa em 7%, acumulando até 2 vezes.": "After each use of the supreme technique, permanently raises its own ATK and DEF by 7%, stacking up to 2 times.",
+  "Fortalecimento de Vida e Ataque": "Life and Attack Strengthening",
+  "Aumenta permanentemente o próprio ataque e a vida.": "Permanently raises its own attack and HP.",
 });
