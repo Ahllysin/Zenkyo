@@ -2842,7 +2842,7 @@ const DEFAULT_CHARACTERS = [
     ],
     "rarity": "SSR [Lendário]",
     "type": "Ataque",
-    "affinity": "Raio",
+    "affinity": "Luz",
     "skill": {
       "name": "MAX. Golpe do Vazio Divino",
       "desc": "[Ataque Especial] Aumenta o dano da habilidade em 50% e ataca uma fileira inimiga. 50% de chance de reduzir em 200 a Fúria de um inimigo aleatório dessa fileira. Contra alvos com mais de 40% de vida, causa dano adicional equivalente a 10% da vida máxima do alvo. Aplica [Proteção] em si mesmo e em 1 aliado aleatório da categoria [Guerreiro de Fusão] por 1 turno. No início do próximo turno aliado, consome a proteção restante e recupera 150 de Fúria para cada portador. Enquanto estiver sob [Proteção], o usuário recebe, por ataque, no máximo 40% da própria vida máxima em dano e recupera 50 de Fúria adicionais sempre que recupera vida. [Proteção]: Aumenta a redução de dano em 30%. Ao receber um ataque de habilidade ou uma técnica suprema, recupera 5% da própria vida máxima. Desaparece após receber de 1 a 6 ataques: quanto mais inimigos houver em campo, mais ataques suporta. Não pode ser dissipada nem acumulada. Dura 1 turno.",
