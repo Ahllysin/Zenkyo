@@ -3990,7 +3990,7 @@ const DESC_GERAL = /melhor time|time forte|time completo|equilibrad|qualquer tim
 // e SSR normal \u00e9 o que mais aparece); mid aceita alguns (at\u00e9 3 raros, no m\u00e1x. 1 Ultimate); late n\u00e3o limita; cash j\u00e1 usa os raros e d\u00e1 prefer\u00eancia a eles.
 // Quem a pessoa citou pelo nome sempre entra, seja qual for a raridade.
 const FASES = {
-  early: { ban:[0, 1], teto:1, ssr:true },
+  early: { ban:[0, 1], teto:2, ssr:true },   // early: nenhum Lendário/Ultimate, no máximo 2 Limitados; SSR normal à vontade
   free:  { ban:[0, 1], teto:1, ssr:true },
   mid:   { ban:[], teto:3, tetoUlt:1 },
   // late e cash: nunca SR/R (só se a pessoa citar pelo nome) e os raros pesam bastante: Ultimate > Lendário > Limitado > SSR normal

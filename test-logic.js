@@ -534,7 +534,7 @@ async function main(){
     assert.strictEqual(r.vazioFree, false, 'pedir só "comp free" já é um pedido válido');
     assert.ok(r.n >= 1);
     assert.ok(r.freeRaros.every(n => n <= 1) && !r.freeUlt, 'free: no máx. 1 Limitado e nenhum Lendário/Ultimate: ' + r.freeRaros);
-    assert.ok(r.earlyRaros.every(n => n <= 1), 'early: no máx. 1 raro: ' + r.earlyRaros);
+    assert.ok(r.earlyRaros.every(n => n <= 2), 'early: no máx. 2 raros (só Limitado, nunca Lendário/Ultimate): ' + r.earlyRaros);
     assert.ok(r.midRaros.every(n => n <= 3) && r.midUlt.every(n => n <= 1), 'mid: até 3 raros e 1 Ultimate: ' + r.midRaros);
     assert.ok(Math.max(...r.cashRaros) >= 3, 'cash usa bastante raro: ' + r.cashRaros);
   });
