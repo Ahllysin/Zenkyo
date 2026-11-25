@@ -2840,7 +2840,7 @@ const DEFAULT_CHARACTERS = [
       "Guerreiro de Fusão",
       "Guerreiro de ATQ"
     ],
-    "rarity": "SSR [Lendário]",
+    "rarity": "SSR [Ultimate]",
     "type": "Ataque",
     "affinity": "Luz",
     "skill": {
