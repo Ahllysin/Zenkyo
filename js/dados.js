@@ -2757,7 +2757,7 @@ const DEFAULT_CHARACTERS = [
     "element": "Nenhum",
     "gender": "Masculino",
     "tags": [
-      "Guerreiro Maligno",
+      "Guerreiro de Fusão",
       "DEF de Guerreiro"
     ],
     "rarity": "SSR [Lendário]",
